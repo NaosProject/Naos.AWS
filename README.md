@@ -1,0 +1,1 @@
+# CoMetrics.StackTemplate
