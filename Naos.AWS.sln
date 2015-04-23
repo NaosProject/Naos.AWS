@@ -1,27 +1,14 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Contract", "Naos.AWS.Contract\Naos.AWS.Contract.csproj", "{43685312-C527-48E5-829C-9C7528881F72}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Contract", "Naos.AWS.Contract\Naos.AWS.Contract.csproj", "{43685312-C527-48E5-829C-9C7528881F72}"
 EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Contract.Test", "Naos.AWS.Contract.Test\Naos.AWS.Contract.Test.csproj", "{3C9D2300-5CB4-4BCC-BAE6-1F8884B4F842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Contract.Test", "Naos.AWS.Contract.Test\Naos.AWS.Contract.Test.csproj", "{3C9D2300-5CB4-4BCC-BAE6-1F8884B4F842}"
 EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Core", "Naos.AWS.Core\Naos.AWS.Core.csproj", "{3D5EF13C-104C-4C62-8C1C-BBEFF6AF3C78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Core", "Naos.AWS.Core\Naos.AWS.Core.csproj", "{3D5EF13C-104C-4C62-8C1C-BBEFF6AF3C78}"
 EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Core.Test", "Naos.AWS.Core.Test\Naos.AWS.Core.Test.csproj", "{D34D0741-7360-4F71-B6DF-06EE04E9052D}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.DataAccess", "Naos.AWS.DataAccess\Naos.AWS.DataAccess.csproj", "{0F9FA0DE-7779-4A42-A34C-8F1AA264E63E}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.DataAccess.Test", "Naos.AWS.DataAccess.Test\Naos.AWS.DataAccess.Test.csproj", "{19CBAF99-C153-4699-AB43-A1232D0589E3}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Proxy", "Naos.AWS.Proxy\Naos.AWS.Proxy.csproj", "{4BF01817-E6ED-4A33-8B00-B18195E54602}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Proxy.Test", "Naos.AWS.Proxy.Test\Naos.AWS.Proxy.Test.csproj", "{4D79D397-821F-459C-A52E-449EF477F4A6}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Rest.Test", "Naos.AWS.Rest.Test\Naos.AWS.Rest.Test.csproj", "{4387B1CD-3BDB-498A-BE2F-3F09CC49F9E6}"
-EndProject
-Project("{A76DB1A4-C8E7-4901-8B17-A4A2E487BE0E}") = "Naos.AWS.Rest", "Naos.AWS.Rest\Naos.AWS.Rest.csproj", "{AD82565B-8C3C-455A-80A5-AB297FD97E2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Core.Test", "Naos.AWS.Core.Test\Naos.AWS.Core.Test.csproj", "{D34D0741-7360-4F71-B6DF-06EE04E9052D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,30 +32,6 @@ Global
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0F9FA0DE-7779-4A42-A34C-8F1AA264E63E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F9FA0DE-7779-4A42-A34C-8F1AA264E63E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F9FA0DE-7779-4A42-A34C-8F1AA264E63E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F9FA0DE-7779-4A42-A34C-8F1AA264E63E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19CBAF99-C153-4699-AB43-A1232D0589E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19CBAF99-C153-4699-AB43-A1232D0589E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19CBAF99-C153-4699-AB43-A1232D0589E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19CBAF99-C153-4699-AB43-A1232D0589E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BF01817-E6ED-4A33-8B00-B18195E54602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BF01817-E6ED-4A33-8B00-B18195E54602}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BF01817-E6ED-4A33-8B00-B18195E54602}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BF01817-E6ED-4A33-8B00-B18195E54602}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D79D397-821F-459C-A52E-449EF477F4A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D79D397-821F-459C-A52E-449EF477F4A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D79D397-821F-459C-A52E-449EF477F4A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D79D397-821F-459C-A52E-449EF477F4A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4387B1CD-3BDB-498A-BE2F-3F09CC49F9E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4387B1CD-3BDB-498A-BE2F-3F09CC49F9E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4387B1CD-3BDB-498A-BE2F-3F09CC49F9E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4387B1CD-3BDB-498A-BE2F-3F09CC49F9E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD82565B-8C3C-455A-80A5-AB297FD97E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD82565B-8C3C-455A-80A5-AB297FD97E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD82565B-8C3C-455A-80A5-AB297FD97E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD82565B-8C3C-455A-80A5-AB297FD97E2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
