@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InternetGatewayExtensionMethods.cs" company="Naos">
+// <copyright file="VpcExtensionMethods.cs" company="Naos">
 //   Copyright 2015 Naos
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -7,55 +7,56 @@
 namespace Naos.AWS.Core
 {
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
 
-    using InternetGateway = Naos.AWS.Contract.InternetGateway;
+    using Vpc = Naos.AWS.Contract.Vpc;
 
     /// <summary>
-    /// Operations to be performed on InternetGateways.
+    /// Operations to be performed on VPCs.
     /// </summary>
-    public static class InternetGatewayExtensionMethods
+    public static class VpcExtensionMethods
     {
         /// <summary>
-        /// Create a new internet gateway.
+        /// Create a new VPC.
         /// </summary>
-        /// <param name="internetGateway">Internet gateway to create.</param>
+        /// <param name="vpc">VPC to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        public static void Create(this Vpc vpc, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(vpc.Region);
 
-            var request = new CreateInternetGatewayRequest();
+            var request = new CreateVpcRequest() { CidrBlock = vpc.Cidr, InstanceTenancy = new Tenancy(vpc.Tenancy) };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.CreateInternetGateway(request);
+                var response = client.CreateVpc(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                internetGateway.Id = response.InternetGateway.InternetGatewayId;
+                vpc.Id = response.Vpc.VpcId;
             }
 
-            internetGateway.TagNameInAws(credentials);
+            vpc.TagNameInAws(credentials);
         }
 
         /// <summary>
-        /// Deletes an internet gateway.
+        /// Deletes a VPC.
         /// </summary>
-        /// <param name="internetGateway">Internet gateway to delete.</param>
+        /// <param name="vpc">VPC to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Delete(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        public static void Delete(this Vpc vpc, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(vpc.Region);
 
-            var request = new DeleteInternetGatewayRequest() { InternetGatewayId = internetGateway.Id };
+            var request = new DeleteVpcRequest() { VpcId = vpc.Id };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DeleteInternetGateway(request);
+                var response = client.DeleteVpc(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }

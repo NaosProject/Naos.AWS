@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EbsVolumeExtensionMethodsTest.cs" />
     <Compile Include="CredentialExtensionMethodsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

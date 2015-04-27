@@ -23,7 +23,7 @@ namespace Naos.AWS.Contract
         /// <param name="virtualMfaDeviceId">Id/Resource path for the Virtual MFA device (found in console where MFA is configured).</param>
         /// <param name="mfaValue">Token/rotating key from the MFA device.</param>
         /// <returns>Credential object to be used when performing operations.</returns>
-        CredentialContainer GetSessionToken(
+        CredentialContainer GetSessionTokenCredentials(
             string region,
             TimeSpan tokenLifespan,
             string accessKey,
