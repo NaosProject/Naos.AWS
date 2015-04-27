@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAwsObject.cs" company="Naos">
+// <copyright file="IHaveRegion.cs" company="Naos">
 //   Copyright 2015 Naos
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -7,9 +7,13 @@
 namespace Naos.AWS.Contract
 {
     /// <summary>
-    /// Interface on all AWS objects.
+    /// Interface for objects that have a name.
     /// </summary>
-    public interface IAwsObject : IHaveName, IHaveId, IHaveRegion
+    public interface IHaveRegion
     {
+        /// <summary>
+        /// Gets the region.
+        /// </summary>
+        string Region { get; }
     }
 }

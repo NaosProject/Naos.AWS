@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InternetGatewayExtensionMethods.cs" company="Naos">
+// <copyright file="SubnetExtensionMethods.cs" company="Naos">
 //   Copyright 2015 Naos
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -9,53 +9,60 @@ namespace Naos.AWS.Core
     using Amazon;
     using Amazon.EC2.Model;
 
+    using CuttingEdge.Conditions;
+
     using Naos.AWS.Contract;
 
-    using InternetGateway = Naos.AWS.Contract.InternetGateway;
+    using Subnet = Naos.AWS.Contract.Subnet;
 
     /// <summary>
-    /// Operations to be performed on InternetGateways.
+    /// Operations to be performed on Subnet.
     /// </summary>
-    public static class InternetGatewayExtensionMethods
+    public static class SubnetExtensionMethods
     {
         /// <summary>
-        /// Create a new internet gateway.
+        /// Create a new subnet.
         /// </summary>
-        /// <param name="internetGateway">Internet gateway to create.</param>
+        /// <param name="subnet">Subnet to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        public static void Create(this Subnet subnet, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
 
-            var request = new CreateInternetGatewayRequest();
+            var request = new CreateSubnetRequest()
+                              {
+                                  AvailabilityZone = subnet.AvailabilityZone,
+                                  CidrBlock = subnet.Cidr,
+                                  VpcId = subnet.ParentVpc.Id
+                              };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.CreateInternetGateway(request);
+                var response = client.CreateSubnet(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                internetGateway.Id = response.InternetGateway.InternetGatewayId;
+                subnet.Id = response.Subnet.SubnetId;
             }
 
-            internetGateway.TagNameInAws(credentials);
+            subnet.TagNameInAws(credentials);
         }
 
         /// <summary>
-        /// Deletes an internet gateway.
+        /// Deletes a subnet.
         /// </summary>
-        /// <param name="internetGateway">Internet gateway to delete.</param>
+        /// <param name="subnet">Subnet to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Delete(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        public static void Delete(this Subnet subnet, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
 
-            var request = new DeleteInternetGatewayRequest() { InternetGatewayId = internetGateway.Id };
+            var request = new DeleteSubnetRequest() { SubnetId = subnet.Id };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DeleteInternetGateway(request);
+                var response = client.DeleteSubnet(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
