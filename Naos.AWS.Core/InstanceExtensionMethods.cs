@@ -240,5 +240,43 @@ namespace Naos.AWS.Core
                 return decryptedPassword;
             }
         }
+
+        /// <summary>
+        /// Stops the instance.
+        /// </summary>
+        /// <param name="instance">Instance to stop.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        public static void Stop(this Instance instance, CredentialContainer credentials = null)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
+
+            var request = new StopInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
+
+            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var response = client.StopInstances(request);
+                Validator.ThrowOnBadResult(request, response);
+            }
+        }
+
+        /// <summary>
+        /// Starts the instance.
+        /// </summary>
+        /// <param name="instance">Instance to start.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        public static void Start(this Instance instance, CredentialContainer credentials = null)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
+
+            var request = new StartInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
+
+            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var response = client.StartInstances(request);
+                Validator.ThrowOnBadResult(request, response);
+            }
+        }
     }
 }
