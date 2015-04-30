@@ -7,6 +7,7 @@
 namespace Naos.AWS.Contract
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Instance model object.
@@ -82,5 +83,32 @@ namespace Naos.AWS.Contract
         /// Gets or sets the EBS volumes mapped to the instance.
         /// </summary>
         public List<EbsVolume> MappedVolumes { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public Instance DeepClone()
+        {
+            var ret = new Instance()
+                          {
+                              Ami = this.Ami.DeepClone(),
+                              ComputerName = this.ComputerName,
+                              DisableApiTermination = this.DisableApiTermination,
+                              ContainingSubnet = this.ContainingSubnet.DeepClone(),
+                              ElasticIp = this.ElasticIp == null ? null : this.ElasticIp.DeepClone(),
+                              EnableSourceDestinationCheck = this.EnableSourceDestinationCheck,
+                              Id = this.Id,
+                              InstanceType = this.InstanceType,
+                              Key = this.Key == null ? null : this.Key.DeepClone(),
+                              MappedVolumes = this.MappedVolumes.Select(_ => _.DeepClone()).ToList(),
+                              Name = this.Name,
+                              PrivateIpAddress = this.PrivateIpAddress,
+                              Region = this.Region,
+                              SecurityGroup = this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
+                          };
+
+            return ret;
+        }
     }
 }

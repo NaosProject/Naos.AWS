@@ -30,5 +30,22 @@ namespace Naos.AWS.Contract
         /// Gets or sets the contents of the PEM file used for encryption.
         /// </summary>
         public string PrivateKey { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public KeyPair DeepClone()
+        {
+            var ret = new KeyPair()
+                          {
+                              KeyName = this.KeyName,
+                              Name = this.Name,
+                              PrivateKey = this.PrivateKey,
+                              Region = this.Region,
+                          };
+
+            return ret;
+        }
     }
 }

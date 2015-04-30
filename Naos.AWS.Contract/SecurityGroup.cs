@@ -6,6 +6,9 @@
 
 namespace Naos.AWS.Contract
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Security group model object.
     /// </summary>
@@ -34,11 +37,30 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the inbound rules.
         /// </summary>
-        public SecurityGroupRule[] InboundRules { get; set; }
+        public ICollection<SecurityGroupRule> InboundRules { get; set; }
 
         /// <summary>
         /// Gets or sets the outbound rules.
         /// </summary>
-        public SecurityGroupRule[] OutboundRules { get; set; }
-     }
+        public ICollection<SecurityGroupRule> OutboundRules { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public SecurityGroup DeepClone()
+        {
+            var ret = new SecurityGroup()
+                          {
+                              Id = this.Id,
+                              InboundRules = this.InboundRules == null ? null : this.InboundRules.Select(_ => _.DeepClone()).ToList(),
+                              IsDefault = this.IsDefault,
+                              Name = this.Name,
+                              OutboundRules = this.OutboundRules == null ? null : this.OutboundRules.Select(_ => _.DeepClone()).ToList(),
+                              Region = this.Region,
+                          };
+
+            return ret;
+        }
+    }
 }

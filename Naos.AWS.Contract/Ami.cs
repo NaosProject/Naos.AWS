@@ -30,5 +30,22 @@ namespace Naos.AWS.Contract
         /// Gets or sets the optional ability to find the AMI id using provided logic.
         /// </summary>
         public AmiSearchStrategy SearchStrategy { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public Ami DeepClone()
+        {
+            var ret = new Ami()
+                          {
+                              Id = this.Id,
+                              Name = this.Name,
+                              Region = this.Region,
+                              SearchStrategy = this.SearchStrategy.DeepClone(),
+                          };
+
+            return ret;
+        }
     }
 }

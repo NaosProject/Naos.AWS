@@ -25,5 +25,21 @@ namespace Naos.AWS.Contract
         /// Gets or sets the source/destination (depending on inbound or outbound rule) CIDR or IP address.
         /// </summary>
         public string Filter { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public SecurityGroupRule DeepClone()
+        {
+            var ret = new SecurityGroupRule()
+                          {
+                              Filter = this.Filter,
+                              PortRange = this.PortRange,
+                              Protocol = this.Protocol,
+                          };
+
+            return ret;
+        }
     }
 }

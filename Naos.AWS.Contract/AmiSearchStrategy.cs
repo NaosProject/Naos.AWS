@@ -25,5 +25,21 @@ namespace Naos.AWS.Contract
         /// Gets or sets the behavior when multiple AMI's are found matching the provided pattern.
         /// </summary>
         public Enums.MultipleAmiFoundBehavior MultipleFoundBehavior { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public AmiSearchStrategy DeepClone()
+        {
+            var ret = new AmiSearchStrategy()
+                          {
+                              MultipleFoundBehavior = this.MultipleFoundBehavior,
+                              OwnerAlias = this.OwnerAlias,
+                              SearchPattern = this.SearchPattern,
+                          };
+
+            return ret;
+        }
     }
 }

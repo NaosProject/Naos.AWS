@@ -25,5 +25,21 @@ namespace Naos.AWS.Contract
         /// Gets or sets the target ID.
         /// </summary>
         public string TargetId { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public RouteEntry DeepClone()
+        {
+            var ret = new RouteEntry()
+                          {
+                              DestinationCidr = this.DestinationCidr,
+                              TargetId = this.TargetId,
+                              TargetType = this.TargetType,
+                          };
+
+            return ret;
+        }
     }
 }

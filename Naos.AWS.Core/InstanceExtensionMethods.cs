@@ -30,28 +30,30 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to create.</param>
         /// <param name="userData">User data to use for instance creation.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this Instance instance, UserData userData, CredentialContainer credentials = null)
+        /// <returns>Updated copy of the provided object.</returns>
+        public static Instance Create(this Instance instance, UserData userData, CredentialContainer credentials = null)
         {
+            var localInstance = instance.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(localInstance.Region);
 
-            var placement = new Placement(instance.ContainingSubnet.AvailabilityZone);
-            var amiId = instance.Ami.DiscoverId(credentials);
-            var blockDeviceMappings = instance.MappedVolumes.ToAwsBlockDeviceMappings();
+            var placement = new Placement(localInstance.ContainingSubnet.AvailabilityZone);
+            var amiId = localInstance.Ami.DiscoverId(credentials);
+            var blockDeviceMappings = localInstance.MappedVolumes.ToAwsBlockDeviceMappings();
             var request = new RunInstancesRequest()
                               {
                                   BlockDeviceMappings = blockDeviceMappings,
                                   ClientToken = Guid.NewGuid().ToString().ToUpper(),
-                                  DisableApiTermination = instance.DisableApiTermination,
+                                  DisableApiTermination = localInstance.DisableApiTermination,
                                   ImageId = amiId,
-                                  InstanceType = instance.InstanceType,
-                                  KeyName = instance.Key.KeyName,
+                                  InstanceType = localInstance.InstanceType,
+                                  KeyName = localInstance.Key.KeyName,
                                   MinCount = 1,
                                   MaxCount = 1,
                                   Placement = placement,
-                                  PrivateIpAddress = instance.PrivateIpAddress,
-                                  SecurityGroupIds = new[] { instance.SecurityGroup.Id }.ToList(),
-                                  SubnetId = instance.ContainingSubnet.Id,
+                                  PrivateIpAddress = localInstance.PrivateIpAddress,
+                                  SecurityGroupIds = new[] { localInstance.SecurityGroup.Id }.ToList(),
+                                  SubnetId = localInstance.ContainingSubnet.Id,
                                   UserData = userData.ToBase64Representation(),
                               };
 
@@ -67,15 +69,15 @@ namespace Naos.AWS.Core
             if (newInstance == null)
             {
                 throw new ApplicationException(
-                    "Instance failed to get created: " + JsonConvert.SerializeObject(instance));
+                    "Instance failed to get created: " + JsonConvert.SerializeObject(localInstance));
             }
 
             // save the instance ID and tag the name in AWS
-            instance.Id = newInstance.InstanceId;
-            instance.TagNameInAws(credentials);
+            localInstance.Id = newInstance.InstanceId;
+            localInstance.TagNameInAws(credentials);
 
             // wait until instance is "running" before proceeding.
-            instance.WaitForState(Enums.InstanceState.Running, credentials);
+            localInstance.WaitForState(Enums.InstanceState.Running, credentials);
 
             // re-fetch the instance details now that everything should be setup
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
@@ -83,7 +85,7 @@ namespace Naos.AWS.Core
                 var describeInstanceRequest = new DescribeInstancesRequest()
                                                   {
                                                       InstanceIds =
-                                                          new[] { instance.Id }.ToList()
+                                                          new[] { localInstance.Id }.ToList()
                                                   };
 
                 var describeInstanceResponse = client.DescribeInstances(describeInstanceRequest);
@@ -95,21 +97,21 @@ namespace Naos.AWS.Core
             // save the EBS volume ID's and tag with name
             foreach (var mapping in newInstance.BlockDeviceMappings)
             {
-                var contractMapping = instance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
+                var contractMapping = localInstance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
                 contractMapping.Id = mapping.Ebs.VolumeId;
                 contractMapping.TagNameInAws(credentials);
             }
 
-            if (instance.ElasticIp != null)
+            if (localInstance.ElasticIp != null)
             {
-                instance.ElasticIp.AssociateToInstance(instance.Id, credentials);
+                localInstance.ElasticIp.AssociateToInstance(localInstance.Id, credentials);
             }
 
             // update the source destination check attribute now that this is created
             var updateSourceDestinationCheckRequest = new ModifyInstanceAttributeRequest()
                                                           {
-                                                              InstanceId = instance.Id,
-                                                              SourceDestCheck = instance.EnableSourceDestinationCheck,
+                                                              InstanceId = localInstance.Id,
+                                                              SourceDestCheck = localInstance.EnableSourceDestinationCheck,
                                                           };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
@@ -117,6 +119,8 @@ namespace Naos.AWS.Core
                 var updateSourceDestinationCheckResponse = client.ModifyInstanceAttribute(updateSourceDestinationCheckRequest);
                 Validator.ThrowOnBadResult(updateSourceDestinationCheckRequest, updateSourceDestinationCheckResponse);
             }
+
+            return localInstance;
         }
 
         /// <summary>
@@ -205,12 +209,6 @@ namespace Naos.AWS.Core
             }
 
             instance.WaitForState(Enums.InstanceState.Terminated, credentials);
-
-            instance.Id = null;
-            foreach (var volume in instance.MappedVolumes)
-            {
-                volume.Id = null;
-            }
         }
 
         /// <summary>

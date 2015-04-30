@@ -45,5 +45,25 @@ namespace Naos.AWS.Contract
         /// Gets or sets the volume size in gigabytes.
         /// </summary>
         public int SizeInGb { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public EbsVolume DeepClone()
+        {
+            var ret = new EbsVolume()
+                          {
+                              DeviceName = this.DeviceName,
+                              Id = this.Id,
+                              Name = this.Name,
+                              Region = this.Region,
+                              SizeInGb = this.SizeInGb,
+                              VirtualName = this.VirtualName,
+                              VolumeType = this.VolumeType,
+                          };
+
+            return ret;
+        }
     }
 }

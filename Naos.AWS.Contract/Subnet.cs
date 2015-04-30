@@ -45,5 +45,25 @@ namespace Naos.AWS.Contract
         /// Gets or sets the availability zone.
         /// </summary>
         public string AvailabilityZone { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public Subnet DeepClone()
+        {
+            var ret = new Subnet()
+                          {
+                              AvailabilityZone = this.AvailabilityZone,
+                              Cidr = this.Cidr,
+                              Id = this.Id,
+                              Name = this.Name,
+                              ParentVpc = this.ParentVpc.DeepClone(),
+                              Region = this.Region,
+                              RegisteredRouteTable = this.RegisteredRouteTable == null ? null : this.RegisteredRouteTable.DeepClone(),
+                          };
+
+            return ret;
+        }
     }
 }

@@ -23,10 +23,13 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="internetGateway">Internet gateway to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        /// <returns>Updated copy of the provided object.</returns>
+        public static InternetGateway Create(this InternetGateway internetGateway, CredentialContainer credentials = null)
         {
+            var localInternetGateway = internetGateway.DeepClone();
+
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(localInternetGateway.Region);
 
             var request = new CreateInternetGatewayRequest();
 
@@ -35,10 +38,12 @@ namespace Naos.AWS.Core
                 var response = client.CreateInternetGateway(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                internetGateway.Id = response.InternetGateway.InternetGatewayId;
+                localInternetGateway.Id = response.InternetGateway.InternetGatewayId;
             }
 
-            internetGateway.TagNameInAws(credentials);
+            localInternetGateway.TagNameInAws(credentials);
+
+            return localInternetGateway;
         }
 
         /// <summary>
