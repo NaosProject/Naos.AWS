@@ -30,5 +30,14 @@ namespace Naos.AWS.Contract
         /// Gets or sets the public IP address of the elastic IP allocation.
         /// </summary>
         public string PublicIpAddress { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public ElasticIp DeepClone()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

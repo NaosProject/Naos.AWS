@@ -6,6 +6,10 @@
 
 namespace Naos.AWS.Contract
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Route table model object.
     /// </summary>
@@ -34,6 +38,24 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the route entries.
         /// </summary>
-        public RouteEntry[] Routes { get; set; }
+        public ICollection<RouteEntry> Routes { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public RouteTable DeepClone()
+        {
+            var ret = new RouteTable()
+                          {
+                              Id = this.Id,
+                              IsDefault = this.IsDefault,
+                              Name = this.Name,
+                              Region = this.Region,
+                              Routes = this.Routes == null ? null : this.Routes.Select(_ => _.DeepClone()).ToList(),
+                          };
+
+            return ret;
+        }
     }
 }

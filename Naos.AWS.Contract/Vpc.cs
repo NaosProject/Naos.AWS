@@ -40,5 +40,24 @@ namespace Naos.AWS.Contract
         /// Gets or sets the InternetGateway for the VPC to use.
         /// </summary>
         public InternetGateway InternetGateway { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public Vpc DeepClone()
+        {
+            var ret = new Vpc()
+                          {
+                              Cidr = this.Cidr,
+                              Id = this.Id,
+                              InternetGateway = this.InternetGateway.DeepClone(),
+                              Name = this.Name,
+                              Region = this.Region,
+                              Tenancy = this.Tenancy,
+                          };
+
+            return ret;
+        }
     }
 }

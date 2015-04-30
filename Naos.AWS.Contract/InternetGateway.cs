@@ -25,5 +25,16 @@ namespace Naos.AWS.Contract
         /// Gets or sets the Name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets a deep clone of the object.
+        /// </summary>
+        /// <returns>Deeply cloned version of the object.</returns>
+        public InternetGateway DeepClone()
+        {
+            var ret = new InternetGateway() { Id = this.Id, Name = this.Name, Region = this.Region, };
+
+            return ret;
+        }
     }
 }

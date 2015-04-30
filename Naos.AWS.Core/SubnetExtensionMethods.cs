@@ -25,16 +25,18 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="subnet">Subnet to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this Subnet subnet, CredentialContainer credentials = null)
+        /// <returns>Updated copy of the provided object.</returns>
+        public static Subnet Create(this Subnet subnet, CredentialContainer credentials = null)
         {
+            var localSubnet = subnet.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(localSubnet.Region);
 
             var request = new CreateSubnetRequest()
                               {
-                                  AvailabilityZone = subnet.AvailabilityZone,
-                                  CidrBlock = subnet.Cidr,
-                                  VpcId = subnet.ParentVpc.Id
+                                  AvailabilityZone = localSubnet.AvailabilityZone,
+                                  CidrBlock = localSubnet.Cidr,
+                                  VpcId = localSubnet.ParentVpc.Id
                               };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
@@ -42,10 +44,12 @@ namespace Naos.AWS.Core
                 var response = client.CreateSubnet(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                subnet.Id = response.Subnet.SubnetId;
+                localSubnet.Id = response.Subnet.SubnetId;
             }
 
-            subnet.TagNameInAws(credentials);
+            localSubnet.TagNameInAws(credentials);
+
+            return localSubnet;
         }
 
         /// <summary>

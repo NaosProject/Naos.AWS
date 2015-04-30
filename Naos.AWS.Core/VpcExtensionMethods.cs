@@ -24,22 +24,26 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="vpc">VPC to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Create(this Vpc vpc, CredentialContainer credentials = null)
+        /// <returns>Updated copy of the provided object.</returns>
+        public static Vpc Create(this Vpc vpc, CredentialContainer credentials = null)
         {
+            var localVpc = vpc.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(vpc.Region);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(localVpc.Region);
 
-            var request = new CreateVpcRequest() { CidrBlock = vpc.Cidr, InstanceTenancy = new Tenancy(vpc.Tenancy) };
+            var request = new CreateVpcRequest() { CidrBlock = localVpc.Cidr, InstanceTenancy = new Tenancy(localVpc.Tenancy) };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.CreateVpc(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                vpc.Id = response.Vpc.VpcId;
+                localVpc.Id = response.Vpc.VpcId;
             }
 
-            vpc.TagNameInAws(credentials);
+            localVpc.TagNameInAws(credentials);
+
+            return localVpc;
         }
 
         /// <summary>
