@@ -52,7 +52,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="awsObject">AWS object to check on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials)
+        public static void AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
         {
             Func<bool> action = () =>
                 {
@@ -65,9 +65,9 @@ namespace Naos.AWS.Core
                         switch (awsObjectType)
                         {
                             case Enums.AwsObjectType.Instance:
-                                return (awsObject as Instance).ExistsOnAws();
+                                return (awsObject as Instance).ExistsOnAws(credentials);
                             case Enums.AwsObjectType.EbsVolume:
-                                return (awsObject as EbsVolume).ExistsOnAws();
+                                return (awsObject as EbsVolume).ExistsOnAws(credentials);
                             default:
                                 throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);
                         }
