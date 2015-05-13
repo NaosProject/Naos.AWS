@@ -58,7 +58,7 @@ namespace Naos.AWS.Contract
                               Cidr = this.Cidr,
                               Id = this.Id,
                               Name = this.Name,
-                              ParentVpc = this.ParentVpc.DeepClone(),
+                              ParentVpc = this.ParentVpc == null ? null : this.ParentVpc.DeepClone(),
                               Region = this.Region,
                               RegisteredRouteTable = this.RegisteredRouteTable == null ? null : this.RegisteredRouteTable.DeepClone(),
                           };
