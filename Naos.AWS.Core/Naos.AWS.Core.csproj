@@ -59,6 +59,7 @@
     <Compile Include="AmiExtensionMethods.cs" />
     <Compile Include="AwsObjectExtensionMethods.cs" />
     <Compile Include="InstanceExtensionMethods.cs" />
+    <Compile Include="InstanceTypeHelper.cs" />
     <Compile Include="NullPasswordDataException.cs" />
     <Compile Include="WaitUntil.cs" />
     <Compile Include="SubnetExtensionMethods.cs" />
