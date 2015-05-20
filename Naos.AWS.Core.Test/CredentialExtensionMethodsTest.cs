@@ -21,7 +21,7 @@ namespace Naos.AWS.Core.Test
         {
             var credentialContainer = new CredentialContainer()
                                           {
-                                              CredentialType = Enums.CredentialType.Token,
+                                              CredentialType = CredentialType.Token,
                                               AccessKeyId = "AccessKeyId",
                                               SecretAccessKey = "SecretAccessKey",
                                               SessionToken = "SessionToken",

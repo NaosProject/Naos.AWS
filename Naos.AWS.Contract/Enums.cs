@@ -7,164 +7,194 @@
 namespace Naos.AWS.Contract
 {
     /// <summary>
-    /// Class to hold enumerations used by project.
+    /// Type of credential.
     /// </summary>
-    public static class Enums
+    public enum CredentialType
     {
         /// <summary>
-        /// Type of credential.
+        /// Token based AWS authorization.
         /// </summary>
-        public enum CredentialType
-        {
-            /// <summary>
-            /// Token based AWS authorization.
-            /// </summary>
-            Token
-        }
+        Token
+    }
+
+    /// <summary>
+    /// Type of routable item in AWS.
+    /// </summary>
+    public enum RoutableType
+    {
+        /// <summary>
+        /// And EC2 instance.
+        /// </summary>
+        Instance,
 
         /// <summary>
-        /// Type of routable item in AWS.
+        /// Peered VPC connection (another VPC).
         /// </summary>
-        public enum RoutableType
-        {
-            /// <summary>
-            /// And EC2 instance.
-            /// </summary>
-            Instance,
-
-            /// <summary>
-            /// Peered VPC connection (another VPC).
-            /// </summary>
-            VpcPeering,
-
-            /// <summary>
-            /// Internet gateway of the VPC (out to public internet).
-            /// </summary>
-            InternetGateway,
-
-            /// <summary>
-            /// Virtual private gateway (VPN connection to a resource outside of AWS).
-            /// </summary>
-            VirtualPrivateGateway,
-        }
+        VpcPeering,
 
         /// <summary>
-        /// Actions available to rules.
+        /// Internet gateway of the VPC (out to public internet).
         /// </summary>
-        public enum RuleAction
-        {
-            /// <summary>
-            /// Allows the matching request.
-            /// </summary>
-            Allow,
-
-            /// <summary>
-            /// Denies the matching request.
-            /// </summary>
-            Deny,
-        }
+        InternetGateway,
 
         /// <summary>
-        /// Behavior for AMI searching when multiple AMI's are found.
+        /// Virtual private gateway (VPN connection to a resource outside of AWS).
         /// </summary>
-        public enum MultipleAmiFoundBehavior
-        {
-            /// <summary>
-            /// Throw an exception.
-            /// </summary>
-            Throw,
+        VirtualPrivateGateway,
+    }
 
-            /// <summary>
-            /// Sort descending by name and take first item.
-            /// </summary>
-            FirstSortedDescending
-        }
+    /// <summary>
+    /// Actions available to rules.
+    /// </summary>
+    public enum RuleAction
+    {
+        /// <summary>
+        /// Allows the matching request.
+        /// </summary>
+        Allow,
 
         /// <summary>
-        /// States an instance can be in.
+        /// Denies the matching request.
         /// </summary>
-        public enum InstanceState
-        {
-            /// <summary>
-            /// Unknown state.
-            /// </summary>
-            Unknown = -1,
+        Deny,
+    }
 
-            /// <summary>
-            /// Pending state.
-            /// </summary>
-            Pending = 0,
-
-            /// <summary>
-            /// Running state.
-            /// </summary>
-            Running = 16,
-
-            /// <summary>
-            /// Shutting down state.
-            /// </summary>
-            ShuttingDown = 32,
-
-            /// <summary>
-            /// Terminated state.
-            /// </summary>
-            Terminated = 48,
-
-            /// <summary>
-            /// Stopping state.
-            /// </summary>
-            Stopping = 64,
-
-            /// <summary>
-            /// Stopped state.
-            /// </summary>
-            Stopped = 80,
-        }
+    /// <summary>
+    /// Behavior for AMI searching when multiple AMI's are found.
+    /// </summary>
+    public enum MultipleAmiFoundBehavior
+    {
+        /// <summary>
+        /// Throw an exception.
+        /// </summary>
+        Throw,
 
         /// <summary>
-        /// Types of AWS objects.
+        /// Sort descending by name and take first item.
         /// </summary>
-        public enum AwsObjectType
-        {
-            /// <summary>
-            /// Virtual private cloud.
-            /// </summary>
-            Vpc,
+        FirstSortedDescending
+    }
 
-            /// <summary>
-            /// Internet gateway.
-            /// </summary>
-            InternetGateway,
+    /// <summary>
+    /// States an instance can be in.
+    /// </summary>
+    public enum InstanceState
+    {
+        /// <summary>
+        /// Unknown state.
+        /// </summary>
+        Unknown = -1,
 
-            /// <summary>
-            /// Route table.
-            /// </summary>
-            RouteTable,
+        /// <summary>
+        /// Pending state.
+        /// </summary>
+        Pending = 0,
 
-            /// <summary>
-            /// Subnet object.
-            /// </summary>
-            Subnet,
+        /// <summary>
+        /// Running state.
+        /// </summary>
+        Running = 16,
 
-            /// <summary>
-            /// Network access control list.
-            /// </summary>
-            NetworkAcl,
+        /// <summary>
+        /// Shutting down state.
+        /// </summary>
+        ShuttingDown = 32,
 
-            /// <summary>
-            /// Security group.
-            /// </summary>
-            SecurityGroup,
+        /// <summary>
+        /// Terminated state.
+        /// </summary>
+        Terminated = 48,
 
-            /// <summary>
-            /// Machine instance.
-            /// </summary>
-            Instance,
+        /// <summary>
+        /// Stopping state.
+        /// </summary>
+        Stopping = 64,
 
-            /// <summary>
-            /// Elastic block storage volume.
-            /// </summary>
-            EbsVolume,
-        }
+        /// <summary>
+        /// Stopped state.
+        /// </summary>
+        Stopped = 80,
+    }
+
+    /// <summary>
+    /// Types of AWS objects.
+    /// </summary>
+    public enum AwsObjectType
+    {
+        /// <summary>
+        /// Virtual private cloud.
+        /// </summary>
+        Vpc,
+
+        /// <summary>
+        /// Internet gateway.
+        /// </summary>
+        InternetGateway,
+
+        /// <summary>
+        /// Route table.
+        /// </summary>
+        RouteTable,
+
+        /// <summary>
+        /// Subnet object.
+        /// </summary>
+        Subnet,
+
+        /// <summary>
+        /// Network access control list.
+        /// </summary>
+        NetworkAcl,
+
+        /// <summary>
+        /// Security group.
+        /// </summary>
+        SecurityGroup,
+
+        /// <summary>
+        /// Machine instance.
+        /// </summary>
+        Instance,
+
+        /// <summary>
+        /// Elastic block storage volume.
+        /// </summary>
+        EbsVolume,
+    }
+
+    /// <summary>
+    /// Enumeration of the types of entries you can have.
+    /// </summary>
+    public enum Route53EntryType
+    {
+        /// <summary>
+        /// A record.
+        /// </summary>
+        A,
+
+        /// <summary>
+        /// CNAME record.
+        /// </summary>
+        CNAME,
+
+        /// <summary>
+        /// MX record.
+        /// </summary>
+        MX,
+
+        /// <summary>
+        /// TXT record.
+        /// </summary>
+        TXT,
+
+        /// <summary>
+        /// NS record.
+        /// </summary>
+        NS,
+
+        /// <summary>
+        /// SOA record.
+        /// </summary>
+        SOA,
     }
 }

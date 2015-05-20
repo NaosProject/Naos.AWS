@@ -39,7 +39,7 @@ namespace Naos.AWS.Core
                 var token = client.GetSessionToken(request);
                 return new CredentialContainer()
                            {
-                               CredentialType = Enums.CredentialType.Token,
+                               CredentialType = CredentialType.Token,
                                AccessKeyId = token.Credentials.AccessKeyId,
                                SecretAccessKey = token.Credentials.SecretAccessKey,
                                SessionToken = token.Credentials.SessionToken,

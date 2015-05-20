@@ -39,6 +39,6 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the action to apply to the rule when met.
         /// </summary>
-        public Enums.RuleAction Action { get; set; }
+        public RuleAction Action { get; set; }
     }
 }

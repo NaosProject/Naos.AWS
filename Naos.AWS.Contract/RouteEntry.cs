@@ -19,7 +19,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the type of target.
         /// </summary>
-        public Enums.RoutableType TargetType { get; set; }
+        public RoutableType TargetType { get; set; }
 
         /// <summary>
         /// Gets or sets the target ID.
