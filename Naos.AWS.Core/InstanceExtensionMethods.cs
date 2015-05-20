@@ -104,6 +104,13 @@ namespace Naos.AWS.Core
 
             if (localInstance.ElasticIp != null)
             {
+                if (string.IsNullOrEmpty(localInstance.ElasticIp.Id)
+                    || string.IsNullOrEmpty(localInstance.ElasticIp.PublicIpAddress))
+                {
+                    localInstance.ElasticIp = localInstance.ElasticIp.Allocate(credentials);
+                    localInstance.ElasticIp.ExistsOnAws(credentials);
+                }
+
                 localInstance.ElasticIp.AssociateToInstance(localInstance.Id, credentials);
             }
 

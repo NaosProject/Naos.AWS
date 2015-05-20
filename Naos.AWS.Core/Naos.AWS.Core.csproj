@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AwsResponseNotOkException.cs" />
+    <Compile Include="DnsManager.cs" />
     <Compile Include="EbsVolumeExtensionMethods.cs" />
     <Compile Include="CredentialExtensionMethods.cs" />
     <Compile Include="CredentialManager.cs" />

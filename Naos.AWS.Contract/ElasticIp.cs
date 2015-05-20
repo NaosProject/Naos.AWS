@@ -37,7 +37,15 @@ namespace Naos.AWS.Contract
         /// <returns>Deeply cloned version of the object.</returns>
         public ElasticIp DeepClone()
         {
-            throw new System.NotImplementedException();
+            var ret = new ElasticIp
+                          {
+                              Id = this.Id,
+                              Name = this.Name,
+                              PublicIpAddress = this.PublicIpAddress,
+                              Region = this.Region
+                          };
+
+            return ret;
         }
     }
 }

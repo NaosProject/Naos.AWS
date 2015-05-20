@@ -9,8 +9,6 @@ namespace Naos.AWS.Core
     using Amazon;
     using Amazon.EC2.Model;
 
-    using CuttingEdge.Conditions;
-
     using Naos.AWS.Contract;
 
     using Subnet = Naos.AWS.Contract.Subnet;

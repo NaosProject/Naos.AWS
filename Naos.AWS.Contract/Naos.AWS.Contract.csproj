@@ -52,6 +52,7 @@
     <Compile Include="IHaveRegion.cs" />
     <Compile Include="IHaveName.cs" />
     <Compile Include="IManageCredentials.cs" />
+    <Compile Include="IManageDns.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="KeyPair.cs" />
     <Compile Include="SecurityGroup.cs" />
