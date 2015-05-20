@@ -52,9 +52,10 @@
     <Compile Include="IHaveRegion.cs" />
     <Compile Include="IHaveName.cs" />
     <Compile Include="IManageCredentials.cs" />
-    <Compile Include="IManageDns.cs" />
+    <Compile Include="IManageRoute53.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="KeyPair.cs" />
+    <Compile Include="Route53Entry.cs" />
     <Compile Include="SecurityGroup.cs" />
     <Compile Include="NetworkAclRule.cs" />
     <Compile Include="RouteEntry.cs" />

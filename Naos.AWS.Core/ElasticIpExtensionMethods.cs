@@ -56,7 +56,7 @@ namespace Naos.AWS.Core
 
             var request = new ReleaseAddressRequest
                               {
-                                  PublicIp = elasticIp.PublicIpAddress
+                                  AllocationId = elasticIp.Id,
                               };
 
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))

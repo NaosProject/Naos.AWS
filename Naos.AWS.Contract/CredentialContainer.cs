@@ -16,7 +16,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the type of AWS credential.
         /// </summary>
-        public Enums.CredentialType CredentialType { get; set; }
+        public CredentialType CredentialType { get; set; }
 
         /// <summary>
         /// Gets or sets the access key ID.

@@ -17,6 +17,7 @@ namespace Naos.AWS.Core
     using Newtonsoft.Json;
 
     using Instance = Naos.AWS.Contract.Instance;
+    using InstanceState = Naos.AWS.Contract.InstanceState;
     using UserData = Naos.AWS.Contract.UserData;
 
     /// <summary>
@@ -77,7 +78,7 @@ namespace Naos.AWS.Core
             localInstance.TagNameInAws(credentials);
 
             // wait until instance is "running" before proceeding.
-            localInstance.WaitForState(Enums.InstanceState.Running, credentials);
+            localInstance.WaitForState(InstanceState.Running, credentials);
 
             // re-fetch the instance details now that everything should be setup
             using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
@@ -157,7 +158,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>State of instance.</returns>
-        public static Enums.InstanceState GetState(this Instance instance, CredentialContainer credentials = null)
+        public static InstanceState GetState(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -177,11 +178,11 @@ namespace Naos.AWS.Core
                 if (specificInstanceResult != null)
                 {
                     var stateCode = specificInstanceResult.InstanceState.Code;
-                    return (Enums.InstanceState)stateCode;
+                    return (InstanceState)stateCode;
                 }
                 else
                 {
-                    return Enums.InstanceState.Unknown;
+                    return InstanceState.Unknown;
                 }
             }
         }
@@ -192,7 +193,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="expectedState">State of instance to wait for.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void WaitForState(this Instance instance, Enums.InstanceState expectedState, CredentialContainer credentials = null)
+        public static void WaitForState(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
         {
             WaitUntil.SuccessIsReturned(() => instance.GetState(credentials) == expectedState);
         }
@@ -215,7 +216,7 @@ namespace Naos.AWS.Core
                 Validator.ThrowOnBadResult(request, response);
             }
 
-            instance.WaitForState(Enums.InstanceState.Terminated, credentials);
+            instance.WaitForState(InstanceState.Terminated, credentials);
         }
 
         /// <summary>

@@ -75,11 +75,11 @@ namespace Naos.AWS.Core
 
                 switch (ami.SearchStrategy.MultipleFoundBehavior)
                 {
-                    case Enums.MultipleAmiFoundBehavior.Throw:
+                    case MultipleAmiFoundBehavior.Throw:
                         throw new ApplicationException(
                             "Unsupported multiple results, found " + filteredImages.Count + " images matching "
                             + ami.SearchStrategy.SearchPattern);
-                    case Enums.MultipleAmiFoundBehavior.FirstSortedDescending:
+                    case MultipleAmiFoundBehavior.FirstSortedDescending:
                         var sorted = filteredImages.OrderByDescending(_ => _.Name);
                         return sorted.First().ImageId;
                     default:

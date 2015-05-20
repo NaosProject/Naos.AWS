@@ -26,15 +26,15 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="awsObject">AWS object to get type of.</param>
         /// <returns>Object type that was inferred from ID prefix.</returns>
-        public static Enums.AwsObjectType InferObjectTypeFromId(this IAwsObject awsObject)
+        public static AwsObjectType InferObjectTypeFromId(this IAwsObject awsObject)
         {
             if (awsObject.Id.StartsWith("i-"))
             {
-                return Enums.AwsObjectType.Instance;
+                return AwsObjectType.Instance;
             }
             else if (awsObject.Id.StartsWith("vol-"))
             {
-                return Enums.AwsObjectType.EbsVolume;
+                return AwsObjectType.EbsVolume;
             }
             else
             {

@@ -64,9 +64,9 @@ namespace Naos.AWS.Core
                         var awsObjectType = awsObject.InferObjectTypeFromId();
                         switch (awsObjectType)
                         {
-                            case Enums.AwsObjectType.Instance:
+                            case AwsObjectType.Instance:
                                 return (awsObject as Instance).ExistsOnAws(credentials);
-                            case Enums.AwsObjectType.EbsVolume:
+                            case AwsObjectType.EbsVolume:
                                 return (awsObject as EbsVolume).ExistsOnAws(credentials);
                             default:
                                 throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);

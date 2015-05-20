@@ -28,7 +28,7 @@ namespace Naos.AWS.Core
             AWSCredentials ret = null;
             switch (credentials.CredentialType)
             {
-                case Enums.CredentialType.Token:
+                case CredentialType.Token:
                     ret = new Credentials(
                         credentials.AccessKeyId,
                         credentials.SecretAccessKey,
