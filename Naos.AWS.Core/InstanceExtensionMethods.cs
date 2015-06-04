@@ -40,6 +40,7 @@ namespace Naos.AWS.Core
 
             var placement = new Placement(localInstance.ContainingSubnet.AvailabilityZone);
             var amiId = localInstance.Ami.DiscoverId(credentials);
+            localInstance.Ami.Id = amiId; // assign for returning to caller (gives visibility for potential debug needs)
             var blockDeviceMappings = localInstance.MappedVolumes.ToAwsBlockDeviceMappings();
             var request = new RunInstancesRequest()
                               {
