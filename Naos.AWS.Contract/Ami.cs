@@ -42,7 +42,7 @@ namespace Naos.AWS.Contract
                               Id = this.Id,
                               Name = this.Name,
                               Region = this.Region,
-                              SearchStrategy = this.SearchStrategy.DeepClone(),
+                              SearchStrategy = this.SearchStrategy == null ? null : this.SearchStrategy.DeepClone(),
                           };
 
             return ret;
