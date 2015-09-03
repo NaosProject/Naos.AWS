@@ -52,14 +52,14 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public Task UploadFileAsync(string region, string bucketName, string keyName, string sourceFilePath)
+        public async Task UploadFileAsync(string region, string bucketName, string keyName, string sourceFilePath)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.accessKey, this.secretKey, regionEndpoint))
             {
                 using (var transferUtility = new TransferUtility(client))
                 {
-                    return transferUtility.UploadAsync(sourceFilePath, bucketName, keyName);
+                    await transferUtility.UploadAsync(sourceFilePath, bucketName, keyName);
                 }
             }
         }
@@ -78,14 +78,14 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath)
+        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.accessKey, this.secretKey, regionEndpoint))
             {
                 using (var transferUtility = new TransferUtility(client))
                 {
-                    return transferUtility.DownloadAsync(destinationFilePath, bucketName, keyName);
+                    await transferUtility.DownloadAsync(destinationFilePath, bucketName, keyName);
                 }
             }
         }
