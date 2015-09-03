@@ -45,7 +45,7 @@ namespace Naos.AWS.Core
                                           }.ToList()
                               };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DescribeImages(request);
                 Validator.ThrowOnBadResult(request, response);

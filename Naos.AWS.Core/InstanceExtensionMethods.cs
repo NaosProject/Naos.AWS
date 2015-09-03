@@ -10,6 +10,7 @@ namespace Naos.AWS.Core
     using System.Linq;
 
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
@@ -60,7 +61,7 @@ namespace Naos.AWS.Core
                               };
 
             Amazon.EC2.Model.Instance newInstance = null;
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.RunInstances(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -82,7 +83,7 @@ namespace Naos.AWS.Core
             localInstance.WaitForState(InstanceState.Running, credentials);
 
             // re-fetch the instance details now that everything should be setup
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var describeInstanceRequest = new DescribeInstancesRequest()
                                                   {
@@ -123,7 +124,7 @@ namespace Naos.AWS.Core
                                                               SourceDestCheck = localInstance.EnableSourceDestinationCheck,
                                                           };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var updateSourceDestinationCheckResponse = client.ModifyInstanceAttribute(updateSourceDestinationCheckRequest);
                 Validator.ThrowOnBadResult(updateSourceDestinationCheckRequest, updateSourceDestinationCheckResponse);
@@ -143,7 +144,7 @@ namespace Naos.AWS.Core
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var request = new DescribeInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
 
@@ -170,7 +171,7 @@ namespace Naos.AWS.Core
                                   InstanceIds = new[] { instance.Id }.ToList()
                               };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DescribeInstanceStatus(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -211,7 +212,7 @@ namespace Naos.AWS.Core
 
             var request = new TerminateInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.TerminateInstances(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -233,7 +234,7 @@ namespace Naos.AWS.Core
 
             var request = new GetPasswordDataRequest() { InstanceId = instance.Id };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.GetPasswordData(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -260,7 +261,7 @@ namespace Naos.AWS.Core
 
             var request = new StopInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.StopInstances(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -279,7 +280,7 @@ namespace Naos.AWS.Core
 
             var request = new StartInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.StartInstances(request);
                 Validator.ThrowOnBadResult(request, response);

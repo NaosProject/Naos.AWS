@@ -7,6 +7,7 @@
 namespace Naos.AWS.Core
 {
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
@@ -33,7 +34,7 @@ namespace Naos.AWS.Core
 
             var request = new CreateInternetGatewayRequest();
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.CreateInternetGateway(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -58,7 +59,7 @@ namespace Naos.AWS.Core
 
             var request = new DeleteInternetGatewayRequest() { InternetGatewayId = internetGateway.Id };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DeleteInternetGateway(request);
                 Validator.ThrowOnBadResult(request, response);

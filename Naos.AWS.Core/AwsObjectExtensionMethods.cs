@@ -10,6 +10,7 @@ namespace Naos.AWS.Core
     using System.Linq;
 
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
@@ -73,7 +74,7 @@ namespace Naos.AWS.Core
                 Tags = new[] { new Tag(tagName, tagValue) }.ToList(),
             };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 CreateTagsResponse result = client.CreateTags(request);
                 Validator.ThrowOnBadResult(request, result);

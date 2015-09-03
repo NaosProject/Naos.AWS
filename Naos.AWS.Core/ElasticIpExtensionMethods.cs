@@ -32,7 +32,7 @@ namespace Naos.AWS.Core
 
             var request = new AllocateAddressRequest { Domain = DomainType.Standard };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.AllocateAddress(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -59,7 +59,7 @@ namespace Naos.AWS.Core
                                   AllocationId = elasticIp.Id,
                               };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.ReleaseAddress(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -79,7 +79,7 @@ namespace Naos.AWS.Core
 
             var request = new AssociateAddressRequest(instanceId, elasticIp.PublicIpAddress);
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.AssociateAddress(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -98,7 +98,7 @@ namespace Naos.AWS.Core
 
             var request = new DisassociateAddressRequest(elasticIp.PublicIpAddress);
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DisassociateAddress(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -116,7 +116,7 @@ namespace Naos.AWS.Core
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var request = new DescribeAddressesRequest() { AllocationIds = new[] { elasticIp.Id }.ToList() };
 

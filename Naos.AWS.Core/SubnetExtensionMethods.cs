@@ -7,6 +7,7 @@
 namespace Naos.AWS.Core
 {
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
@@ -37,7 +38,7 @@ namespace Naos.AWS.Core
                                   VpcId = localSubnet.ParentVpc.Id
                               };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.CreateSubnet(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -62,7 +63,7 @@ namespace Naos.AWS.Core
 
             var request = new DeleteSubnetRequest() { SubnetId = subnet.Id };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DeleteSubnet(request);
                 Validator.ThrowOnBadResult(request, response);

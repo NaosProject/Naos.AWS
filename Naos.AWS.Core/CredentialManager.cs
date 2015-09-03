@@ -10,6 +10,7 @@ namespace Naos.AWS.Core
 
     using Amazon;
     using Amazon.Runtime;
+    using Amazon.SecurityToken;
     using Amazon.SecurityToken.Model;
 
     using Naos.AWS.Contract;
@@ -34,7 +35,7 @@ namespace Naos.AWS.Core
                                   TokenCode = mfaValue,
                               };
 
-            using (var client = AWSClientFactory.CreateAmazonSecurityTokenServiceClient(accessKey, secretKey, regionEndpoint))
+            using (var client = new AmazonSecurityTokenServiceClient(accessKey, secretKey, regionEndpoint))
             {
                 var token = client.GetSessionToken(request);
                 return new CredentialContainer()

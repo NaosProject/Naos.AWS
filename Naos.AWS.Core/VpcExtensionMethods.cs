@@ -33,7 +33,7 @@ namespace Naos.AWS.Core
 
             var request = new CreateVpcRequest() { CidrBlock = localVpc.Cidr, InstanceTenancy = new Tenancy(localVpc.Tenancy) };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.CreateVpc(request);
                 Validator.ThrowOnBadResult(request, response);
@@ -58,7 +58,7 @@ namespace Naos.AWS.Core
 
             var request = new DeleteVpcRequest() { VpcId = vpc.Id };
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var response = client.DeleteVpc(request);
                 Validator.ThrowOnBadResult(request, response);
