@@ -43,12 +43,14 @@
   <ItemGroup>
     <Compile Include="Ami.cs" />
     <Compile Include="AmiSearchStrategy.cs" />
+    <Compile Include="CloudFile.cs" />
     <Compile Include="CredentialContainer.cs" />
     <Compile Include="EbsVolume.cs" />
     <Compile Include="ElasticIp.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="IAwsObject.cs" />
     <Compile Include="IHaveId.cs" />
+    <Compile Include="IManageFiles.cs" />
     <Compile Include="IHaveRegion.cs" />
     <Compile Include="IHaveName.cs" />
     <Compile Include="IManageCredentials.cs" />
