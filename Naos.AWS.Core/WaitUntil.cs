@@ -10,6 +10,7 @@ namespace Naos.AWS.Core
     using System.Threading;
 
     using Amazon;
+    using Amazon.EC2;
 
     using Naos.AWS.Contract;
 
@@ -56,21 +57,15 @@ namespace Naos.AWS.Core
         {
             Func<bool> action = () =>
                 {
-                    var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-                    var regionEndpoint = RegionEndpoint.GetBySystemName(awsObject.Region);
-
-                    using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+                    var awsObjectType = awsObject.InferObjectTypeFromId();
+                    switch (awsObjectType)
                     {
-                        var awsObjectType = awsObject.InferObjectTypeFromId();
-                        switch (awsObjectType)
-                        {
-                            case AwsObjectType.Instance:
-                                return (awsObject as Instance).ExistsOnAws(credentials);
-                            case AwsObjectType.EbsVolume:
-                                return (awsObject as EbsVolume).ExistsOnAws(credentials);
-                            default:
-                                throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);
-                        }
+                        case AwsObjectType.Instance:
+                            return (awsObject as Instance).ExistsOnAws(credentials);
+                        case AwsObjectType.EbsVolume:
+                            return (awsObject as EbsVolume).ExistsOnAws(credentials);
+                        default:
+                            throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);
                     }
                 };
 

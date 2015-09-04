@@ -49,7 +49,7 @@ namespace Naos.AWS.Core
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
 
-            var client = AWSClientFactory.CreateAmazonRoute53Client(this.awsCredentials, regionEndpoint);
+            var client = new AmazonRoute53Client(this.awsCredentials, regionEndpoint);
             var resourceRecordSet = new ResourceRecordSet()
                                         {
                                             Name = domain,
@@ -72,7 +72,7 @@ namespace Naos.AWS.Core
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
 
-            var client = AWSClientFactory.CreateAmazonRoute53Client(this.awsCredentials, regionEndpoint);
+            var client = new AmazonRoute53Client(this.awsCredentials, regionEndpoint);
 
             var request = new ListResourceRecordSetsRequest(domainZoneHostingId);
 

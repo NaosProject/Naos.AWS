@@ -10,6 +10,7 @@ namespace Naos.AWS.Core
     using System.Linq;
 
     using Amazon;
+    using Amazon.EC2;
     using Amazon.EC2.Model;
 
     using Naos.AWS.Contract;
@@ -54,7 +55,7 @@ namespace Naos.AWS.Core
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(volume.Region);
 
-            using (var client = AWSClientFactory.CreateAmazonEC2Client(awsCredentials, regionEndpoint))
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
                 var request = new DescribeVolumesRequest() { VolumeIds = new[] { volume.Id }.ToList() };
 
