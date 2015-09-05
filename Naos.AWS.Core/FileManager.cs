@@ -116,8 +116,8 @@ namespace Naos.AWS.Core
                                     Region = region,
                                     BucketName = bucketName,
                                     KeyName = _.Key,
-                                    OwnerId = _.Owner.Id,
-                                    OwnerName = _.Owner.DisplayName,
+                                    OwnerId = _.Owner == null ? "[Null Owner]" : _.Owner.Id,
+                                    OwnerName = _.Owner == null ? "[Null Owner]" : _.Owner.DisplayName,
                                     LastModified = _.LastModified,
                                     Size = _.Size
                                 }));
