@@ -36,9 +36,9 @@
     <DocumentationFile>bin\Release\Naos.AWS.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK, Version=2.3.51.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
+    <Reference Include="AWSSDK, Version=2.3.50.1, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AWSSDK.2.3.51.0\lib\net45\AWSSDK.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.2.3.50.1\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="CuttingEdge.Conditions">
       <HintPath>..\packages\CuttingEdge.Conditions.1.2.0.0\lib\NET35\CuttingEdge.Conditions.dll</HintPath>
