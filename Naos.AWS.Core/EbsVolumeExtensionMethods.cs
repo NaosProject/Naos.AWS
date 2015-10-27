@@ -55,18 +55,27 @@ namespace Naos.AWS.Core
                                 }
                             }
 
+                            var ebsBlockDevice = iops == 0
+                                                     ? new EbsBlockDevice()
+                                                           {
+                                                               DeleteOnTermination = true,
+                                                               VolumeSize = volume.SizeInGb,
+                                                               VolumeType = volumeType,
+                                                           }
+                                                     : new EbsBlockDevice()
+                                                           {
+                                                               DeleteOnTermination = true,
+                                                               VolumeSize = volume.SizeInGb,
+                                                               VolumeType = volumeType,
+                                                               Iops = iops
+                                                           };
+
                             return new BlockDeviceMapping()
                                              {
                                                  DeviceName = volume.DeviceName,
                                                  VirtualName = volume.VirtualName,
                                                  Ebs =
-                                                     new EbsBlockDevice()
-                                                         {
-                                                             DeleteOnTermination = true,
-                                                             VolumeSize = volume.SizeInGb,
-                                                             VolumeType = volumeType,
-                                                             Iops = iops
-                                                         }
+                                                     ebsBlockDevice
                                              };
                         }).ToList();
         }
