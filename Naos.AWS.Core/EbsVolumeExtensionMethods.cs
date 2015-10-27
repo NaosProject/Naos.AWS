@@ -6,6 +6,7 @@
 
 namespace Naos.AWS.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -30,17 +31,43 @@ namespace Naos.AWS.Core
             return
                 volumes.Select(
                     volume =>
-                    new BlockDeviceMapping()
                         {
-                            DeviceName = volume.DeviceName,
-                            VirtualName = volume.VirtualName,
-                            Ebs =
-                                new EbsBlockDevice()
-                                    {
-                                        DeleteOnTermination = true,
-                                        VolumeSize = volume.SizeInGb,
-                                        VolumeType = volume.VolumeType
-                                    }
+                            var volumeType = volume.VolumeType;
+                            var iops = 0;
+                            if (volume.VolumeType.StartsWith("io1"))
+                            {
+                                var dashSplit = volume.VolumeType.Split('-');
+                                volumeType = dashSplit[0];
+
+                                var maxIops = volume.SizeInGb * 30;
+                                if (dashSplit.Length == 1)
+                                {
+                                    iops = maxIops;
+                                }
+                                else
+                                {
+                                    iops = int.Parse(dashSplit[1]);
+                                }
+
+                                if (iops > maxIops)
+                                {
+                                    throw new ArgumentException("Specified IOPS: " + iops + " was greated than allowed (30 IOPS:1GB): " + maxIops);
+                                }
+                            }
+
+                            return new BlockDeviceMapping()
+                                             {
+                                                 DeviceName = volume.DeviceName,
+                                                 VirtualName = volume.VirtualName,
+                                                 Ebs =
+                                                     new EbsBlockDevice()
+                                                         {
+                                                             DeleteOnTermination = true,
+                                                             VolumeSize = volume.SizeInGb,
+                                                             VolumeType = volumeType,
+                                                             Iops = iops
+                                                         }
+                                             };
                         }).ToList();
         }
 
