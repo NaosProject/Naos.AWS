@@ -35,6 +35,9 @@ namespace Naos.AWS.Core
                         credentials.SessionToken,
                         credentials.Expiration);
                     break;
+                case CredentialType.Keys:
+                    ret = new BasicAWSCredentials(credentials.AccessKeyId, credentials.SecretAccessKey);
+                    break;
                 default:
                     throw new ArgumentException("Unsupported credential type: " + credentials.CredentialType);
             }
