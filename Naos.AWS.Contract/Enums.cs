@@ -14,7 +14,12 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Token based AWS authorization.
         /// </summary>
-        Token
+        Token,
+
+        /// <summary>
+        /// Key only based AWS authorization.
+        /// </summary>
+        Keys
     }
 
     /// <summary>

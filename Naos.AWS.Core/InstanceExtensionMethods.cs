@@ -286,5 +286,24 @@ namespace Naos.AWS.Core
                 Validator.ThrowOnBadResult(request, response);
             }
         }
+
+        /// <summary>
+        /// Update the type of the instance in AWS to match the type of the object.
+        /// </summary>
+        /// <param name="instance">Instance to true up the type of.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        public static void UpdateInstanceType(this Instance instance, CredentialContainer credentials = null)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
+
+            var request = new ModifyInstanceAttributeRequest() { InstanceId = instance.Id, InstanceType = instance.InstanceType };
+
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var response = client.ModifyInstanceAttribute(request);
+                Validator.ThrowOnBadResult(request, response);
+            }
+        }
     }
 }
