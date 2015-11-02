@@ -71,6 +71,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="AwsResponseNotOkException.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="Route53Manager.cs" />

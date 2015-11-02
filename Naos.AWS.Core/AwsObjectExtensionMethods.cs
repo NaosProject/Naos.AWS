@@ -20,8 +20,6 @@ namespace Naos.AWS.Core
     /// </summary>
     public static class AwsObjectExtensionMethods
     {
-        private const string NameTagKey = "Name";
-
         /// <summary>
         /// Inspects the ID and infers the type of AWS object it is.
         /// </summary>
@@ -50,7 +48,7 @@ namespace Naos.AWS.Core
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         public static void TagNameInAws(this IAwsObject awsObject, CredentialContainer credentials = null)
         {
-            AddTagInAws(awsObject, NameTagKey, awsObject.Name, credentials);
+            AddTagInAws(awsObject, Constants.NameTagKey, awsObject.Name, credentials);
         }
 
         /// <summary>
