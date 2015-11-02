@@ -85,6 +85,11 @@ namespace Naos.AWS.Contract
         public List<EbsVolume> MappedVolumes { get; set; }
 
         /// <summary>
+        /// Gets or sets the tags as a dictionary of name and value.
+        /// </summary>
+        public Dictionary<string, string> Tags { get; set; }  
+
+        /// <summary>
         /// Gets a deep clone of the object.
         /// </summary>
         /// <returns>Deeply cloned version of the object.</returns>
@@ -106,6 +111,7 @@ namespace Naos.AWS.Contract
                               PrivateIpAddress = this.PrivateIpAddress,
                               Region = this.Region,
                               SecurityGroup = this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
+                              Tags = this.Tags.ToDictionary(keyInput => keyInput.Key, valueInput => valueInput.Value)
                           };
 
             return ret;

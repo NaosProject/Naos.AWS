@@ -7,6 +7,7 @@
 namespace Naos.AWS.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Amazon;
@@ -19,6 +20,9 @@ namespace Naos.AWS.Core
 
     using Instance = Naos.AWS.Contract.Instance;
     using InstanceState = Naos.AWS.Contract.InstanceState;
+    using KeyPair = Naos.AWS.Contract.KeyPair;
+    using SecurityGroup = Naos.AWS.Contract.SecurityGroup;
+    using Subnet = Naos.AWS.Contract.Subnet;
     using UserData = Naos.AWS.Contract.UserData;
 
     /// <summary>
@@ -151,6 +155,70 @@ namespace Naos.AWS.Core
                 var response = client.DescribeInstances(request);
                 Validator.ThrowOnBadResult(request, response);
                 return response.Reservations.Any(_ => _.Instances.Any(__ => __.InstanceId == instance.Id));
+            }
+        }
+
+        /// <summary>
+        /// Fills the list 
+        /// </summary>
+        /// <param name="instances">List to fill </param>
+        /// <param name="region">Region to make call against.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        /// <returns>Same collection operating on for fluent usage.</returns>
+        public static IList<Instance> FillFromAws(this IList<Instance> instances, string region, CredentialContainer credentials = null)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(region);
+
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var request = new DescribeInstancesRequest();
+
+                var response = client.DescribeInstances(request);
+                Validator.ThrowOnBadResult(request, response);
+
+                var typedObjects =
+                    response.Reservations.SelectMany(
+                        reserveration =>
+                        reserveration.Instances.Select(
+                            _ =>
+                            new Instance
+                                {
+                                    Id = _.InstanceId,
+                                    InstanceType = _.InstanceType,
+                                    Ami = new Ami { Id = _.ImageId },
+                                    ElasticIp =
+                                        new ElasticIp { Region = region, PublicIpAddress = _.PublicIpAddress },
+                                    ContainingSubnet = new Subnet { Id = _.SubnetId },
+                                    Region = region,
+                                    PrivateIpAddress = _.PrivateIpAddress,
+                                    Key = new KeyPair { Region = region, KeyName = _.KeyName },
+                                    SecurityGroup =
+                                        new SecurityGroup
+                                            {
+                                                Region = region,
+                                                Id = _.SecurityGroups.Single().GroupId,
+                                                Name = _.SecurityGroups.Single().GroupName
+                                            },
+                                    Tags = _.Tags.ToDictionary(keyInput => keyInput.Key, valueInput => valueInput.Value),
+                                    MappedVolumes =
+                                        _.BlockDeviceMappings.Select(
+                                            mapping =>
+                                            new EbsVolume
+                                                {
+                                                    DeviceName = mapping.DeviceName,
+                                                    Id = mapping.Ebs.VolumeId,
+                                                    Region = region
+                                                }).ToList()
+                                })).ToList();
+
+                // No AddRange on the interface...
+                foreach (var instance in typedObjects)
+                {
+                    instances.Add(instance);
+                }
+
+                return instances;
             }
         }
 
