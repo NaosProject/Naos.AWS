@@ -110,8 +110,12 @@ namespace Naos.AWS.Contract
                               Name = this.Name,
                               PrivateIpAddress = this.PrivateIpAddress,
                               Region = this.Region,
-                              SecurityGroup = this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
-                              Tags = this.Tags.ToDictionary(keyInput => keyInput.Key, valueInput => valueInput.Value)
+                              SecurityGroup =
+                                  this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
+                              Tags =
+                                  (this.Tags ?? new Dictionary<string, string>()).ToDictionary(
+                                      keyInput => keyInput.Key,
+                                      valueInput => valueInput.Value)
                           };
 
             return ret;
