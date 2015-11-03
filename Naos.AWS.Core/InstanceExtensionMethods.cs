@@ -180,37 +180,46 @@ namespace Naos.AWS.Core
                 var typedObjects =
                     response.Reservations.SelectMany(
                         reserveration =>
-                        reserveration.Instances.Select(
-                            _ =>
-                            new Instance
-                                {
-                                    Id = _.InstanceId,
-                                    InstanceType = _.InstanceType,
-                                    Ami = new Ami { Id = _.ImageId },
-                                    ElasticIp =
-                                        new ElasticIp { Region = region, PublicIpAddress = _.PublicIpAddress },
-                                    ContainingSubnet = new Subnet { Id = _.SubnetId },
-                                    Region = region,
-                                    PrivateIpAddress = _.PrivateIpAddress,
-                                    Key = new KeyPair { Region = region, KeyName = _.KeyName },
-                                    SecurityGroup =
-                                        new SecurityGroup
-                                            {
-                                                Region = region,
-                                                Id = _.SecurityGroups.Single().GroupId,
-                                                Name = _.SecurityGroups.Single().GroupName
-                                            },
-                                    Tags = _.Tags.ToDictionary(keyInput => keyInput.Key, valueInput => valueInput.Value),
-                                    MappedVolumes =
-                                        _.BlockDeviceMappings.Select(
-                                            mapping =>
-                                            new EbsVolume
-                                                {
-                                                    DeviceName = mapping.DeviceName,
-                                                    Id = mapping.Ebs.VolumeId,
-                                                    Region = region
-                                                }).ToList()
-                                })).ToList();
+                        (reserveration.Instances != null && reserveration.Instances.Count > 0
+                             ? reserveration.Instances
+                             : new List<Amazon.EC2.Model.Instance>()).Select(
+                                 _ =>
+                                 new Instance
+                                     {
+                                         Id = _.InstanceId,
+                                         InstanceType = _.InstanceType,
+                                         Ami = new Ami { Id = _.ImageId },
+                                         ElasticIp =
+                                             new ElasticIp
+                                                 {
+                                                     Region = region,
+                                                     PublicIpAddress = _.PublicIpAddress
+                                                 },
+                                         ContainingSubnet = new Subnet { Id = _.SubnetId },
+                                         Region = region,
+                                         PrivateIpAddress = _.PrivateIpAddress,
+                                         Key = new KeyPair { Region = region, KeyName = _.KeyName },
+                                         SecurityGroup =
+                                             new SecurityGroup
+                                                 {
+                                                     Region = region,
+                                                     Id = _.SecurityGroups.Single().GroupId,
+                                                     Name = _.SecurityGroups.Single().GroupName
+                                                 },
+                                         Tags =
+                                             _.Tags.ToDictionary(
+                                                 keyInput => keyInput.Key,
+                                                 valueInput => valueInput.Value),
+                                         MappedVolumes =
+                                             _.BlockDeviceMappings.Select(
+                                                 mapping =>
+                                                 new EbsVolume
+                                                     {
+                                                         DeviceName = mapping.DeviceName,
+                                                         Id = mapping.Ebs.VolumeId,
+                                                         Region = region
+                                                     }).ToList()
+                                     })).ToList();
 
                 // No AddRange on the interface...
                 foreach (var instance in typedObjects)
