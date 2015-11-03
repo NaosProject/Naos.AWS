@@ -203,8 +203,12 @@ namespace Naos.AWS.Core
                                              new SecurityGroup
                                                  {
                                                      Region = region,
-                                                     Id = _.SecurityGroups.Single().GroupId,
-                                                     Name = _.SecurityGroups.Single().GroupName
+                                                     Id =
+                                                         (_.SecurityGroups.SingleOrDefault()
+                                                          ?? new GroupIdentifier()).GroupId,
+                                                     Name =
+                                                         (_.SecurityGroups.SingleOrDefault()
+                                                          ?? new GroupIdentifier()).GroupName
                                                  },
                                          Tags =
                                              _.Tags.ToDictionary(
