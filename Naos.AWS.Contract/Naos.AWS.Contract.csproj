@@ -55,6 +55,7 @@
     <Compile Include="IHaveName.cs" />
     <Compile Include="IManageCredentials.cs" />
     <Compile Include="IManageRoute53.cs" />
+    <Compile Include="InstanceWithState.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="KeyPair.cs" />
     <Compile Include="Route53Entry.cs" />

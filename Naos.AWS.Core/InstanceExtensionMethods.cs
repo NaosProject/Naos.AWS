@@ -165,7 +165,7 @@ namespace Naos.AWS.Core
         /// <param name="region">Region to make call against.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Same collection operating on for fluent usage.</returns>
-        public static IList<Instance> FillFromAws(this IList<Instance> instances, string region, CredentialContainer credentials = null)
+        public static IList<InstanceWithState> FillFromAws(this IList<InstanceWithState> instances, string region, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
@@ -184,8 +184,9 @@ namespace Naos.AWS.Core
                              ? reserveration.Instances
                              : new List<Amazon.EC2.Model.Instance>()).Select(
                                  _ =>
-                                 new Instance
+                                 new InstanceWithState()
                                      {
+                                         InstanceState = _.State == null ? InstanceState.Unknown : (InstanceState)_.State.Code,
                                          Id = _.InstanceId,
                                          InstanceType = _.InstanceType,
                                          Ami = new Ami { Id = _.ImageId },
