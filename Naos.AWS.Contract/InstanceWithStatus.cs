@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="InstanceWithState.cs" company="Naos">
+// <copyright file="InstanceWithStatus.cs" company="Naos">
 //   Copyright 2015 Naos
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -10,22 +10,22 @@ namespace Naos.AWS.Contract
     using System.Linq;
 
     /// <summary>
-    /// Instance model object.
+    /// Instance model object with status.
     /// </summary>
-    public class InstanceWithState : Instance
+    public class InstanceWithStatus : Instance
     {
         /// <summary>
-        /// Gets or sets the state of the instance.
+        /// Gets or sets the status of the instance.
         /// </summary>
-        public InstanceState InstanceState { get; set; }
+        public InstanceStatus InstanceStatus { get; set; }
 
         /// <summary>
         /// Gets a deep clone of the object.
         /// </summary>
         /// <returns>Deeply cloned version of the object.</returns>
-        public new InstanceWithState DeepClone()
+        public new InstanceWithStatus DeepClone()
         {
-            var ret = new InstanceWithState()
+            var ret = new InstanceWithStatus()
                           {
                               Ami = this.Ami.DeepClone(),
                               ComputerName = this.ComputerName,
@@ -46,7 +46,7 @@ namespace Naos.AWS.Contract
                                   (this.Tags ?? new Dictionary<string, string>()).ToDictionary(
                                       keyInput => keyInput.Key,
                                       valueInput => valueInput.Value),
-                              InstanceState = this.InstanceState
+                              InstanceStatus = this.InstanceStatus.DeepClone()
                           };
 
             return ret;

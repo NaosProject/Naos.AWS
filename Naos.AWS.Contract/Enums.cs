@@ -122,6 +122,37 @@ namespace Naos.AWS.Contract
     }
 
     /// <summary>
+    /// State a check can be in.
+    /// </summary>
+    public enum CheckState
+    {
+        /// <summary>
+        /// Unknown state.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// Initializing state.
+        /// </summary>
+        Initializing,
+
+        /// <summary>
+        /// Insufficient data state.
+        /// </summary>
+        InsufficientData,
+
+        /// <summary>
+        /// Failed state.
+        /// </summary>
+        Failed,
+
+        /// <summary>
+        /// Passed state.
+        /// </summary>
+        Passed
+    }
+
+    /// <summary>
     /// Types of AWS objects.
     /// </summary>
     public enum AwsObjectType
