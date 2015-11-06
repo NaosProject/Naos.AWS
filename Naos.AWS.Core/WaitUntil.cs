@@ -10,9 +10,6 @@ namespace Naos.AWS.Core
     using System.Threading;
     using System.Threading.Tasks;
 
-    using Amazon;
-    using Amazon.EC2;
-
     using Naos.AWS.Contract;
 
     using Instance = Naos.AWS.Contract.Instance;
@@ -23,34 +20,6 @@ namespace Naos.AWS.Core
     public class WaitUntil
     {
         /// <summary>
-        /// Runs the provided function until true is returned.
-        /// </summary>
-        /// <param name="function">The code to execute.</param>
-        /// <param name="swallowExceptions">Optional value to indicate whether or not to ignore errors (default is TRUE).</param>
-        /// <returns>Task for async/await</returns>
-        public static async Task SuccessIsReturned(Task<bool> function, bool swallowExceptions = true)
-        {
-            try
-            {
-                var timeToSleepInSeconds = .25;
-                var success = false;
-                while (!success)
-                {
-                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                    success = await function;
-                }
-            }
-            catch (Exception)
-            {
-                if (!swallowExceptions)
-                {
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
         /// Tries to describe the object against AWS API and wait for non-null response.
         /// </summary>
         /// <param name="awsObject">AWS object to check on.</param>
@@ -58,23 +27,51 @@ namespace Naos.AWS.Core
         /// <returns>Task for async/await</returns>
         public static async Task AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
         {
-            Task<bool> action = Task.Run(
-                () =>
+            var awsObjectType = awsObject.InferObjectTypeFromId();
+            switch (awsObjectType)
+            {
+                case AwsObjectType.Instance:
+                    try
                     {
-                        var awsObjectType = awsObject.InferObjectTypeFromId();
-                        switch (awsObjectType)
+                        var timeToSleepInSeconds = .25;
+                        var success = false;
+                        while (!success)
                         {
-                            case AwsObjectType.Instance:
-                                return (awsObject as Instance).ExistsOnAwsAsync(credentials);
-                            case AwsObjectType.EbsVolume:
-                                return (awsObject as EbsVolume).ExistsOnAwsAsync(credentials);
-                            default:
-                                throw new NotSupportedException(
-                                    "Don't know how to check existence of AWS Object Type: " + awsObjectType);
+                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                            var objectAsInstance = (Instance)awsObject;
+                            success = await objectAsInstance.ExistsOnAwsAsync(credentials);
                         }
-                    });
+                    }
+                    catch (Exception)
+                    {
+                        /* swallow exceptions on purpose... */
+                    }
 
-            await SuccessIsReturned(action);
+                    break;
+                case AwsObjectType.EbsVolume:
+                    try
+                    {
+                        var timeToSleepInSeconds = .25;
+                        var success = false;
+                        while (!success)
+                        {
+                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                            var objectAsVolume = (EbsVolume)awsObject;
+                            success = await objectAsVolume.ExistsOnAwsAsync(credentials);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        /* swallow exceptions on purpose... */
+                    }
+
+                    break;
+                default:
+                    throw new NotSupportedException(
+                        "Don't know how to check existence of AWS Object Type: " + awsObjectType);
+            }
         }
     }
 }

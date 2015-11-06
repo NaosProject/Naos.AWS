@@ -9,6 +9,7 @@ namespace Naos.AWS.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Amazon;
@@ -307,7 +308,23 @@ namespace Naos.AWS.Core
         /// <returns>Task for async/await</returns>
         public static async Task WaitForStateAsync(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
         {
-            await WaitUntil.SuccessIsReturned(Task.Run(() => instance.GetStatusAsync(credentials).Result.InstanceState == expectedState));
+            try
+            {
+                var timeToSleepInSeconds = .25;
+                var success = false;
+                while (!success)
+                {
+                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+
+                    var status = await instance.GetStatusAsync(credentials);
+                    success = status.InstanceState == expectedState;
+                }
+            }
+            catch (Exception)
+            {
+                /* swallow exceptions on purpose... */
+            }
         }
 
         /// <summary>
@@ -318,12 +335,23 @@ namespace Naos.AWS.Core
         /// <returns>Task for async/await</returns>
         public static async Task WaitForSuccessfulChecksAsync(this Instance instance, CredentialContainer credentials = null)
         {
-            await WaitUntil.SuccessIsReturned(Task.Run(() =>
+            try
+            {
+                var timeToSleepInSeconds = .25;
+                var success = false;
+                while (!success)
                 {
-                    var instanceStatus = instance.GetStatusAsync(credentials).Result;
-                    return instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
+                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                    var instanceStatus = await instance.GetStatusAsync(credentials);
+                    success = instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
                            && instanceStatus.InstanceChecks.All(_ => _.Value == CheckState.Passed);
-                }));
+                }
+            }
+            catch (Exception)
+            {
+                /* swallow exceptions on purpose... */
+            }
         }
 
         /// <summary>
