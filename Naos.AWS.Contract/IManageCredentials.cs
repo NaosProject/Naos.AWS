@@ -7,6 +7,7 @@
 namespace Naos.AWS.Contract
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Calls responsible for creating a session to make calls to other services.
@@ -23,7 +24,7 @@ namespace Naos.AWS.Contract
         /// <param name="virtualMfaDeviceId">Id/Resource path for the Virtual MFA device (found in console where MFA is configured).</param>
         /// <param name="mfaValue">Token/rotating key from the MFA device.</param>
         /// <returns>Credential object to be used when performing operations.</returns>
-        CredentialContainer GetSessionTokenCredentials(
+        Task<CredentialContainer> GetSessionTokenCredentialsAsync(
             string region,
             TimeSpan tokenLifespan,
             string accessKey,
