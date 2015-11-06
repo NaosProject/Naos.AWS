@@ -9,6 +9,7 @@ namespace Naos.AWS.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.Route53;
@@ -32,14 +33,14 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public void UpsertDnsEntry(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses)
+        public async Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses)
         {
             var action = "UPSERT";
 
-            this.InternalRunAction(region, domainZoneHostingId, domain, ipAddresses, type.ToString(), action);
+            await this.InternalRunActionAsync(region, domainZoneHostingId, domain, ipAddresses, type.ToString(), action);
         }
 
-        private void InternalRunAction(
+        private async Task InternalRunActionAsync(
             string region,
             string domainZoneHostingId,
             string domain,
@@ -63,12 +64,12 @@ namespace Naos.AWS.Core
             var changeBatch = new ChangeBatch(changes.ToList());
             var request = new ChangeResourceRecordSetsRequest(domainZoneHostingId, changeBatch);
 
-            var response = client.ChangeResourceRecordSets(request);
+            var response = await client.ChangeResourceRecordSetsAsync(request);
             Validator.ThrowOnBadResult(request, response);
         }
 
         /// <inheritdoc />
-        public ICollection<Route53Entry> GetDnsEntries(string region, string domainZoneHostingId)
+        public async Task<ICollection<Route53Entry>> GetDnsEntriesAsync(string region, string domainZoneHostingId)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
 
@@ -76,7 +77,7 @@ namespace Naos.AWS.Core
 
             var request = new ListResourceRecordSetsRequest(domainZoneHostingId);
 
-            var response = client.ListResourceRecordSets(request);
+            var response = await client.ListResourceRecordSetsAsync(request);
             Validator.ThrowOnBadResult(request, response);
 
             var ret =

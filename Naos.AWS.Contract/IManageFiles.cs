@@ -21,26 +21,8 @@ namespace Naos.AWS.Contract
         /// <param name="bucketName">Bucket name to upload to.</param>
         /// <param name="keyName">Key name to use for file.</param>
         /// <param name="sourceFilePath">File path of the file to upload.</param>
-        void UploadFile(string region, string bucketName, string keyName, string sourceFilePath);
-
-        /// <summary>
-        /// Uploads the provided file to the specified region and bucket named using the provided key.
-        /// </summary>
-        /// <param name="region">Region bucket is in.</param>
-        /// <param name="bucketName">Bucket name to upload to.</param>
-        /// <param name="keyName">Key name to use for file.</param>
-        /// <param name="sourceFilePath">File path of the file to upload.</param>
         /// <returns>Task to allow for async await use.</returns>
         Task UploadFileAsync(string region, string bucketName, string keyName, string sourceFilePath);
-
-        /// <summary>
-        /// Downloads file to provided path from the specified region and bucket and key.
-        /// </summary>
-        /// <param name="region">Region bucket is in.</param>
-        /// <param name="bucketName">Bucket name to find file in.</param>
-        /// <param name="keyName">Key name of file to download.</param>
-        /// <param name="destinationFilePath">File path to download to.</param>
-        void DownloadFile(string region, string bucketName, string keyName, string destinationFilePath);
 
         /// <summary>
         /// Downloads file to provided path from the specified region and bucket and key.
@@ -58,7 +40,7 @@ namespace Naos.AWS.Contract
         /// <param name="region">Region bucket is in.</param>
         /// <param name="bucketName">Bucket name to list files in.</param>
         /// <returns>Files from the bucket.</returns>
-        ICollection<CloudFile> ListFiles(string region, string bucketName);
+        Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName);
 
         /// <summary>
         /// Lists the files in the specified region and bucket matching the provided prefix search pattern.
@@ -67,6 +49,6 @@ namespace Naos.AWS.Contract
         /// <param name="bucketName">Bucket name to list files in.</param>
         /// <param name="keyPrefixSearchPattern">Key prefix search pattern to match (do not include '*' at the end, this is implied).</param>
         /// <returns>Files from the bucket.</returns>
-        ICollection<CloudFile> ListFiles(string region, string bucketName, string keyPrefixSearchPattern);
+        Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern);
     }
 }

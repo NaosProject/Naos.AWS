@@ -7,6 +7,7 @@
 namespace Naos.AWS.Core
 {
     using System;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.Runtime;
@@ -19,7 +20,7 @@ namespace Naos.AWS.Core
     public class CredentialManager : IManageCredentials
     {
         /// <inheritdoc />
-        public CredentialContainer GetSessionTokenCredentials(
+        public async Task<CredentialContainer> GetSessionTokenCredentialsAsync(
             string region,
             TimeSpan tokenLifespan,
             string accessKey, 
@@ -37,7 +38,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonSecurityTokenServiceClient(accessKey, secretKey, regionEndpoint))
             {
-                var token = client.GetSessionToken(request);
+                var token = await client.GetSessionTokenAsync(request);
                 return new CredentialContainer()
                            {
                                CredentialType = CredentialType.Token,

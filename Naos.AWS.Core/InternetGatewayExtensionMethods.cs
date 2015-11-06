@@ -6,6 +6,8 @@
 
 namespace Naos.AWS.Core
 {
+    using System.Threading.Tasks;
+
     using Amazon;
     using Amazon.EC2;
     using Amazon.EC2.Model;
@@ -25,7 +27,7 @@ namespace Naos.AWS.Core
         /// <param name="internetGateway">Internet gateway to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
-        public static InternetGateway Create(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        public static async Task<InternetGateway> CreateAsync(this InternetGateway internetGateway, CredentialContainer credentials = null)
         {
             var localInternetGateway = internetGateway.DeepClone();
 
@@ -36,13 +38,13 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.CreateInternetGateway(request);
+                var response = await client.CreateInternetGatewayAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 localInternetGateway.Id = response.InternetGateway.InternetGatewayId;
             }
 
-            localInternetGateway.TagNameInAws(credentials);
+            await localInternetGateway.TagNameInAwsAsync(credentials);
 
             return localInternetGateway;
         }
@@ -52,7 +54,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="internetGateway">Internet gateway to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Delete(this InternetGateway internetGateway, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task DeleteAsync(this InternetGateway internetGateway, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(internetGateway.Region);
@@ -61,7 +64,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DeleteInternetGateway(request);
+                var response = await client.DeleteInternetGatewayAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }

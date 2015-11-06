@@ -9,6 +9,8 @@ namespace Naos.AWS.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -38,14 +40,14 @@ namespace Naos.AWS.Core
         /// <param name="userData">User data to use for instance creation.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
-        public static Instance Create(this Instance instance, UserData userData, CredentialContainer credentials = null)
+        public static async Task<Instance> CreateAsync(this Instance instance, UserData userData, CredentialContainer credentials = null)
         {
             var localInstance = instance.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(localInstance.Region);
 
             var placement = new Placement(localInstance.ContainingSubnet.AvailabilityZone);
-            var amiId = localInstance.Ami.DiscoverId(credentials);
+            var amiId = await localInstance.Ami.DiscoverIdAsync(credentials);
             localInstance.Ami.Id = amiId; // assign for returning to caller (gives visibility for potential debug needs)
             var blockDeviceMappings = localInstance.MappedVolumes.ToAwsBlockDeviceMappings();
             var request = new RunInstancesRequest()
@@ -68,7 +70,7 @@ namespace Naos.AWS.Core
             Amazon.EC2.Model.Instance newInstance = null;
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.RunInstances(request);
+                var response = await client.RunInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 newInstance = response.Reservation.Instances.Single();
@@ -82,10 +84,10 @@ namespace Naos.AWS.Core
 
             // save the instance ID and tag the name in AWS
             localInstance.Id = newInstance.InstanceId;
-            localInstance.TagNameInAws(credentials);
+            await localInstance.TagNameInAwsAsync(credentials);
 
             // wait until instance is "running" before proceeding.
-            localInstance.WaitForState(InstanceState.Running, credentials);
+            await localInstance.WaitForStateAsync(InstanceState.Running, credentials);
 
             // re-fetch the instance details now that everything should be setup
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
@@ -96,7 +98,7 @@ namespace Naos.AWS.Core
                                                           new[] { localInstance.Id }.ToList()
                                                   };
 
-                var describeInstanceResponse = client.DescribeInstances(describeInstanceRequest);
+                var describeInstanceResponse = await client.DescribeInstancesAsync(describeInstanceRequest);
                 Validator.ThrowOnBadResult(describeInstanceRequest, describeInstanceResponse);
 
                 newInstance = describeInstanceResponse.Reservations.Single().Instances.Single();
@@ -107,7 +109,7 @@ namespace Naos.AWS.Core
             {
                 var contractMapping = localInstance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
                 contractMapping.Id = mapping.Ebs.VolumeId;
-                contractMapping.TagNameInAws(credentials);
+                await contractMapping.TagNameInAwsAsync(credentials);
             }
 
             if (localInstance.ElasticIp != null)
@@ -115,11 +117,11 @@ namespace Naos.AWS.Core
                 if (string.IsNullOrEmpty(localInstance.ElasticIp.Id)
                     || string.IsNullOrEmpty(localInstance.ElasticIp.PublicIpAddress))
                 {
-                    localInstance.ElasticIp = localInstance.ElasticIp.Allocate(credentials);
-                    localInstance.ElasticIp.ExistsOnAws(credentials);
+                    localInstance.ElasticIp = await localInstance.ElasticIp.AllocateAsync(credentials);
+                    await localInstance.ElasticIp.ExistsOnAwsAsync(credentials);
                 }
 
-                localInstance.ElasticIp.AssociateToInstance(localInstance.Id, credentials);
+                await localInstance.ElasticIp.AssociateToInstanceAsync(localInstance.Id, credentials);
             }
 
             // update the source destination check attribute now that this is created
@@ -131,7 +133,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var updateSourceDestinationCheckResponse = client.ModifyInstanceAttribute(updateSourceDestinationCheckRequest);
+                var updateSourceDestinationCheckResponse = await client.ModifyInstanceAttributeAsync(updateSourceDestinationCheckRequest);
                 Validator.ThrowOnBadResult(updateSourceDestinationCheckRequest, updateSourceDestinationCheckResponse);
             }
 
@@ -144,7 +146,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Whether or not is was found.</returns>
-        public static bool ExistsOnAws(this Instance instance, CredentialContainer credentials = null)
+        public static async Task<bool> ExistsOnAwsAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -153,7 +155,7 @@ namespace Naos.AWS.Core
             {
                 var request = new DescribeInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
 
-                var response = client.DescribeInstances(request);
+                var response = await client.DescribeInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
                 return response.Reservations.Any(_ => _.Instances.Any(__ => __.InstanceId == instance.Id));
             }
@@ -166,7 +168,7 @@ namespace Naos.AWS.Core
         /// <param name="region">Region to make call against.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Same collection operating on for fluent usage.</returns>
-        public static IList<InstanceWithStatus> FillFromAws(this IList<InstanceWithStatus> instances, string region, CredentialContainer credentials = null)
+        public static async Task<IList<InstanceWithStatus>> FillFromAwsAsync(this IList<InstanceWithStatus> instances, string region, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
@@ -175,7 +177,7 @@ namespace Naos.AWS.Core
             {
                 var request = new DescribeInstancesRequest();
 
-                var response = client.DescribeInstances(request);
+                var response = await client.DescribeInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 var typedObjects =
@@ -254,7 +256,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Status of instance.</returns>
-        public static InstanceStatus GetStatus(this Instance instance, CredentialContainer credentials = null)
+        public static async Task<InstanceStatus> GetStatusAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -267,7 +269,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DescribeInstanceStatus(request);
+                var response = await client.DescribeInstanceStatusAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 var specificInstanceResult = response.InstanceStatuses.SingleOrDefault(_ => _.InstanceId == instance.Id);
@@ -303,9 +305,26 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="expectedState">State of instance to wait for.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void WaitForState(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task WaitForStateAsync(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
         {
-            WaitUntil.SuccessIsReturned(() => instance.GetStatus(credentials).InstanceState == expectedState);
+            try
+            {
+                var timeToSleepInSeconds = .25;
+                var success = false;
+                while (!success)
+                {
+                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+
+                    var status = await instance.GetStatusAsync(credentials);
+                    success = status.InstanceState == expectedState;
+                }
+            }
+            catch (Exception)
+            {
+                /* swallow exceptions on purpose... */
+            }
         }
 
         /// <summary>
@@ -313,14 +332,26 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void WaitForSuccessfulChecks(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task WaitForSuccessfulChecksAsync(this Instance instance, CredentialContainer credentials = null)
         {
-            WaitUntil.SuccessIsReturned(() =>
+            try
+            {
+                var timeToSleepInSeconds = .25;
+                var success = false;
+                while (!success)
                 {
-                    var instanceStatus = instance.GetStatus(credentials);
-                    return instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
+                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                    var instanceStatus = await instance.GetStatusAsync(credentials);
+                    success = instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
                            && instanceStatus.InstanceChecks.All(_ => _.Value == CheckState.Passed);
-                });
+                }
+            }
+            catch (Exception)
+            {
+                /* swallow exceptions on purpose... */
+            }
         }
 
         /// <summary>
@@ -328,7 +359,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Terminate(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task TerminateAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -337,11 +369,11 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.TerminateInstances(request);
+                var response = await client.TerminateInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
 
-            instance.WaitForState(InstanceState.Terminated, credentials);
+            await instance.WaitForStateAsync(InstanceState.Terminated, credentials);
         }
 
         /// <summary>
@@ -350,7 +382,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to get the administrator password for.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Administrator password for provided instance.</returns>
-        public static string GetAdministratorPassword(this Instance instance, CredentialContainer credentials = null)
+        public static async Task<string> GetAdministratorPasswordAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -359,7 +391,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.GetPasswordData(request);
+                var response = await client.GetPasswordDataAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 if (response.PasswordData == null)
@@ -377,7 +409,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to stop.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Stop(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task StopAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -386,7 +419,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.StopInstances(request);
+                var response = await client.StopInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
@@ -396,7 +429,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to start.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Start(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task StartAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -405,7 +439,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.StartInstances(request);
+                var response = await client.StartInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
@@ -415,7 +449,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to true up the type of.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void UpdateInstanceType(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task UpdateInstanceTypeAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -424,7 +459,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.ModifyInstanceAttribute(request);
+                var response = await client.ModifyInstanceAttributeAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }

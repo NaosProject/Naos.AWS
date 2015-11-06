@@ -6,6 +6,8 @@
 
 namespace Naos.AWS.Core
 {
+    using System.Threading.Tasks;
+
     using Amazon;
     using Amazon.EC2;
     using Amazon.EC2.Model;
@@ -25,7 +27,7 @@ namespace Naos.AWS.Core
         /// <param name="subnet">Subnet to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
-        public static Subnet Create(this Subnet subnet, CredentialContainer credentials = null)
+        public static async Task<Subnet> CreateAsync(this Subnet subnet, CredentialContainer credentials = null)
         {
             var localSubnet = subnet.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -40,13 +42,13 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.CreateSubnet(request);
+                var response = await client.CreateSubnetAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 localSubnet.Id = response.Subnet.SubnetId;
             }
 
-            localSubnet.TagNameInAws(credentials);
+            await localSubnet.TagNameInAwsAsync(credentials);
 
             return localSubnet;
         }
@@ -56,7 +58,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="subnet">Subnet to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Delete(this Subnet subnet, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task DeleteAsync(this Subnet subnet, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
@@ -65,7 +68,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DeleteSubnet(request);
+                var response = await client.DeleteSubnetAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }

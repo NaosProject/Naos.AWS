@@ -9,6 +9,7 @@ namespace Naos.AWS.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -86,7 +87,7 @@ namespace Naos.AWS.Core
         /// <param name="volume">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Whether or not is was found.</returns>
-        public static bool ExistsOnAws(this EbsVolume volume, CredentialContainer credentials = null)
+        public static async Task<bool> ExistsOnAwsAsync(this EbsVolume volume, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(volume.Region);
@@ -95,7 +96,7 @@ namespace Naos.AWS.Core
             {
                 var request = new DescribeVolumesRequest() { VolumeIds = new[] { volume.Id }.ToList() };
 
-                var response = client.DescribeVolumes(request);
+                var response = await client.DescribeVolumesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
                 return response.Volumes.Any(_ => _.VolumeId == volume.Id);
             }

@@ -8,9 +8,7 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Threading;
-
-    using Amazon;
-    using Amazon.EC2;
+    using System.Threading.Tasks;
 
     using Naos.AWS.Contract;
 
@@ -22,54 +20,58 @@ namespace Naos.AWS.Core
     public class WaitUntil
     {
         /// <summary>
-        /// Runs the provided function until true is returned.
-        /// </summary>
-        /// <param name="function">The code to execute.</param>
-        /// <param name="swallowExceptions">Optional value to indicate whether or not to ignore errors (default is TRUE).</param>
-        public static void SuccessIsReturned(Func<bool> function, bool swallowExceptions = true)
-        {
-            try
-            {
-                var timeToSleepInSeconds = .25;
-                var success = false;
-                while (!success)
-                {
-                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                    success = function();
-                }
-            }
-            catch (Exception)
-            {
-                if (!swallowExceptions)
-                {
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
         /// Tries to describe the object against AWS API and wait for non-null response.
         /// </summary>
         /// <param name="awsObject">AWS object to check on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
         {
-            Func<bool> action = () =>
-                {
-                    var awsObjectType = awsObject.InferObjectTypeFromId();
-                    switch (awsObjectType)
+            var awsObjectType = awsObject.InferObjectTypeFromId();
+            switch (awsObjectType)
+            {
+                case AwsObjectType.Instance:
+                    try
                     {
-                        case AwsObjectType.Instance:
-                            return (awsObject as Instance).ExistsOnAws(credentials);
-                        case AwsObjectType.EbsVolume:
-                            return (awsObject as EbsVolume).ExistsOnAws(credentials);
-                        default:
-                            throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);
+                        var timeToSleepInSeconds = .25;
+                        var success = false;
+                        while (!success)
+                        {
+                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                            var objectAsInstance = (Instance)awsObject;
+                            success = await objectAsInstance.ExistsOnAwsAsync(credentials);
+                        }
                     }
-                };
+                    catch (Exception)
+                    {
+                        /* swallow exceptions on purpose... */
+                    }
 
-            SuccessIsReturned(action);
+                    break;
+                case AwsObjectType.EbsVolume:
+                    try
+                    {
+                        var timeToSleepInSeconds = .25;
+                        var success = false;
+                        while (!success)
+                        {
+                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
+                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
+                            var objectAsVolume = (EbsVolume)awsObject;
+                            success = await objectAsVolume.ExistsOnAwsAsync(credentials);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        /* swallow exceptions on purpose... */
+                    }
+
+                    break;
+                default:
+                    throw new NotSupportedException(
+                        "Don't know how to check existence of AWS Object Type: " + awsObjectType);
+            }
         }
     }
 }

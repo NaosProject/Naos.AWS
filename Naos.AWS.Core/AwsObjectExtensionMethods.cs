@@ -8,6 +8,7 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -46,9 +47,10 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="awsObject">Object to tag with name.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void TagNameInAws(this IAwsObject awsObject, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task TagNameInAwsAsync(this IAwsObject awsObject, CredentialContainer credentials = null)
         {
-            AddTagInAws(awsObject, Constants.NameTagKey, awsObject.Name, credentials);
+            await AddTagInAwsAsync(awsObject, Constants.NameTagKey, awsObject.Name, credentials);
         }
 
         /// <summary>
@@ -58,13 +60,14 @@ namespace Naos.AWS.Core
         /// <param name="tagName">Name of tag.</param>
         /// <param name="tagValue">Value of tag.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void AddTagInAws(this IAwsObject awsObject, string tagName, string tagValue, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task AddTagInAwsAsync(this IAwsObject awsObject, string tagName, string tagValue, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(awsObject.Region);
 
             // make sure the object is there so we can tag it (eventual consistency issue...)
-            WaitUntil.AwsObjectExists(awsObject, credentials);
+            await WaitUntil.AwsObjectExists(awsObject, credentials);
 
             var request = new CreateTagsRequest()
             {
@@ -74,7 +77,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                CreateTagsResponse result = client.CreateTags(request);
+                CreateTagsResponse result = await client.CreateTagsAsync(request);
                 Validator.ThrowOnBadResult(request, result);
             }
         }
