@@ -7,6 +7,7 @@
 namespace Naos.AWS.Contract
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for dealing with Route53's API.
@@ -21,7 +22,8 @@ namespace Naos.AWS.Contract
         /// <param name="type">Type of entry to add.</param>
         /// <param name="domain">Domain to use.</param>
         /// <param name="ipAddresses">IP Addresses to attach to the domain.</param>
-        void UpsertDnsEntry(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses);
+        /// <returns>Task for async/await</returns>
+        Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses);
 
         /// <summary>
         /// Gets the DNS entries of the specified zone.
@@ -29,6 +31,7 @@ namespace Naos.AWS.Contract
         /// <param name="region">Region the call should be made against.</param>
         /// <param name="domainZoneHostingId">AWS id of the zone.</param>
         /// <returns>Collection of DNS entries in the zone.</returns>
-        ICollection<Route53Entry> GetDnsEntries(string region, string domainZoneHostingId);
+        /// <returns>Task for async/await</returns>
+        Task<ICollection<Route53Entry>> GetDnsEntriesAsync(string region, string domainZoneHostingId);
     }
 }

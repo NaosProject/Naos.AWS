@@ -7,6 +7,7 @@
 namespace Naos.AWS.Core
 {
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -25,7 +26,7 @@ namespace Naos.AWS.Core
         /// <param name="elasticIp">Elastic IP to allocate.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Newly allocated elastic IP.</returns>
-        public static ElasticIp Allocate(this ElasticIp elasticIp, CredentialContainer credentials = null)
+        public static async Task<ElasticIp> AllocateAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
@@ -34,7 +35,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.AllocateAddress(request);
+                var response = await client.AllocateAddressAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 var ret = elasticIp.DeepClone();
@@ -49,7 +50,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="elasticIp">Elastic IP to release.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Release(this ElasticIp elasticIp, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task ReleaseAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
@@ -61,7 +63,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.ReleaseAddress(request);
+                var response = await client.ReleaseAddressAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
@@ -72,7 +74,8 @@ namespace Naos.AWS.Core
         /// <param name="elasticIp">Elastic IP to connect to the provided instance.</param>
         /// <param name="instanceId">Instance to attach elastic IP to.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void AssociateToInstance(this ElasticIp elasticIp, string instanceId, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task AssociateToInstanceAsync(this ElasticIp elasticIp, string instanceId, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
@@ -81,7 +84,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.AssociateAddress(request);
+                var response = await client.AssociateAddressAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
@@ -91,7 +94,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="elasticIp">Elastic IP to remove from the provided instance.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void DisassociateFromInstance(this ElasticIp elasticIp, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task DisassociateFromInstanceAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
@@ -100,7 +104,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DisassociateAddress(request);
+                var response = await client.DisassociateAddressAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }
@@ -111,7 +115,7 @@ namespace Naos.AWS.Core
         /// <param name="elasticIp">Elastic IP to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Whether or not is was found.</returns>
-        public static bool ExistsOnAws(this ElasticIp elasticIp, CredentialContainer credentials = null)
+        public static async Task<bool> ExistsOnAwsAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
@@ -120,7 +124,7 @@ namespace Naos.AWS.Core
             {
                 var request = new DescribeAddressesRequest() { AllocationIds = new[] { elasticIp.Id }.ToList() };
 
-                var response = client.DescribeAddresses(request);
+                var response = await client.DescribeAddressesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 var existsOnAws = response.Addresses.Any(_ => _.AllocationId == elasticIp.Id);

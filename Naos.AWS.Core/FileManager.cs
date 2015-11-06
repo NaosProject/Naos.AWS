@@ -39,19 +39,6 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public void UploadFile(string region, string bucketName, string keyName, string sourceFilePath)
-        {
-            var regionEndpoint = RegionEndpoint.GetBySystemName(region);
-            using (var client = new AmazonS3Client(this.accessKey, this.secretKey, regionEndpoint))
-            {
-                using (var transferUtility = new TransferUtility(client))
-                {
-                    transferUtility.Upload(sourceFilePath, bucketName, keyName);
-                }
-            }
-        }
-
-        /// <inheritdoc />
         public async Task UploadFileAsync(string region, string bucketName, string keyName, string sourceFilePath)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
@@ -60,19 +47,6 @@ namespace Naos.AWS.Core
                 using (var transferUtility = new TransferUtility(client))
                 {
                     await transferUtility.UploadAsync(sourceFilePath, bucketName, keyName);
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public void DownloadFile(string region, string bucketName, string keyName, string destinationFilePath)
-        {
-            var regionEndpoint = RegionEndpoint.GetBySystemName(region);
-            using (var client = new AmazonS3Client(this.accessKey, this.secretKey, regionEndpoint))
-            {
-                using (var transferUtility = new TransferUtility(client))
-                {
-                    transferUtility.Download(destinationFilePath, bucketName, keyName);
                 }
             }
         }
@@ -91,20 +65,20 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public ICollection<CloudFile> ListFiles(string region, string bucketName)
+        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName)
         {
-            return this.ListFiles(region, bucketName, null);
+            return await this.ListFilesAsync(region, bucketName, null);
         }
 
         /// <inheritdoc />
-        public ICollection<CloudFile> ListFiles(string region, string bucketName, string keyPrefixSearchPattern)
+        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.accessKey, this.secretKey, regionEndpoint))
             {
                 var request = new ListObjectsRequest { BucketName = bucketName, Prefix = keyPrefixSearchPattern };
 
-                var objects = client.ListObjects(request);
+                var objects = await client.ListObjectsAsync(request);
                 var ret = new List<CloudFile>();
                 if (objects != null && objects.S3Objects != null && objects.S3Objects.Count > 0)
                 {

@@ -8,6 +8,7 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -26,7 +27,7 @@ namespace Naos.AWS.Core
         /// <param name="ami">AMI to use to get the id for.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>AMI ID, either in the object or discovered through the search strategy.</returns>
-        public static string DiscoverId(this Ami ami, CredentialContainer credentials = null)
+        public static async Task<string> DiscoverIdAsync(this Ami ami, CredentialContainer credentials = null)
         {
             if (ami.SearchStrategy == null)
             {
@@ -47,7 +48,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DescribeImages(request);
+                var response = await client.DescribeImagesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 if (!response.Images.Any())

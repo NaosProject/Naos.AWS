@@ -6,6 +6,8 @@
 
 namespace Naos.AWS.Core
 {
+    using System.Threading.Tasks;
+
     using Amazon;
     using Amazon.EC2;
     using Amazon.EC2.Model;
@@ -25,7 +27,7 @@ namespace Naos.AWS.Core
         /// <param name="vpc">VPC to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
-        public static Vpc Create(this Vpc vpc, CredentialContainer credentials = null)
+        public static async Task<Vpc> CreateAsync(this Vpc vpc, CredentialContainer credentials = null)
         {
             var localVpc = vpc.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -35,13 +37,13 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.CreateVpc(request);
+                var response = await client.CreateVpcAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
                 localVpc.Id = response.Vpc.VpcId;
             }
 
-            localVpc.TagNameInAws(credentials);
+            await localVpc.TagNameInAwsAsync(credentials);
 
             return localVpc;
         }
@@ -51,7 +53,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="vpc">VPC to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void Delete(this Vpc vpc, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task DeleteAsync(this Vpc vpc, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(vpc.Region);
@@ -60,7 +63,7 @@ namespace Naos.AWS.Core
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = client.DeleteVpc(request);
+                var response = await client.DeleteVpcAsync(request);
                 Validator.ThrowOnBadResult(request, response);
             }
         }

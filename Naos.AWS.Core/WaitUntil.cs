@@ -8,6 +8,7 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
@@ -26,7 +27,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="function">The code to execute.</param>
         /// <param name="swallowExceptions">Optional value to indicate whether or not to ignore errors (default is TRUE).</param>
-        public static void SuccessIsReturned(Func<bool> function, bool swallowExceptions = true)
+        /// <returns>Task for async/await</returns>
+        public static async Task SuccessIsReturned(Task<bool> function, bool swallowExceptions = true)
         {
             try
             {
@@ -36,7 +38,7 @@ namespace Naos.AWS.Core
                 {
                     timeToSleepInSeconds = timeToSleepInSeconds * 2;
                     Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                    success = function();
+                    success = await function;
                 }
             }
             catch (Exception)
@@ -53,23 +55,26 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="awsObject">AWS object to check on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        public static void AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
+        /// <returns>Task for async/await</returns>
+        public static async Task AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
         {
-            Func<bool> action = () =>
-                {
-                    var awsObjectType = awsObject.InferObjectTypeFromId();
-                    switch (awsObjectType)
+            Task<bool> action = Task.Run(
+                () =>
                     {
-                        case AwsObjectType.Instance:
-                            return (awsObject as Instance).ExistsOnAws(credentials);
-                        case AwsObjectType.EbsVolume:
-                            return (awsObject as EbsVolume).ExistsOnAws(credentials);
-                        default:
-                            throw new NotSupportedException("Don't know how to check existence of AWS Object Type: " + awsObjectType);
-                    }
-                };
+                        var awsObjectType = awsObject.InferObjectTypeFromId();
+                        switch (awsObjectType)
+                        {
+                            case AwsObjectType.Instance:
+                                return (awsObject as Instance).ExistsOnAwsAsync(credentials);
+                            case AwsObjectType.EbsVolume:
+                                return (awsObject as EbsVolume).ExistsOnAwsAsync(credentials);
+                            default:
+                                throw new NotSupportedException(
+                                    "Don't know how to check existence of AWS Object Type: " + awsObjectType);
+                        }
+                    });
 
-            SuccessIsReturned(action);
+            await SuccessIsReturned(action);
         }
     }
 }
