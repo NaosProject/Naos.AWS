@@ -20,6 +20,7 @@ namespace Naos.AWS.Core
 
     using Instance = Naos.AWS.Contract.Instance;
     using InstanceState = Naos.AWS.Contract.InstanceState;
+    using InstanceStatus = Naos.AWS.Contract.InstanceStatus;
     using KeyPair = Naos.AWS.Contract.KeyPair;
     using SecurityGroup = Naos.AWS.Contract.SecurityGroup;
     using Subnet = Naos.AWS.Contract.Subnet;
@@ -165,7 +166,7 @@ namespace Naos.AWS.Core
         /// <param name="region">Region to make call against.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Same collection operating on for fluent usage.</returns>
-        public static IList<InstanceWithState> FillFromAws(this IList<InstanceWithState> instances, string region, CredentialContainer credentials = null)
+        public static IList<InstanceWithStatus> FillFromAws(this IList<InstanceWithStatus> instances, string region, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
@@ -184,46 +185,57 @@ namespace Naos.AWS.Core
                              ? reserveration.Instances
                              : new List<Amazon.EC2.Model.Instance>()).Select(
                                  _ =>
-                                 new InstanceWithState()
                                      {
-                                         InstanceState = _.State == null ? InstanceState.Unknown : (InstanceState)_.State.Code,
-                                         Id = _.InstanceId,
-                                         InstanceType = _.InstanceType,
-                                         Ami = new Ami { Id = _.ImageId },
-                                         ElasticIp =
-                                             new ElasticIp
-                                                 {
-                                                     Region = region,
-                                                     PublicIpAddress = _.PublicIpAddress
-                                                 },
-                                         ContainingSubnet = new Subnet { Id = _.SubnetId },
-                                         Region = region,
-                                         PrivateIpAddress = _.PrivateIpAddress,
-                                         Key = new KeyPair { Region = region, KeyName = _.KeyName },
-                                         SecurityGroup =
-                                             new SecurityGroup
-                                                 {
-                                                     Region = region,
-                                                     Id =
-                                                         (_.SecurityGroups.SingleOrDefault()
-                                                          ?? new GroupIdentifier()).GroupId,
-                                                     Name =
-                                                         (_.SecurityGroups.SingleOrDefault()
-                                                          ?? new GroupIdentifier()).GroupName
-                                                 },
-                                         Tags =
-                                             _.Tags.ToDictionary(
-                                                 keyInput => keyInput.Key,
-                                                 valueInput => valueInput.Value),
-                                         MappedVolumes =
-                                             _.BlockDeviceMappings.Select(
-                                                 mapping =>
-                                                 new EbsVolume
+                                         var instanceStatus = new InstanceStatus
+                                                                  {
+                                                                      InstanceState =
+                                                                          _.State == null
+                                                                              ? InstanceState.Unknown
+                                                                              : (InstanceState)
+                                                                                _.State.Code
+                                                                  };
+
+                                         return new InstanceWithStatus()
                                                      {
-                                                         DeviceName = mapping.DeviceName,
-                                                         Id = mapping.Ebs.VolumeId,
-                                                         Region = region
-                                                     }).ToList()
+                                                         InstanceStatus = instanceStatus,
+                                                         Id = _.InstanceId,
+                                                         InstanceType = _.InstanceType,
+                                                         Ami = new Ami { Id = _.ImageId },
+                                                         ElasticIp =
+                                                             new ElasticIp
+                                                                 {
+                                                                     Region = region,
+                                                                     PublicIpAddress = _.PublicIpAddress
+                                                                 },
+                                                         ContainingSubnet = new Subnet { Id = _.SubnetId },
+                                                         Region = region,
+                                                         PrivateIpAddress = _.PrivateIpAddress,
+                                                         Key = new KeyPair { Region = region, KeyName = _.KeyName },
+                                                         SecurityGroup =
+                                                             new SecurityGroup
+                                                                 {
+                                                                     Region = region,
+                                                                     Id =
+                                                                         (_.SecurityGroups.SingleOrDefault()
+                                                                          ?? new GroupIdentifier()).GroupId,
+                                                                     Name =
+                                                                         (_.SecurityGroups.SingleOrDefault()
+                                                                          ?? new GroupIdentifier()).GroupName
+                                                                 },
+                                                         Tags =
+                                                             _.Tags.ToDictionary(
+                                                                 keyInput => keyInput.Key,
+                                                                 valueInput => valueInput.Value),
+                                                         MappedVolumes =
+                                                             _.BlockDeviceMappings.Select(
+                                                                 mapping =>
+                                                                 new EbsVolume
+                                                                     {
+                                                                         DeviceName = mapping.DeviceName,
+                                                                         Id = mapping.Ebs.VolumeId,
+                                                                         Region = region
+                                                                     }).ToList()
+                                                     };
                                      })).ToList();
 
                 // No AddRange on the interface...
@@ -237,12 +249,12 @@ namespace Naos.AWS.Core
         }
 
         /// <summary>
-        /// Gets the state of an instance.
+        /// Gets the status of an instance.
         /// </summary>
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>State of instance.</returns>
-        public static InstanceState GetState(this Instance instance, CredentialContainer credentials = null)
+        /// <returns>Status of instance.</returns>
+        public static InstanceStatus GetStatus(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -262,11 +274,25 @@ namespace Naos.AWS.Core
                 if (specificInstanceResult != null)
                 {
                     var stateCode = specificInstanceResult.InstanceState.Code;
-                    return (InstanceState)stateCode;
+                    var ret = new InstanceStatus
+                                  {
+                                      InstanceState = (InstanceState)stateCode,
+                                      SystemChecks = specificInstanceResult.SystemStatus.Details.ToDictionary(key => key.Name.Value, value => (CheckState)Enum.Parse(typeof(CheckState), value.Status, true)),
+                                      InstanceChecks = specificInstanceResult.Status.Details.ToDictionary(key => key.Name.Value, value => (CheckState)Enum.Parse(typeof(CheckState), value.Status, true))
+                                  };
+
+                    return ret;
                 }
                 else
                 {
-                    return InstanceState.Unknown;
+                    var ret = new InstanceStatus
+                        {
+                            InstanceState = InstanceState.Unknown,
+                            InstanceChecks = new Dictionary<string, CheckState>(),
+                            SystemChecks = new Dictionary<string, CheckState>()
+                        };
+
+                    return ret;
                 }
             }
         }
@@ -279,7 +305,22 @@ namespace Naos.AWS.Core
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         public static void WaitForState(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
         {
-            WaitUntil.SuccessIsReturned(() => instance.GetState(credentials) == expectedState);
+            WaitUntil.SuccessIsReturned(() => instance.GetStatus(credentials).InstanceState == expectedState);
+        }
+
+        /// <summary>
+        /// Waits until the instance has successful status checks.
+        /// </summary>
+        /// <param name="instance">Instance to operate on.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        public static void WaitForSuccessfulChecks(this Instance instance, CredentialContainer credentials = null)
+        {
+            WaitUntil.SuccessIsReturned(() =>
+                {
+                    var instanceStatus = instance.GetStatus(credentials);
+                    return instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
+                           && instanceStatus.InstanceChecks.All(_ => _.Value == CheckState.Passed);
+                });
         }
 
         /// <summary>
