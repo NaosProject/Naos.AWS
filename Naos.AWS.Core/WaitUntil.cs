@@ -31,40 +31,40 @@ namespace Naos.AWS.Core
             switch (awsObjectType)
             {
                 case AwsObjectType.Instance:
-                    try
+                    var objectAsInstance = (Instance)awsObject;
+                    var timeToSleepInSecondsInstance = .25;
+                    var successInstance = false;
+                    while (!successInstance)
                     {
-                        var timeToSleepInSeconds = .25;
-                        var success = false;
-                        while (!success)
+                        timeToSleepInSecondsInstance = timeToSleepInSecondsInstance * 2;
+                        await Task.Delay(TimeSpan.FromSeconds(timeToSleepInSecondsInstance));
+                        try
                         {
-                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                            var objectAsInstance = (Instance)awsObject;
-                            success = await objectAsInstance.ExistsOnAwsAsync(credentials);
+                            successInstance = await objectAsInstance.ExistsOnAwsAsync(credentials);
                         }
-                    }
-                    catch (Exception)
-                    {
-                        /* swallow exceptions on purpose... */
+                        catch (Exception)
+                        {
+                            /* swallow exceptions on purpose...should add a throw after timeout */
+                        }
                     }
 
                     break;
                 case AwsObjectType.EbsVolume:
-                    try
+                    var objectAsVolume = (EbsVolume)awsObject;
+                    var timeToSleepInSecondsVolume = .25;
+                    var successVolume = false;
+                    while (!successVolume)
                     {
-                        var timeToSleepInSeconds = .25;
-                        var success = false;
-                        while (!success)
+                        timeToSleepInSecondsVolume = timeToSleepInSecondsVolume * 2;
+                        await Task.Delay(TimeSpan.FromSeconds(timeToSleepInSecondsVolume));
+                        try
                         {
-                            timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                            Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                            var objectAsVolume = (EbsVolume)awsObject;
-                            success = await objectAsVolume.ExistsOnAwsAsync(credentials);
+                            successVolume = await objectAsVolume.ExistsOnAwsAsync(credentials);
                         }
-                    }
-                    catch (Exception)
-                    {
-                        /* swallow exceptions on purpose... */
+                        catch (Exception)
+                        {
+                            /* swallow exceptions on purpose...should add a throw after timeout */
+                        }
                     }
 
                     break;
