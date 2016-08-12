@@ -408,14 +408,15 @@ namespace Naos.AWS.Core
         /// Stops the instance.
         /// </summary>
         /// <param name="instance">Instance to stop.</param>
+        /// <param name="force">Force the instance to stop (default is FALSE).</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
-        public static async Task StopAsync(this Instance instance, CredentialContainer credentials = null)
+        public static async Task StopAsync(this Instance instance, bool force = false, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
 
-            var request = new StopInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList() };
+            var request = new StopInstancesRequest() { InstanceIds = new[] { instance.Id }.ToList(), Force = force };
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
