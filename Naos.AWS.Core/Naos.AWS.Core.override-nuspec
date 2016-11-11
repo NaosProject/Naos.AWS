@@ -1,0 +1,6 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <description>Naos wrapper of AWS operations to provide consistentcy in interaction with AWS as they change their API's.</description>
+  </metadata>
+</package>
