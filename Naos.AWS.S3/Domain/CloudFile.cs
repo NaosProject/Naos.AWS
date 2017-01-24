@@ -1,10 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CloudFile.cs" company="Naos">
-//   Copyright 2015 Naos
+//   Copyright 2017 Naos
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.Contract
+// ReSharper disable once CheckNamespace
+
+namespace Naos.AWS.S3
 {
     using System;
 

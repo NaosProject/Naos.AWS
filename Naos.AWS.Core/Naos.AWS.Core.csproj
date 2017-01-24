@@ -49,10 +49,6 @@
       <HintPath>..\packages\AWSSDK.Route53.3.3.1.1\lib\net45\AWSSDK.Route53.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.S3.3.3.1.1\lib\net45\AWSSDK.S3.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="AWSSDK.SecurityToken, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.SecurityToken.3.3.0.2\lib\net45\AWSSDK.SecurityToken.dll</HintPath>
       <Private>True</Private>
@@ -72,7 +68,6 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="AwsResponseNotOkException.cs" />
-    <Compile Include="FileManager.cs" />
     <Compile Include="Route53Manager.cs" />
     <Compile Include="EbsVolumeExtensionMethods.cs" />
     <Compile Include="CredentialExtensionMethods.cs" />
@@ -104,7 +99,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.EC2.3.3.2.2\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.Route53.3.3.1.1\analyzers\dotnet\cs\AWSSDK.Route53.CodeAnalysis.dll" />
-    <Analyzer Include="..\packages\AWSSDK.S3.3.3.1.1\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SecurityToken.3.3.0.2\analyzers\dotnet\cs\AWSSDK.SecurityToken.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
