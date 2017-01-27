@@ -85,7 +85,7 @@
     <Compile Include="Domain\IUploadFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AwsInteractionBase.cs" />
-    <Compile Include="UploadFileResult.cs" />
+    <Compile Include="Domain\UploadFileResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

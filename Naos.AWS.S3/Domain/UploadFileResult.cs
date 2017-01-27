@@ -4,6 +4,8 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+// ReSharper disable once CheckNamespace
+
 namespace Naos.AWS.S3
 {
     using System.Collections.Generic;
