@@ -16,7 +16,7 @@ namespace Naos.AWS.S3
     /// </summary>
     public class FileManager : IManageFiles
     {
-        private readonly IListFiles fileSearcher;
+        private readonly IListFiles fileLister;
         private readonly IManageFileMetadata fileMedataManager;
         private readonly IUploadFiles fileUploader;
         private readonly IDownloadFiles fileDownloader;
@@ -24,11 +24,11 @@ namespace Naos.AWS.S3
         /// <summary>
         /// Initializes a new instance of the <see cref="FileManager"/> class.
         /// </summary>
-        /// <param name="accessKey">Access key with rights to download files in specified buckets.</param>
-        /// <param name="secretKey">Secret key with rights to download files in specified buckets.</param>
+        /// <param name="accessKey">Access key with rights to read and write files in specified buckets.</param>
+        /// <param name="secretKey">Secret key with rights to read and write files in specified buckets.</param>
         public FileManager(string accessKey, string secretKey)
         {
-            this.fileSearcher = new FileSearcher(accessKey, secretKey);
+            this.fileLister = new FileLister(accessKey, secretKey);
             this.fileMedataManager = new FileMetadataManager(accessKey, secretKey);
             this.fileUploader = new FileUploader(accessKey, secretKey);
             this.fileDownloader = new FileDownloader(accessKey, secretKey);
@@ -37,81 +37,21 @@ namespace Naos.AWS.S3
         /// <summary>
         /// Initializes a new instance of the <see cref="FileManager"/> class.
         /// </summary>
-        /// <param name="fileUploader">File uploader</param>
+        /// <param name="fileUploader">File uploader.</param>
         /// <param name="fileDownloader">File downloader.</param>
         /// <param name="fileMetadataManager">File metadata manager.</param>
-        /// <param name="fileSearcher">File searcher.</param>
+        /// <param name="fileLister">File searcher.</param>
         public FileManager(
             IUploadFiles fileUploader,
             IDownloadFiles fileDownloader,
             IManageFileMetadata fileMetadataManager,
-            IListFiles fileSearcher)
+            IListFiles fileLister)
         {
             this.fileUploader = fileUploader;
             this.fileDownloader = fileDownloader;
             this.fileMedataManager = fileMetadataManager;
-            this.fileSearcher = fileSearcher;
+            this.fileLister = fileLister;
         }
-
-        #region IDownloadFiles
-
-        /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath)
-        {
-            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationFilePath);
-        }
-
-        /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream)
-        {
-            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationStream);
-        }
-
-        /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath)
-        {
-            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationFilePath);
-        }
-
-        /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream)
-        {
-            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationStream);
-        }
-
-        #endregion
-
-        #region IManageFileMetadata
-
-        /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult)
-        {
-            return await this.fileMedataManager.GetFileMetadataAsync(uploadFileResult);
-        }
-
-        /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName)
-        {
-            return await this.fileMedataManager.GetFileMetadataAsync(region, bucketName, keyName);
-        }
-
-        #endregion
-
-        #region IListFiles
-
-        /// <inheritdoc />
-        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName)
-        {
-            return await this.fileSearcher.ListFilesAsync(region, bucketName);
-        }
-
-        /// <inheritdoc />
-        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
-        {
-            return await this.fileSearcher.ListFilesAsync(region, bucketName, keyPrefixSearchPattern);
-        }
-
-        #endregion
 
         #region IUploadFiles
 
@@ -121,7 +61,7 @@ namespace Naos.AWS.S3
             string bucketName,
             string keyName,
             string sourceFilePath,
-            HashAlgorithmName hashAlgorithmName,
+            IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
             return await this.fileUploader.UploadFileAsync(
@@ -129,7 +69,7 @@ namespace Naos.AWS.S3
                 bucketName,
                 keyName,
                 sourceFilePath,
-                hashAlgorithmName,
+                hashAlgorithmNames,
                 userDefinedMetadata);
         }
 
@@ -139,7 +79,7 @@ namespace Naos.AWS.S3
             string bucketName,
             string keyName,
             Stream sourceStream,
-            HashAlgorithmName hashAlgorithmName,
+            IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
             return await this.fileUploader.UploadFileAsync(
@@ -147,40 +87,68 @@ namespace Naos.AWS.S3
                 bucketName,
                 keyName,
                 sourceStream,
-                hashAlgorithmName,
+                hashAlgorithmNames,
                 userDefinedMetadata);
         }
 
+        #endregion
+
+        #region IDownloadFiles
+
         /// <inheritdoc />
-        public async Task<UploadFileResult> UploadFileAsync(
-            string region,
-            string bucketName,
-            string keyName,
-            string sourceFilePath,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
-            return await this.fileUploader.UploadFileAsync(
-                region,
-                bucketName,
-                keyName,
-                sourceFilePath,
-                userDefinedMetadata);
+            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationFilePath, validateChecksumsIfPresent);
         }
 
         /// <inheritdoc />
-        public async Task<UploadFileResult> UploadFileAsync(
-            string region,
-            string bucketName,
-            string keyName,
-            Stream sourceStream,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
-            return await this.fileUploader.UploadFileAsync(
-                region,
-                bucketName,
-                keyName,
-                sourceStream,
-                userDefinedMetadata);
+            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationStream, validateChecksumsIfPresent);
+        }
+
+        /// <inheritdoc />
+        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath, bool validateChecksumsIfPresent = true)
+        {
+            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationFilePath, validateChecksumsIfPresent);
+        }
+
+        /// <inheritdoc />
+        public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream, bool validateChecksumsIfPresent = true)
+        {
+            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationStream, validateChecksumsIfPresent);
+        }
+
+        #endregion
+
+        #region IListFiles
+
+        /// <inheritdoc />
+        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName)
+        {
+            return await this.fileLister.ListFilesAsync(region, bucketName);
+        }
+
+        /// <inheritdoc />
+        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
+        {
+            return await this.fileLister.ListFilesAsync(region, bucketName, keyPrefixSearchPattern);
+        }
+
+        #endregion
+
+        #region IManageFileMetadata
+
+        /// <inheritdoc />
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult, bool shouldSanitizeKeys = true)
+        {
+            return await this.fileMedataManager.GetFileMetadataAsync(uploadFileResult, shouldSanitizeKeys);
+        }
+
+        /// <inheritdoc />
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName, bool shouldSanitizeKeys = true)
+        {
+            return await this.fileMedataManager.GetFileMetadataAsync(region, bucketName, keyName, shouldSanitizeKeys);
         }
 
         #endregion

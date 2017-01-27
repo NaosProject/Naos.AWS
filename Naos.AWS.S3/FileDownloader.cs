@@ -7,6 +7,7 @@
 namespace Naos.AWS.S3
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
@@ -17,42 +18,51 @@ namespace Naos.AWS.S3
     using Amazon.S3.Model;
 
     using Its.Log.Instrumentation;
+    using Spritely.Recipes;
     using Spritely.Redo;
 
     /// <summary>
     /// Class to download files from Amazon S3.
     /// </summary>
-    public class FileDownloader : S3FileBase, IDownloadFiles
+    public class FileDownloader : AwsInteractionBase, IDownloadFiles
     {
-        /// <inheritdoc cref="S3FileBase"/>
+        /// <inheritdoc cref="AwsInteractionBase"/>
         public FileDownloader(string accessKey, string secretKey)
             : base(accessKey, secretKey)
         {
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath)
+        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
                 uploadFileResult.BucketName,
                 uploadFileResult.KeyName,
-                destinationFilePath);
+                destinationFilePath,
+                validateChecksumsIfPresent);
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream)
+        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
                 uploadFileResult.BucketName,
                 uploadFileResult.KeyName,
-                destinationStream);
+                destinationStream,
+                validateChecksumsIfPresent);
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath)
+        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
+            destinationFilePath.Named(nameof(destinationFilePath)).Must().NotBeWhiteSpace().OrThrow();
+
             using (var fileStream = File.Create(destinationFilePath))
             {
                 await this.DownloadFileAsync(region, bucketName, keyName, fileStream);
@@ -60,8 +70,13 @@ namespace Naos.AWS.S3
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream)
+        public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
+            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
+            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
+            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
+            destinationStream.Named(nameof(destinationStream)).Must().NotBeNull().OrThrow();
+
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
             {
@@ -82,34 +97,55 @@ namespace Naos.AWS.S3
                     using (var responseStream = response.ResponseStream)
                     {
                         await responseStream.CopyToAsync(destinationStream);
-                        VerifyChecksum(destinationStream, response);
+                        if (validateChecksumsIfPresent)
+                        {
+                            VerifyChecksums(destinationStream, response);
+                        }
                     }
                 }
             }
         }
 
-        private static void VerifyChecksum(Stream destinationStream, GetObjectResponse response)
+        private static void VerifyChecksums(Stream destinationStream, GetObjectResponse response)
         {
-            Tuple<HashAlgorithmName, string> checksumInfo = GetSavedChecksum(response);
-            if (checksumInfo == null)
+            foreach (var computedChecksum in GetSavedChecksums(response))
             {
-                return;
-            }
-
-            string computedChecksum = HashAlgorithmHelper.ComputeHash(checksumInfo.Item1, destinationStream);
-            if (checksumInfo.Item2 != computedChecksum)
-            {
-                throw new ChecksumVerificationException(checksumInfo.Item1, checksumInfo.Item2, computedChecksum);
+                var checksum = HashAlgorithmHelper.ComputeHash(computedChecksum.HashAlgorithmName, destinationStream);
+                if (computedChecksum.Value != checksum)
+                {
+                    throw new ChecksumVerificationException(computedChecksum.HashAlgorithmName, computedChecksum.Value, checksum);
+                }
             }
         }
 
-        private static Tuple<HashAlgorithmName, string> GetSavedChecksum(GetObjectResponse response)
+        private static IEnumerable<ComputedChecksum> GetSavedChecksums(GetObjectResponse response)
         {
-            // key will be of the form x-amz-meta-{hashType}-checksum  e.g. x-amz-meta-sha256-checksum
-            var firstChecksumKey = response.Metadata.Keys.FirstOrDefault(_ => _.EndsWith(MetadataKeyChecksumSuffix));
+            return response.Metadata
+                .Keys
+                // ReSharper disable once ArrangeStaticMemberQualifier
+                .Where(_ => _.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix))
+                .Select(key => new ComputedChecksum(ExtractHashAlgorithmNameFromMetadataKey(key), response.Metadata[key]));
+        }
 
-            return firstChecksumKey != null ?
-                Tuple.Create(new HashAlgorithmName(firstChecksumKey.Split('-').Skip(3).First().ToUpperInvariant()), response.Metadata[firstChecksumKey]) : null;
+        /// <summary>
+        /// Extract the hash algorithm name (e.g. MD5) from the metadata key.
+        /// </summary>
+        /// <param name="metadataKey">The metadata key containing the hash algorithm name.</param>
+        /// <returns>The appropriate HashAlgorithmName.</returns>
+        private static HashAlgorithmName ExtractHashAlgorithmNameFromMetadataKey(string metadataKey)
+        {
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            if (!metadataKey.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix))
+            {
+                throw new ArgumentException("Metadata key containing a checksum must end with with the suffix '-checksum'.", nameof(metadataKey));
+            }
+
+            var sanitizedMetadataKey = SanitizeUserDefinedMetadataKey(metadataKey);
+            var hashName = sanitizedMetadataKey
+                .Substring(0, sanitizedMetadataKey.Length - MetadataKeyChecksumSuffix.Length)
+                .ToUpperInvariant();
+
+            return new HashAlgorithmName(hashName);
         }
     }
 }

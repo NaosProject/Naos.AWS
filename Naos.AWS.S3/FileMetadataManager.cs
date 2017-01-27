@@ -8,35 +8,42 @@ namespace Naos.AWS.S3
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.S3;
 
     using Its.Log.Instrumentation;
+    using Spritely.Recipes;
     using Spritely.Redo;
 
     /// <summary>
     /// Class to manage file metadata for Amazon S3.
     /// </summary>
-    public class FileMetadataManager : S3FileBase, IManageFileMetadata
+    public class FileMetadataManager : AwsInteractionBase, IManageFileMetadata
     {
-        /// <inheritdoc cref="S3FileBase"/>
+        /// <inheritdoc cref="AwsInteractionBase"/>
         public FileMetadataManager(string accessKey, string secretKey)
             : base(accessKey, secretKey)
         {
         }
 
         /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult)
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult, bool shouldSanitizeKeys = true)
         {
-            return await this.GetFileMetadataAsync(uploadFileResult.Region, uploadFileResult.BucketName, uploadFileResult.KeyName);
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+
+            return await this.GetFileMetadataAsync(uploadFileResult.Region, uploadFileResult.BucketName, uploadFileResult.KeyName, shouldSanitizeKeys);
         }
 
         /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName)
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName, bool shouldSanitizeKeys = true)
         {
+            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
+            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
+            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();            
+
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
             {
@@ -48,15 +55,9 @@ namespace Naos.AWS.S3
                                        .Run(() => client.GetObjectMetadataAsync(bucketName, keyName))
                                        .Now();
 
-                IDictionary<string, string> metadata = new Dictionary<string, string>();
-
-                foreach (var key in response.Metadata.Keys)
-                {
-                    // TODO: should we remove the x-amz-meta- prefix when returning keys?
-                    metadata.Add(key, response.Metadata[key]);
-                }
-
-                return new ReadOnlyDictionary<string, string>(metadata);
+                // ReSharper disable once ArrangeStaticMemberQualifier
+                return response.Metadata.Keys
+                    .ToDictionary(key => shouldSanitizeKeys ? AwsInteractionBase.SanitizeUserDefinedMetadataKey(key) : key, key => response.Metadata[key]);
             }
         }
     }

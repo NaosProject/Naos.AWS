@@ -9,6 +9,7 @@ namespace Naos.AWS.S3
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
 
@@ -23,9 +24,9 @@ namespace Naos.AWS.S3
     /// <summary>
     /// Class to upload files to Amazon S3.
     /// </summary>
-    public class FileUploader : S3FileBase, IUploadFiles
+    public class FileUploader : AwsInteractionBase, IUploadFiles
     {
-        /// <inheritdoc cref="S3FileBase"/>
+        /// <inheritdoc cref="AwsInteractionBase"/>
         public FileUploader(string accessKey, string secretKey)
             : base(accessKey, secretKey)
         {
@@ -37,12 +38,12 @@ namespace Naos.AWS.S3
             string bucketName,
             string keyName,
             string sourceFilePath,
-            HashAlgorithmName hashAlgorithmName,
+            IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
-            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeEmptyString().OrThrow();
+            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeWhiteSpace().OrThrow();
 
-            return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, hashAlgorithmName, userDefinedMetadata);
+            return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, hashAlgorithmNames, userDefinedMetadata);
         }
 
         /// <inheritdoc />
@@ -51,38 +52,12 @@ namespace Naos.AWS.S3
             string bucketName,
             string keyName,
             Stream sourceStream,
-            HashAlgorithmName hashAlgorithmName,
+            IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
             sourceStream.Named(nameof(sourceStream)).Must().NotBeNull().OrThrow();
 
-            return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, hashAlgorithmName, userDefinedMetadata);
-        }
-
-        /// <inheritdoc />
-        public async Task<UploadFileResult> UploadFileAsync(
-            string region,
-            string bucketName,
-            string keyName,
-            string sourceFilePath,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
-        {
-            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeEmptyString().OrThrow();
-
-            return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, null, userDefinedMetadata);
-        }
-
-        /// <inheritdoc />
-        public async Task<UploadFileResult> UploadFileAsync(
-            string region,
-            string bucketName,
-            string keyName,
-            Stream sourceStream,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
-        {
-            sourceStream.Named(nameof(sourceStream)).Must().NotBeNull().OrThrow();
-
-            return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, null, userDefinedMetadata);
+            return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, hashAlgorithmNames, userDefinedMetadata);
         }
 
         private async Task<UploadFileResult> UploadFileAsync(
@@ -91,12 +66,13 @@ namespace Naos.AWS.S3
             string keyName,
             string sourceFilePath,
             Stream sourceFileStream,
-            HashAlgorithmName? hashAlgorithmName,
+            IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata)
         {
-            region.Named(nameof(region)).Must().NotBeNull().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeEmptyString().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeEmptyString();
+            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
+            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
+            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();            
+            hashAlgorithmNames.Named(nameof(hashAlgorithmNames)).Must().NotBeNull().OrThrow();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
@@ -109,19 +85,44 @@ namespace Naos.AWS.S3
                         Key = keyName
                     };
 
+                    Dictionary<HashAlgorithmName, ComputedChecksum> computedChecksums;
                     if (sourceFilePath != null)
                     {
                         transferUtilityUploadRequest.FilePath = sourceFilePath;
+
+                        computedChecksums = hashAlgorithmNames
+                            .Distinct()
+                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashAlgorithmHelper.ComputeHash(_, sourceFilePath)));
                     }
                     else
                     {
                         transferUtilityUploadRequest.AutoCloseStream = false;
                         transferUtilityUploadRequest.AutoResetStreamPosition = true;
                         transferUtilityUploadRequest.InputStream = sourceFileStream;
+
+                        computedChecksums = hashAlgorithmNames
+                            .Distinct()
+                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashAlgorithmHelper.ComputeHash(_, sourceFileStream)));
                     }
 
-                    AddUserDefinedMetadataToRequest(transferUtilityUploadRequest, userDefinedMetadata);
-                    var computedChecksum = ComputeChecksumAndAddToRequest(hashAlgorithmName, transferUtilityUploadRequest, sourceFilePath, sourceFileStream);
+                    // If there is an MD5 hash passed in then add to ContentMD5 in order to have S3 perform a checksum verification before persisting the file.
+                    if (computedChecksums.ContainsKey(HashAlgorithmName.MD5))
+                    {
+                        transferUtilityUploadRequest.Headers.ContentMD5 = HashAlgorithmHelper.ConvertHexStringToBase64(computedChecksums[HashAlgorithmName.MD5].Value);
+                    }
+
+                    foreach (var computedChecksum in computedChecksums)
+                    {
+                        transferUtilityUploadRequest.Metadata.Add(CreateChecksumMetadataKey(computedChecksum.Key), computedChecksum.Value.Value);
+                    }
+
+                    if (userDefinedMetadata != null)
+                    {
+                        foreach (var keyValuePair in userDefinedMetadata)
+                        {
+                            transferUtilityUploadRequest.Metadata.Add(keyValuePair.Key, keyValuePair.Value);
+                        }
+                    }
 
                     await
                         Using.LinearBackOff(TimeSpan.FromSeconds(5))
@@ -131,53 +132,17 @@ namespace Naos.AWS.S3
                             .Run(() => transferUtility.UploadAsync(transferUtilityUploadRequest))
                             .Now();
 
-                    return new UploadFileResult(region, bucketName, keyName, computedChecksum);
+                    return new UploadFileResult(region, bucketName, keyName, computedChecksums);
                 }
             }
         }
 
-        private static void AddUserDefinedMetadataToRequest(
-            TransferUtilityUploadRequest transferUtilityUploadRequest,
-            IReadOnlyDictionary<string, string> userDefinedMetadata)
+        private static string CreateChecksumMetadataKey(HashAlgorithmName hashAlgorithmName)
         {
-            if (userDefinedMetadata == null)
-            {
-                return;
-            }
-
-            foreach (var key in userDefinedMetadata.Keys)
-            {
-                transferUtilityUploadRequest.Metadata.Add(key, userDefinedMetadata[key]);
-            }
-        }
-
-        private static ComputedChecksum ComputeChecksumAndAddToRequest(
-            HashAlgorithmName? hashAlgorithmName,
-            TransferUtilityUploadRequest transferUtilityUploadRequest,
-            string sourceFilePath,
-            Stream sourceFileStream)
-        {
-            // Always compute MD5 because S3 will automatically perform checksum verification
-            var md5ComputedChecksum = ComputeChecksum(HashAlgorithmName.MD5, sourceFilePath, sourceFileStream);
-            transferUtilityUploadRequest.Headers.ContentMD5 = HashAlgorithmHelper.ConvertHexStringToBase64(md5ComputedChecksum.Value);
-
-            // If caller did not request an algorithm then use MD5
-            var computedChecksum = ComputeChecksum(hashAlgorithmName, sourceFilePath, sourceFileStream) ?? md5ComputedChecksum;
-            transferUtilityUploadRequest.Metadata.Add(computedChecksum.HashAlgorithmName.Name + S3FileBase.MetadataKeyChecksumSuffix, computedChecksum.Value);
-
-            return computedChecksum;
-        }
-
-        private static ComputedChecksum ComputeChecksum(HashAlgorithmName? hashAlgorithmName, string sourceFilePath, Stream sourceFileStream)
-        {
-            if (hashAlgorithmName == null)
-            {
-                return null;
-            }
-
-            return sourceFilePath != null ?
-                new ComputedChecksum(hashAlgorithmName.Value, HashAlgorithmHelper.ComputeHash(hashAlgorithmName.Value, sourceFilePath)) :
-                new ComputedChecksum(hashAlgorithmName.Value, HashAlgorithmHelper.ComputeHash(hashAlgorithmName.Value, sourceFileStream));
+            // Actual Checksum metadata key in S3 will be 'x-amz-meta-{HashAlgorithmName}-checksum' since
+            // Amazon will prepend 'x-amz-meta-' to the metadata key if not already present.
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return hashAlgorithmName + AwsInteractionBase.MetadataKeyChecksumSuffix;
         }
     }
 }

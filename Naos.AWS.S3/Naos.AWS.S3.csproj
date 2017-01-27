@@ -75,7 +75,7 @@
     <Compile Include="FileDownloader.cs" />
     <Compile Include="FileManager.cs" />
     <Compile Include="FileMetadataManager.cs" />
-    <Compile Include="FileSearcher.cs" />
+    <Compile Include="FileLister.cs" />
     <Compile Include="FileUploader.cs" />
     <Compile Include="HashAlgorithmHelper.cs" />
     <Compile Include="Domain\IListFiles.cs" />
@@ -84,7 +84,7 @@
     <Compile Include="Domain\IManageFiles.cs" />
     <Compile Include="Domain\IUploadFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="S3FileBase.cs" />
+    <Compile Include="AwsInteractionBase.cs" />
     <Compile Include="UploadFileResult.cs" />
   </ItemGroup>
   <ItemGroup>

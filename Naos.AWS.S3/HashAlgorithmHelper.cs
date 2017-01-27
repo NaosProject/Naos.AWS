@@ -20,7 +20,7 @@ namespace Naos.AWS.S3
     /// </summary>
     public static class HashAlgorithmHelper
     {
-        private static readonly IDictionary<HashAlgorithmName, Func<HashAlgorithm>> HashAlgorithms =
+        private static readonly IDictionary<HashAlgorithmName, Func<HashAlgorithm>> HashAlgorithmFactory =
             new Dictionary<HashAlgorithmName, Func<HashAlgorithm>>
             {
                 { HashAlgorithmName.MD5, MD5.Create },
@@ -76,10 +76,14 @@ namespace Naos.AWS.S3
         /// <returns>Hexadecimal-formatted string of the hash value.</returns>
         public static string ComputeHash(HashAlgorithmName hashAlgorithmName, string sourceFilePath)
         {
+            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeEmptyString().OrThrow();
+
             using (var hashAlgorithm = GetHashAlgorithm(hashAlgorithmName))
             {
-                var fileContents = File.ReadAllBytes(sourceFilePath);
-                return CreateHashString(hashAlgorithm.ComputeHash(fileContents));
+                using (var file = File.OpenRead(sourceFilePath))
+                {
+                    return CreateHashString(hashAlgorithm.ComputeHash(file));
+                }
             }
         }
 
@@ -90,15 +94,15 @@ namespace Naos.AWS.S3
         /// <returns>Hash algorithm to use in computing a hash value.</returns>
         private static HashAlgorithm GetHashAlgorithm(HashAlgorithmName hashAlgorithmName)
         {
-            if (!HashAlgorithms.ContainsKey(hashAlgorithmName))
+            if (!HashAlgorithmFactory.ContainsKey(hashAlgorithmName))
             {
                 throw new ArgumentOutOfRangeException(nameof(hashAlgorithmName), hashAlgorithmName, "Unsupported Hash Algorithm Name.");
             }
 
-            return HashAlgorithms[hashAlgorithmName]();
+            return HashAlgorithmFactory[hashAlgorithmName]();
         }
 
-        private static string CreateHashString(byte[] bytes)
+        private static string CreateHashString(IEnumerable<byte> bytes)
         {
             var hashValue = new StringBuilder();
 
