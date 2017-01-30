@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Contract", "Naos.AWS.Contract\Naos.AWS.Contract.csproj", "{43685312-C527-48E5-829C-9C7528881F72}"
 EndProject
@@ -9,6 +9,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Core", "Naos.AWS.Core\Naos.AWS.Core.csproj", "{3D5EF13C-104C-4C62-8C1C-BBEFF6AF3C78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Core.Test", "Naos.AWS.Core.Test\Naos.AWS.Core.Test.csproj", "{D34D0741-7360-4F71-B6DF-06EE04E9052D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.S3", "Naos.AWS.S3\Naos.AWS.S3.csproj", "{7AE47CD9-4E04-49CB-A0D7-298BFE2908EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.S3.Test", "Naos.AWS.S3.Test\Naos.AWS.S3.Test.csproj", "{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D34D0741-7360-4F71-B6DF-06EE04E9052D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE47CD9-4E04-49CB-A0D7-298BFE2908EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE47CD9-4E04-49CB-A0D7-298BFE2908EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE47CD9-4E04-49CB-A0D7-298BFE2908EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE47CD9-4E04-49CB-A0D7-298BFE2908EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
