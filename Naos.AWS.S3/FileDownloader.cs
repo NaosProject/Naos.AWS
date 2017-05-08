@@ -91,7 +91,7 @@ namespace Naos.AWS.S3
                                               .WithMaxRetries(3)
                                               .WithReporter(_ => Log.Write(new LogEntry("Retrying Download File due to error.", _)))
                                               // ReSharper disable once AccessToDisposedClosure
-                                              .Run(() => client.GetObjectAsync(request))
+                                              .RunAsync(() => client.GetObjectAsync(request))
                                               .Now())
                 {
                     using (var responseStream = response.ResponseStream)

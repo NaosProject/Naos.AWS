@@ -129,7 +129,7 @@ namespace Naos.AWS.S3
                             .WithMaxRetries(3)
                             .WithReporter(_ => Log.Write(new LogEntry("Retrying Upload File due to error.", _)))
                             // ReSharper disable once AccessToDisposedClosure
-                            .Run(() => transferUtility.UploadAsync(transferUtilityUploadRequest))
+                            .RunAsync(() => transferUtility.UploadAsync(transferUtilityUploadRequest))
                             .Now();
 
                     return new UploadFileResult(region, bucketName, keyName, computedChecksums);

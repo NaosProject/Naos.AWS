@@ -52,7 +52,7 @@ namespace Naos.AWS.S3
                                        .WithMaxRetries(3)
                                        .WithReporter(_ => Log.Write(new LogEntry("Retrying Get File Metadata due to error.", _)))
                                        // ReSharper disable once AccessToDisposedClosure
-                                       .Run(() => client.GetObjectMetadataAsync(bucketName, keyName))
+                                       .RunAsync(() => client.GetObjectMetadataAsync(bucketName, keyName))
                                        .Now();
 
                 // ReSharper disable once ArrangeStaticMemberQualifier
