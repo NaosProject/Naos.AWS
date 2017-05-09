@@ -11,6 +11,7 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Exception for when the password data can't be retrieved.
     /// </summary>
+    [Serializable]
     public class NullPasswordDataException : Exception
     {
         /// <summary>

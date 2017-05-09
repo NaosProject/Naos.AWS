@@ -15,6 +15,7 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Exception signaling that a result from AWS was not HttpStatus of 200 (OK).
     /// </summary>
+    [Serializable]
     public class AwsResponseNotOkException : Exception
     {
         /// <summary>

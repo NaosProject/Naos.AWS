@@ -18,6 +18,9 @@ namespace Naos.AWS.S3
     using Amazon.S3.Model;
 
     using Its.Log.Instrumentation;
+
+    using Naos.Recipes.Cryptography.Hashing;
+
     using Spritely.Recipes;
     using Spritely.Redo;
 
@@ -110,7 +113,7 @@ namespace Naos.AWS.S3
         {
             foreach (var computedChecksum in GetSavedChecksums(response))
             {
-                var checksum = HashAlgorithmHelper.ComputeHash(computedChecksum.HashAlgorithmName, destinationStream);
+                var checksum = HashGenerator.ComputeHashFromStream(computedChecksum.HashAlgorithmName, destinationStream);
                 if (computedChecksum.Value != checksum)
                 {
                     throw new ChecksumVerificationException(computedChecksum.HashAlgorithmName, computedChecksum.Value, checksum);

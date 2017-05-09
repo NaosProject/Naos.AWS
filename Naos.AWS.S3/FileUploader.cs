@@ -18,6 +18,9 @@ namespace Naos.AWS.S3
     using Amazon.S3.Transfer;
 
     using Its.Log.Instrumentation;
+
+    using Naos.Recipes.Cryptography.Hashing;
+
     using Spritely.Recipes;
     using Spritely.Redo;
 
@@ -92,7 +95,7 @@ namespace Naos.AWS.S3
 
                         computedChecksums = hashAlgorithmNames
                             .Distinct()
-                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashAlgorithmHelper.ComputeHash(_, sourceFilePath)));
+                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromFilePath(_, sourceFilePath)));
                     }
                     else
                     {
@@ -102,13 +105,13 @@ namespace Naos.AWS.S3
 
                         computedChecksums = hashAlgorithmNames
                             .Distinct()
-                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashAlgorithmHelper.ComputeHash(_, sourceFileStream)));
+                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromStream(_, sourceFileStream)));
                     }
 
                     // If there is an MD5 hash passed in then add to ContentMD5 in order to have S3 perform a checksum verification before persisting the file.
                     if (computedChecksums.ContainsKey(HashAlgorithmName.MD5))
                     {
-                        transferUtilityUploadRequest.Headers.ContentMD5 = HashAlgorithmHelper.ConvertHexStringToBase64(computedChecksums[HashAlgorithmName.MD5].Value);
+                        transferUtilityUploadRequest.Headers.ContentMD5 = EncodingHelper.ConvertHexStringToBase64(computedChecksums[HashAlgorithmName.MD5].Value);
                     }
 
                     foreach (var computedChecksum in computedChecksums)

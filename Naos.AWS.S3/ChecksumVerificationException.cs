@@ -12,6 +12,7 @@ namespace Naos.AWS.S3
     /// <summary>
     /// Exception when checksum verification fails.
     /// </summary>
+    [Serializable]
     public class ChecksumVerificationException : Exception
     {
         /// <summary>

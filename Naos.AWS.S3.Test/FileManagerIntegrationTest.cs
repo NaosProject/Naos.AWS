@@ -16,6 +16,9 @@ namespace Naos.AWS.S3.Test
     using System.Security.Cryptography;
 
     using Amazon.S3;
+
+    using Naos.Recipes.Cryptography.Hashing;
+
     using Newtonsoft.Json;
     using Spritely.Recipes;
     using Xunit;
@@ -177,10 +180,10 @@ namespace Naos.AWS.S3.Test
             // Assert
             Assert.True(File.Exists(downloadFile));
 
-            string md5Hash = HashAlgorithmHelper.ComputeHash(HashAlgorithmName.MD5, downloadFile);
+            string md5Hash = HashGenerator.ComputeHashFromFilePath(HashAlgorithmName.MD5, downloadFile);
             Assert.Equal(uploadFileResult.Checksums[HashAlgorithmName.MD5].Value, md5Hash);
 
-            string sha256Hash = HashAlgorithmHelper.ComputeHash(HashAlgorithmName.SHA256, downloadFile);
+            string sha256Hash = HashGenerator.ComputeHashFromFilePath(HashAlgorithmName.SHA256, downloadFile);
             Assert.Equal(uploadFileResult.Checksums[HashAlgorithmName.SHA256].Value, sha256Hash);
         }
 
@@ -215,10 +218,10 @@ namespace Naos.AWS.S3.Test
             // Assert
             Assert.True(File.Exists(downloadFile));
 
-            string md5Hash = HashAlgorithmHelper.ComputeHash(HashAlgorithmName.MD5, downloadFile);
+            string md5Hash = HashGenerator.ComputeHashFromFilePath(HashAlgorithmName.MD5, downloadFile);
             Assert.Equal(uploadFileResult.Checksums[HashAlgorithmName.MD5].Value, md5Hash);
 
-            string sha256Hash = HashAlgorithmHelper.ComputeHash(HashAlgorithmName.SHA256, downloadFile);
+            string sha256Hash = HashGenerator.ComputeHashFromFilePath(HashAlgorithmName.SHA256, downloadFile);
             Assert.Equal(uploadFileResult.Checksums[HashAlgorithmName.SHA256].Value, sha256Hash);
         }
 
