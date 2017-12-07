@@ -1,10 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IManageFiles.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
-// ReSharper disable once CheckNamespace
 
 namespace Naos.AWS.S3
 {

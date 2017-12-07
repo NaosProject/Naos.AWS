@@ -1,10 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileManagerTest.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable ArrangeStaticMemberQualifier
 namespace Naos.AWS.S3.Test
 {
     using System;
@@ -17,6 +16,7 @@ namespace Naos.AWS.S3.Test
     /// <summary>
     /// Performs unit tests of the <see cref="FileManager"/> class.
     /// </summary>
+#pragma warning disable SA1124 // Do not use regions - keeping them.
     public class FileManagerTest : TestBase
     {
         private const string AccessKey = "AccessKey";
@@ -43,11 +43,11 @@ namespace Naos.AWS.S3.Test
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_invalid_input()
         {
-            Assert.Throws<ArgumentException>(() => new FileManager(null, SecretKey));
+            Assert.Throws<ArgumentNullException>(() => new FileManager(null, SecretKey));
             Assert.Throws<ArgumentException>(() => new FileManager(string.Empty, SecretKey));
             Assert.Throws<ArgumentException>(() => new FileManager("   ", SecretKey));
 
-            Assert.Throws<ArgumentException>(() => new FileManager(AccessKey, null));
+            Assert.Throws<ArgumentNullException>(() => new FileManager(AccessKey, null));
             Assert.Throws<ArgumentException>(() => new FileManager(AccessKey, string.Empty));
             Assert.Throws<ArgumentException>(() => new FileManager(AccessKey, "   "));
         }
@@ -245,4 +245,3 @@ namespace Naos.AWS.S3.Test
         #endregion
     }
 }
-// ReSharper restore ArrangeStaticMemberQualifier

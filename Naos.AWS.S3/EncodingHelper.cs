@@ -1,12 +1,14 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EncodingHelper.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.S3
 {
     using System;
+
+    using Spritely.Recipes;
 
     /// <summary>
     /// Helper class for computing hash values.
@@ -19,8 +21,11 @@ namespace Naos.AWS.S3
         /// </summary>
         /// <param name="hexString">Hexadecimal string to convert</param>
         /// <returns>The base64-encoded hash value.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "string", Justification = "Spelling/name is correct.")]
         public static string ConvertHexStringToBase64(string hexString)
         {
+            new { hexString }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+
             var buffer = new byte[hexString.Length / 2];
             for (var i = 0; i < hexString.Length; i += 2)
             {

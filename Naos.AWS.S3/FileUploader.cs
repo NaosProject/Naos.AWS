@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileUploader.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ namespace Naos.AWS.S3
 
     using Its.Log.Instrumentation;
 
+    using Naos.AWS.Contract;
     using Naos.Recipes.Cryptography.Hashing;
 
     using Spritely.Recipes;
@@ -31,7 +32,13 @@ namespace Naos.AWS.S3
     {
         /// <inheritdoc cref="AwsInteractionBase"/>
         public FileUploader(string accessKey, string secretKey)
-            : base(accessKey, secretKey)
+            : this(new CredentialContainer(accessKey, secretKey))
+        {
+        }
+
+        /// <inheritdoc cref="AwsInteractionBase"/>
+        public FileUploader(CredentialContainer credentials)
+            : base(credentials)
         {
         }
 
@@ -74,18 +81,19 @@ namespace Naos.AWS.S3
         {
             region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
             bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();            
+            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
             hashAlgorithmNames.Named(nameof(hashAlgorithmNames)).Must().NotBeNull().OrThrow();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
-            using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
+            var awsCredentials = this.Credentials.ToAwsCredentials();
+            using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
                 using (var transferUtility = new TransferUtility(client))
                 {
                     var transferUtilityUploadRequest = new TransferUtilityUploadRequest
                     {
                         BucketName = bucketName,
-                        Key = keyName
+                        Key = keyName,
                     };
 
                     Dictionary<HashAlgorithmName, ComputedChecksum> computedChecksums;
@@ -127,12 +135,12 @@ namespace Naos.AWS.S3
                         }
                     }
 
+                    var localTransferUtility = transferUtility;
                     await
                         Using.LinearBackOff(TimeSpan.FromSeconds(5))
                             .WithMaxRetries(3)
                             .WithReporter(_ => Log.Write(new LogEntry("Retrying Upload File due to error.", _)))
-                            // ReSharper disable once AccessToDisposedClosure
-                            .RunAsync(() => transferUtility.UploadAsync(transferUtilityUploadRequest))
+                            .RunAsync(() => localTransferUtility.UploadAsync(transferUtilityUploadRequest))
                             .Now();
 
                     return new UploadFileResult(region, bucketName, keyName, computedChecksums);

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileManager.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -11,9 +11,12 @@ namespace Naos.AWS.S3
     using System.Security.Cryptography;
     using System.Threading.Tasks;
 
+    using Naos.AWS.Contract;
+
     /// <summary>
     /// Class to manage files in Amazon S3.
     /// </summary>
+#pragma warning disable SA1124 // Do not use regions - good use of regions here...
     public class FileManager : IManageFiles
     {
         private readonly IListFiles fileLister;
@@ -27,11 +30,20 @@ namespace Naos.AWS.S3
         /// <param name="accessKey">Access key with rights to read and write files in specified buckets.</param>
         /// <param name="secretKey">Secret key with rights to read and write files in specified buckets.</param>
         public FileManager(string accessKey, string secretKey)
+            : this(new CredentialContainer(accessKey, secretKey))
         {
-            this.fileLister = new FileLister(accessKey, secretKey);
-            this.fileMedataManager = new FileMetadataManager(accessKey, secretKey);
-            this.fileUploader = new FileUploader(accessKey, secretKey);
-            this.fileDownloader = new FileDownloader(accessKey, secretKey);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileManager"/> class.
+        /// </summary>
+        /// <param name="credentials">Credentials with rights to read and write files in specified buckets.</param>
+        public FileManager(CredentialContainer credentials)
+        {
+            this.fileLister = new FileLister(credentials);
+            this.fileMedataManager = new FileMetadataManager(credentials);
+            this.fileUploader = new FileUploader(credentials);
+            this.fileDownloader = new FileDownloader(credentials);
         }
 
         /// <summary>

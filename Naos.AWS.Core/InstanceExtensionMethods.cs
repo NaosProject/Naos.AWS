@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="InstanceExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ namespace Naos.AWS.Core
             var blockDeviceMappings = localInstance.MappedVolumes.ToAwsBlockDeviceMappings();
             var request = new RunInstancesRequest()
                               {
-                                  BlockDeviceMappings = blockDeviceMappings,
+                                  BlockDeviceMappings = blockDeviceMappings.ToList(),
                                   ClientToken = Guid.NewGuid().ToString().ToUpper(),
                                   DisableApiTermination = localInstance.DisableApiTermination,
                                   ImageId = amiId,
@@ -94,8 +94,7 @@ namespace Naos.AWS.Core
             {
                 var describeInstanceRequest = new DescribeInstancesRequest()
                                                   {
-                                                      InstanceIds =
-                                                          new[] { localInstance.Id }.ToList()
+                                                      InstanceIds = new[] { localInstance.Id }.ToList(),
                                                   };
 
                 var describeInstanceResponse = await client.DescribeInstancesAsync(describeInstanceRequest);
@@ -146,6 +145,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Whether or not is was found.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task<bool> ExistsOnAwsAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -157,17 +157,18 @@ namespace Naos.AWS.Core
 
                 var response = await client.DescribeInstancesAsync(request);
                 Validator.ThrowOnBadResult(request, response);
-                return response.Reservations.Any(_ => _.Instances.Any(__ => __.InstanceId == instance.Id));
+                return response.Reservations.Any(reservation => reservation.Instances.Any(reservationInstance => reservationInstance.InstanceId == instance.Id));
             }
         }
 
         /// <summary>
-        /// Fills the list 
+        /// Fills the list.
         /// </summary>
         /// <param name="instances">List to fill </param>
         /// <param name="region">Region to make call against.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Same collection operating on for fluent usage.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task<IList<InstanceWithStatus>> FillFromAwsAsync(this IList<InstanceWithStatus> instances, string region, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -188,14 +189,7 @@ namespace Naos.AWS.Core
                              : new List<Amazon.EC2.Model.Instance>()).Select(
                                  _ =>
                                      {
-                                         var instanceStatus = new InstanceStatus
-                                                                  {
-                                                                      InstanceState =
-                                                                          _.State == null
-                                                                              ? InstanceState.Unknown
-                                                                              : (InstanceState)
-                                                                                _.State.Code
-                                                                  };
+                                         var instanceStatus = new InstanceStatus { InstanceState = _.State == null ? InstanceState.Unknown : (InstanceState)_.State.Code, };
 
                                          return new InstanceWithStatus()
                                                      {
@@ -207,7 +201,7 @@ namespace Naos.AWS.Core
                                                              new ElasticIp
                                                                  {
                                                                      Region = region,
-                                                                     PublicIpAddress = _.PublicIpAddress
+                                                                     PublicIpAddress = _.PublicIpAddress,
                                                                  },
                                                          ContainingSubnet = new Subnet { Id = _.SubnetId },
                                                          Region = region,
@@ -222,7 +216,7 @@ namespace Naos.AWS.Core
                                                                           ?? new GroupIdentifier()).GroupId,
                                                                      Name =
                                                                          (_.SecurityGroups.SingleOrDefault()
-                                                                          ?? new GroupIdentifier()).GroupName
+                                                                          ?? new GroupIdentifier()).GroupName,
                                                                  },
                                                          Tags =
                                                              _.Tags.ToDictionary(
@@ -235,8 +229,8 @@ namespace Naos.AWS.Core
                                                                      {
                                                                          DeviceName = mapping.DeviceName,
                                                                          Id = mapping.Ebs.VolumeId,
-                                                                         Region = region
-                                                                     }).ToList()
+                                                                         Region = region,
+                                                                     }).ToList(),
                                                      };
                                      })).ToList();
 
@@ -264,7 +258,7 @@ namespace Naos.AWS.Core
             var request = new DescribeInstanceStatusRequest()
                               {
                                   IncludeAllInstances = true, // necessary to get state of a terminated instance...
-                                  InstanceIds = new[] { instance.Id }.ToList()
+                                  InstanceIds = new[] { instance.Id }.ToList(),
                               };
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
@@ -280,7 +274,7 @@ namespace Naos.AWS.Core
                                   {
                                       InstanceState = (InstanceState)stateCode,
                                       SystemChecks = specificInstanceResult.SystemStatus.Details.ToDictionary(key => key.Name.Value, value => (CheckState)Enum.Parse(typeof(CheckState), value.Status, true)),
-                                      InstanceChecks = specificInstanceResult.Status.Details.ToDictionary(key => key.Name.Value, value => (CheckState)Enum.Parse(typeof(CheckState), value.Status, true))
+                                      InstanceChecks = specificInstanceResult.Status.Details.ToDictionary(key => key.Name.Value, value => (CheckState)Enum.Parse(typeof(CheckState), value.Status, true)),
                                   };
 
                     return ret;
@@ -291,7 +285,7 @@ namespace Naos.AWS.Core
                         {
                             InstanceState = InstanceState.Unknown,
                             InstanceChecks = new Dictionary<string, CheckState>(),
-                            SystemChecks = new Dictionary<string, CheckState>()
+                            SystemChecks = new Dictionary<string, CheckState>(),
                         };
 
                     return ret;

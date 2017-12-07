@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CredentialManager.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ namespace Naos.AWS.Core
         public async Task<CredentialContainer> GetSessionTokenCredentialsAsync(
             string region,
             TimeSpan tokenLifespan,
-            string accessKey, 
-            string secretKey, 
-            string virtualMfaDeviceId, 
+            string accessKey,
+            string secretKey,
+            string virtualMfaDeviceId,
             string mfaValue)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
@@ -60,6 +60,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="credentials">Optional credential container to make credentials from.</param>
         /// <returns>AWSCredentials from provided or cached.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static AWSCredentials GetAwsCredentials(CredentialContainer credentials)
         {
             var ret = credentials == null ? Cached : credentials.ToAwsCredentials();

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Instance.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -52,6 +52,8 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the private IP address of the instance.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         public string PrivateIpAddress { get; set; }
 
         /// <summary>
@@ -62,6 +64,8 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the elastic IP of the instance (if applicable).
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         public ElasticIp ElasticIp { get; set; }
 
         /// <summary>
@@ -82,12 +86,12 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the EBS volumes mapped to the instance.
         /// </summary>
-        public List<EbsVolume> MappedVolumes { get; set; }
+        public IReadOnlyCollection<EbsVolume> MappedVolumes { get; set; }
 
         /// <summary>
         /// Gets or sets the tags as a dictionary of name and value.
         /// </summary>
-        public Dictionary<string, string> Tags { get; set; }  
+        public IReadOnlyDictionary<string, string> Tags { get; set; }
 
         /// <summary>
         /// Gets a deep clone of the object.
@@ -101,21 +105,20 @@ namespace Naos.AWS.Contract
                               ComputerName = this.ComputerName,
                               DisableApiTermination = this.DisableApiTermination,
                               ContainingSubnet = this.ContainingSubnet.DeepClone(),
-                              ElasticIp = this.ElasticIp == null ? null : this.ElasticIp.DeepClone(),
+                              ElasticIp = this.ElasticIp?.DeepClone(),
                               EnableSourceDestinationCheck = this.EnableSourceDestinationCheck,
                               Id = this.Id,
                               InstanceType = this.InstanceType,
-                              Key = this.Key == null ? null : this.Key.DeepClone(),
+                              Key = this.Key?.DeepClone(),
                               MappedVolumes = this.MappedVolumes.Select(_ => _.DeepClone()).ToList(),
                               Name = this.Name,
                               PrivateIpAddress = this.PrivateIpAddress,
                               Region = this.Region,
-                              SecurityGroup =
-                                  this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
+                              SecurityGroup = this.SecurityGroup?.DeepClone(),
                               Tags =
                                   (this.Tags ?? new Dictionary<string, string>()).ToDictionary(
                                       keyInput => keyInput.Key,
-                                      valueInput => valueInput.Value)
+                                      valueInput => valueInput.Value),
                           };
 
             return ret;

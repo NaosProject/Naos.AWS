@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="InstanceTypeHelper.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instanceTypes">List of instance types to filter to largest.</param>
         /// <returns>The largest instance type of the provided list.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Fine for now.")]
         public static string InferLargestInstanceType(ICollection<string> instanceTypes)
         {
             // there's probably a better algorithm for this, it doesn't run very often and it's what i've got... -Lawson 2015/05/01
@@ -58,7 +59,7 @@ namespace Naos.AWS.Core
                 new
                 {
                     SearchString = item.SearchString.Substring(prefixLength, item.SearchString.Length - prefixLength),
-                    InstanceType = item.InstanceType
+                    InstanceType = item.InstanceType,
                 };
             Func<dynamic, dynamic> justAfterDotTrimmer =
                 (item) => new { SearchString = item.SearchString.Split('.')[1], InstanceType = item.InstanceType };
@@ -70,7 +71,9 @@ namespace Naos.AWS.Core
                                     new { Trimmer = justAfterDotTrimmer, BucketPrefixes = suffixes, },
                                 };
 
+#pragma warning disable SA1130 // Use lambda syntax - can't use a lambda for the where clause...
             Func<ICollection<dynamic>, string[], ICollection<dynamic>> filterToHighestBucket = delegate(ICollection<dynamic> input, string[] buckets)
+#pragma warning restore SA1130 // Use lambda syntax
             {
                 var ret = new List<dynamic>();
                 for (var idx = buckets.Length - 1; idx >= 0; --idx)
@@ -88,8 +91,7 @@ namespace Naos.AWS.Core
                     }
                 }
 
-                throw new NotSupportedException(
-                    "The filter list provided did not contain a value that prefix matched any of the seach strings.");
+                throw new NotSupportedException("The filter list provided did not contain a value that prefix matched any of the search strings.");
             };
 
             var theList = wrappedInstanceTypes.Select(_ => (dynamic)_).ToList();

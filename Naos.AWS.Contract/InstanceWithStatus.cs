@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="InstanceWithStatus.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -31,22 +31,21 @@ namespace Naos.AWS.Contract
                               ComputerName = this.ComputerName,
                               DisableApiTermination = this.DisableApiTermination,
                               ContainingSubnet = this.ContainingSubnet.DeepClone(),
-                              ElasticIp = this.ElasticIp == null ? null : this.ElasticIp.DeepClone(),
+                              ElasticIp = this.ElasticIp?.DeepClone(),
                               EnableSourceDestinationCheck = this.EnableSourceDestinationCheck,
                               Id = this.Id,
                               InstanceType = this.InstanceType,
-                              Key = this.Key == null ? null : this.Key.DeepClone(),
+                              Key = this.Key?.DeepClone(),
                               MappedVolumes = this.MappedVolumes.Select(_ => _.DeepClone()).ToList(),
                               Name = this.Name,
                               PrivateIpAddress = this.PrivateIpAddress,
                               Region = this.Region,
-                              SecurityGroup =
-                                  this.SecurityGroup == null ? null : this.SecurityGroup.DeepClone(),
+                              SecurityGroup = this.SecurityGroup?.DeepClone(),
                               Tags =
                                   (this.Tags ?? new Dictionary<string, string>()).ToDictionary(
                                       keyInput => keyInput.Key,
                                       valueInput => valueInput.Value),
-                              InstanceStatus = this.InstanceStatus.DeepClone()
+                              InstanceStatus = this.InstanceStatus.DeepClone(),
                           };
 
             return ret;

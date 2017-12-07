@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EbsVolumeExtensionMethodsTest.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -13,8 +13,11 @@ namespace Naos.AWS.Core.Test
 
     using Xunit;
 
-    public class EbsVolumeExtensionMethodsTest
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+    public static class EbsVolumeExtensionMethodsTest
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeCollection_ValidBlockDeviceMappingList()
         {
@@ -28,8 +31,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 1000,
                                           VirtualName = "OS",
-                                          VolumeType = "gp2"
-                                      }
+                                          VolumeType = "gp2",
+                                      },
                               }.ToList();
 
             var blockMappings = volumes.ToAwsBlockDeviceMappings();
@@ -42,6 +45,9 @@ namespace Naos.AWS.Core.Test
             Assert.Equal(true, blockMappings.First().Ebs.DeleteOnTermination);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeWithIopsAndNoLevelSpecified_GetsThirtyToOne()
         {
@@ -55,8 +61,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 1000,
                                           VirtualName = "OS",
-                                          VolumeType = "io1"
-                                      }
+                                          VolumeType = "io1",
+                                      },
                               }.ToList();
 
             var blockMappings = volumes.ToAwsBlockDeviceMappings();
@@ -65,6 +71,9 @@ namespace Naos.AWS.Core.Test
             Assert.Equal(volumes.Single().SizeInGb * 30, blockMappings.Single().Ebs.Iops);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeWithIopsAndLevelSpecified_GetsSpecified()
         {
@@ -78,8 +87,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 150,
                                           VirtualName = "OS",
-                                          VolumeType = "io1-4000"
-                                      }
+                                          VolumeType = "io1-4000",
+                                      },
                               }.ToList();
 
             var blockMappings = volumes.ToAwsBlockDeviceMappings();
@@ -88,6 +97,9 @@ namespace Naos.AWS.Core.Test
             Assert.Equal(4000, blockMappings.Single().Ebs.Iops);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeWithIopsAndLevelSpecifiedOverThirtyToOne_Throws()
         {
@@ -101,8 +113,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 1,
                                           VirtualName = "OS",
-                                          VolumeType = "io1-300"
-                                      }
+                                          VolumeType = "io1-300",
+                                      },
                               }.ToList();
 
             Action testCode = () => volumes.ToAwsBlockDeviceMappings();
@@ -110,6 +122,10 @@ namespace Naos.AWS.Core.Test
             Assert.Equal("Specified IOPS: 300 was greated than allowed (30 IOPS:1GB): 30", ex.Message);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gp", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeWithGp2_GetsZeroIops()
         {
@@ -123,8 +139,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 1,
                                           VirtualName = "OS",
-                                          VolumeType = "gp2"
-                                      }
+                                          VolumeType = "gp2",
+                                      },
                               }.ToList();
 
             var mappings = volumes.ToAwsBlockDeviceMappings();
@@ -132,6 +148,9 @@ namespace Naos.AWS.Core.Test
             Assert.Equal(0, mappings.Single().Ebs.Iops);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsBlockDeviceMappings_EbsVolumeWithStandard_GetsZeroIops()
         {
@@ -145,8 +164,8 @@ namespace Naos.AWS.Core.Test
                                           Region = "us-south-42",
                                           SizeInGb = 1,
                                           VirtualName = "OS",
-                                          VolumeType = "standard"
-                                      }
+                                          VolumeType = "standard",
+                                      },
                               }.ToList();
 
             var mappings = volumes.ToAwsBlockDeviceMappings();

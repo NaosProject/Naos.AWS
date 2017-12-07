@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="InstanceTypeHelperTest.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ namespace Naos.AWS.Core.Test
 {
     using Xunit;
 
-    public class InstanceTypeHelperTest
+    public static class InstanceTypeHelperTest
     {
         [Fact]
         public static void GetLargestInstanceType_AllSame_ReturnsTheType()

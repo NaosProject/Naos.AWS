@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileLister.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -14,6 +14,8 @@ namespace Naos.AWS.S3
     using Amazon.S3;
     using Amazon.S3.Model;
 
+    using Naos.AWS.Contract;
+
     using Spritely.Recipes;
 
     /// <summary>
@@ -23,7 +25,13 @@ namespace Naos.AWS.S3
     {
         /// <inheritdoc cref="AwsInteractionBase"/>
         public FileLister(string accessKey, string secretKey)
-            : base(accessKey, secretKey)
+            : this(new CredentialContainer(accessKey, secretKey))
+        {
+        }
+
+        /// <inheritdoc cref="AwsInteractionBase"/>
+        public FileLister(CredentialContainer credentials)
+            : base(credentials)
         {
         }
 
@@ -40,7 +48,8 @@ namespace Naos.AWS.S3
             bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
-            using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
+            var awsCredentials = this.Credentials.ToAwsCredentials();
+            using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
                 var request = new ListObjectsRequest { BucketName = bucketName, Prefix = keyPrefixSearchPattern };
 

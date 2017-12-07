@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EbsVolume.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace Naos.AWS.Contract
     /// <summary>
     /// Elastic block storage volume model object.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
     public class EbsVolume : IAwsObject
     {
         /// <summary>
@@ -44,6 +45,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the volume size in gigabytes.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Gb", Justification = "Spelling/name is correct.")]
         public int SizeInGb { get; set; }
 
         /// <summary>

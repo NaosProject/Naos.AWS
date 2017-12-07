@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileManagerIntegrationTest.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -8,7 +8,6 @@ namespace Naos.AWS.S3.Test
 {
     using System;
     using System.Collections.Generic;
-    using static System.FormattableString;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -23,12 +22,14 @@ namespace Naos.AWS.S3.Test
     using Spritely.Recipes;
     using Xunit;
 
+    using static System.FormattableString;
+
     /// <summary>
     /// Performs integration tests of the <see cref="FileManager"/> class.   These are integration tests so files *are* written to S3.
     /// <remarks>
-    /// Pre-requisites: 
+    /// Pre-requisites:
     /// o An Amazon AWS account configured for S3 access
-    /// o network connection capable of accessing Amazon AWS  
+    /// o network connection capable of accessing Amazon AWS
     /// o The following AWS information: AccessKey, SecretKey, BucketName, Region
     /// <para />
     /// STEPS TO RUN INTEGRATION TESTS
@@ -48,6 +49,7 @@ namespace Naos.AWS.S3.Test
         /// <summary>
         /// Test uploading a file using actual S3 storage.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "hashnames", Justification = "Spelling/name is correct.")]
         [Fact(Skip = IntegrationTestSkipReason)]
         public async void Upload___Should_upload_file_with_no_errors_and_return_upload_result_with_no_checksums___When_no_hashnames_specified()
         {
@@ -300,7 +302,7 @@ namespace Naos.AWS.S3.Test
             var customMetaDictionary = new Dictionary<string, string>
             {
                 { typeof(CustomMetadata).Name, serializedMetadata },
-                { "abc", "def" }
+                { "abc", "def" },
             };
 
             UploadFileResult uploadFileResult = await fileManager.UploadFileAsync(
@@ -324,7 +326,7 @@ namespace Naos.AWS.S3.Test
             Assert.Equal(3, metadata.Count);
 
             var customMetadataFromAws = JsonConvert.DeserializeObject<CustomMetadata>(metadata[typeof(CustomMetadata).Name.ToLowerInvariant()], new JsonSerializerSettings { ContractResolver = CamelStrictConstructorContractResolver.Instance });
-            Assert.Equal(customMetadata.IsMetadata, customMetadataFromAws.IsMetadata);
+            Assert.Equal(customMetadata.ThisIsMetadata, customMetadataFromAws.ThisIsMetadata);
             Assert.Equal(customMetadata.MetadataItem1, customMetadataFromAws.MetadataItem1);
             Assert.Equal(customMetadata.MetadataItem2, customMetadataFromAws.MetadataItem2);
             Assert.Equal("def", metadata["abc"]);

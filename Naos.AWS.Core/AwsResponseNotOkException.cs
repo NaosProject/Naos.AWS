@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AwsResponseNotOkException.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -15,11 +15,14 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Exception signaling that a result from AWS was not HttpStatus of 200 (OK).
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification = "Want to force parameters.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2240:ImplementISerializableCorrectly", Justification = "Objects do not serialize great.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
     [Serializable]
     public class AwsResponseNotOkException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the AwsResponseNotOkException class.
+        /// Initializes a new instance of the <see cref="AwsResponseNotOkException"/> class.
         /// </summary>
         /// <param name="request">Request sent.</param>
         /// <param name="response">Response received.</param>

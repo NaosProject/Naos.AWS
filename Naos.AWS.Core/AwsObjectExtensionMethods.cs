@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AwsObjectExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -16,9 +16,12 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Contract;
 
+    using Spritely.Recipes;
+
     /// <summary>
     /// Extension methods on the AWS object.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
     public static class AwsObjectExtensionMethods
     {
         /// <summary>
@@ -26,19 +29,22 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="awsObject">AWS object to get type of.</param>
         /// <returns>Object type that was inferred from ID prefix.</returns>
-        public static AwsObjectType InferObjectTypeFromId(this IAwsObject awsObject)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
+        public static AwsObjectType InferObjectTypeFromId(this IHaveId awsObject)
         {
-            if (awsObject.Id.StartsWith("i-"))
+            new { awsObject }.Must().NotBeNull().OrThrow();
+
+            if (awsObject.Id.StartsWith("i-", StringComparison.OrdinalIgnoreCase))
             {
                 return AwsObjectType.Instance;
             }
-            else if (awsObject.Id.StartsWith("vol-"))
+            else if (awsObject.Id.StartsWith("vol-", StringComparison.OrdinalIgnoreCase))
             {
                 return AwsObjectType.EbsVolume;
             }
             else
             {
-                throw new ArgumentException("Can't infer AWS object type from the ID: " + awsObject.Id, "awsObject");
+                throw new ArgumentException("Can't infer AWS object type from the ID: " + awsObject.Id, nameof(awsObject));
             }
         }
 
@@ -48,6 +54,8 @@ namespace Naos.AWS.Core
         /// <param name="awsObject">Object to tag with name.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task TagNameInAwsAsync(this IAwsObject awsObject, CredentialContainer credentials = null)
         {
             await AddTagInAwsAsync(awsObject, Constants.NameTagKey, awsObject.Name, credentials);
@@ -61,6 +69,8 @@ namespace Naos.AWS.Core
         /// <param name="tagValue">Value of tag.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task AddTagInAwsAsync(this IAwsObject awsObject, string tagName, string tagValue, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);

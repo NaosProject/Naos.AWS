@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="NetworkAcl.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace Naos.AWS.Contract
     /// <summary>
     /// Route table model object.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
     public class NetworkAcl : IAwsObject
     {
         /// <summary>
@@ -34,16 +35,19 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the subnets the ACL is associated with.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Want these clearly ordered.")]
         public Subnet[] AssociatedSubnets { get; set; }
 
         /// <summary>
         /// Gets or sets the inbound rules.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Want these clearly ordered.")]
         public NetworkAclRule[] InboundRules { get; set; }
 
         /// <summary>
         /// Gets or sets the outbound rules.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Want these clearly ordered.")]
         public NetworkAclRule[] OutboundRules { get; set; }
      }
 }

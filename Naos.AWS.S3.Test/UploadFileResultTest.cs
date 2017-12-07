@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="UploadFileResultTest.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace Naos.AWS.S3.Test
     {
         private static readonly IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> HashAlgorithms = new Dictionary<HashAlgorithmName, ComputedChecksum>
         {
-            { HashAlgorithmName.MD5, new ComputedChecksum(HashAlgorithmName.MD5, "abc123") }
+            { HashAlgorithmName.MD5, new ComputedChecksum(HashAlgorithmName.MD5, "abc123") },
         };
 
         /// <summary>

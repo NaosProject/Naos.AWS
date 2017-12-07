@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CredentialExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -13,6 +13,8 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Contract;
 
+    using Spritely.Recipes;
+
     /// <summary>
     /// Extension methods to convert internal objects to AWS SDK objects.
     /// </summary>
@@ -23,8 +25,11 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="credentials">CredentialContainer to be converted.</param>
         /// <returns>AWSCredentials using supplied values.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static AWSCredentials ToAwsCredentials(this CredentialContainer credentials)
         {
+            new { credentials }.Must().NotBeNull().OrThrow();
+
             AWSCredentials ret = null;
             switch (credentials.CredentialType)
             {

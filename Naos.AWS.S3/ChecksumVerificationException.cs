@@ -1,17 +1,19 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChecksumVerificationException.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.S3
 {
     using System;
+    using System.Runtime.Serialization;
     using System.Security.Cryptography;
 
     /// <summary>
     /// Exception when checksum verification fails.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification = "Want to control properties through constructor.")]
     [Serializable]
     public class ChecksumVerificationException : Exception
     {
@@ -27,6 +29,28 @@ namespace Naos.AWS.S3
             this.HashAlgorithmName = hashAlgorithmName;
             this.ExpectedChecksum = expectedChecksum;
             this.ComputedChecksum = computedChecksum;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChecksumVerificationException"/> class.
+        /// </summary>
+        /// <param name="info">Serialization info.</param>
+        /// <param name="context">Reading context.</param>
+        protected ChecksumVerificationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            this.HashAlgorithmName = new HashAlgorithmName(info.GetString(nameof(this.HashAlgorithmName)));
+            this.ExpectedChecksum = info.GetString(nameof(this.ExpectedChecksum));
+            this.ComputedChecksum = info.GetString(nameof(this.ComputedChecksum));
+        }
+
+        /// <inheritdoc cref="Exception" />
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(this.HashAlgorithmName), this.HashAlgorithmName.ToString());
+            info.AddValue(nameof(this.ExpectedChecksum), this.ExpectedChecksum);
+            info.AddValue(nameof(this.ComputedChecksum), this.ComputedChecksum);
         }
 
         /// <summary>

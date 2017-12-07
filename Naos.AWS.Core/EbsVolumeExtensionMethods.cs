@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="EbsVolumeExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -8,6 +8,7 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Extension methods to convert internal objects to AWS SDK objects.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
     public static class EbsVolumeExtensionMethods
     {
         /// <summary>
@@ -27,7 +29,8 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="volumes">Volumes to covert into block device mappings.</param>
         /// <returns>AWSCredentials using supplied values.</returns>
-        public static List<BlockDeviceMapping> ToAwsBlockDeviceMappings(this List<EbsVolume> volumes)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
+        public static IReadOnlyCollection<BlockDeviceMapping> ToAwsBlockDeviceMappings(this IReadOnlyCollection<EbsVolume> volumes)
         {
             return
                 volumes.Select(
@@ -35,7 +38,7 @@ namespace Naos.AWS.Core
                         {
                             var volumeType = volume.VolumeType;
                             var iops = 0;
-                            if (volume.VolumeType.StartsWith("io1"))
+                            if (volume.VolumeType.StartsWith("io1", StringComparison.OrdinalIgnoreCase))
                             {
                                 var dashSplit = volume.VolumeType.Split('-');
                                 volumeType = dashSplit[0];
@@ -47,7 +50,7 @@ namespace Naos.AWS.Core
                                 }
                                 else
                                 {
-                                    iops = int.Parse(dashSplit[1]);
+                                    iops = int.Parse(dashSplit[1], CultureInfo.InvariantCulture);
                                 }
 
                                 if (iops > maxIops)
@@ -68,15 +71,14 @@ namespace Naos.AWS.Core
                                                                DeleteOnTermination = true,
                                                                VolumeSize = volume.SizeInGb,
                                                                VolumeType = volumeType,
-                                                               Iops = iops
+                                                               Iops = iops,
                                                            };
 
                             return new BlockDeviceMapping()
                                              {
                                                  DeviceName = volume.DeviceName,
                                                  VirtualName = volume.VirtualName,
-                                                 Ebs =
-                                                     ebsBlockDevice
+                                                 Ebs = ebsBlockDevice,
                                              };
                         }).ToList();
         }
@@ -87,6 +89,7 @@ namespace Naos.AWS.Core
         /// <param name="volume">Instance to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Whether or not is was found.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task<bool> ExistsOnAwsAsync(this EbsVolume volume, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);

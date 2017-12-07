@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FileDownloader.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ namespace Naos.AWS.S3
 
     using Its.Log.Instrumentation;
 
+    using Naos.AWS.Contract;
     using Naos.Recipes.Cryptography.Hashing;
 
     using Spritely.Recipes;
@@ -31,7 +32,13 @@ namespace Naos.AWS.S3
     {
         /// <inheritdoc cref="AwsInteractionBase"/>
         public FileDownloader(string accessKey, string secretKey)
-            : base(accessKey, secretKey)
+            : this(new CredentialContainer(accessKey, secretKey))
+        {
+        }
+
+        /// <inheritdoc cref="AwsInteractionBase"/>
+        public FileDownloader(CredentialContainer credentials)
+            : base(credentials)
         {
         }
 
@@ -81,20 +88,21 @@ namespace Naos.AWS.S3
             destinationStream.Named(nameof(destinationStream)).Must().NotBeNull().OrThrow();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
-            using (var client = new AmazonS3Client(this.AccessKey, this.SecretKey, regionEndpoint))
+            var awsCredentials = this.Credentials.ToAwsCredentials();
+            using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
                 var request = new GetObjectRequest
                 {
                     BucketName = bucketName,
-                    Key = keyName
+                    Key = keyName,
                 };
 
+                var localClient = client;
                 using (var response = await
                                           Using.LinearBackOff(TimeSpan.FromSeconds(5))
                                               .WithMaxRetries(3)
                                               .WithReporter(_ => Log.Write(new LogEntry("Retrying Download File due to error.", _)))
-                                              // ReSharper disable once AccessToDisposedClosure
-                                              .RunAsync(() => client.GetObjectAsync(request))
+                                              .RunAsync(() => localClient.GetObjectAsync(request))
                                               .Now())
                 {
                     using (var responseStream = response.ResponseStream)
@@ -125,8 +133,7 @@ namespace Naos.AWS.S3
         {
             return response.Metadata
                 .Keys
-                // ReSharper disable once ArrangeStaticMemberQualifier
-                .Where(_ => _.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix))
+                .Where(_ => _.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix, StringComparison.OrdinalIgnoreCase))
                 .Select(key => new ComputedChecksum(ExtractHashAlgorithmNameFromMetadataKey(key), response.Metadata[key]));
         }
 
@@ -138,7 +145,7 @@ namespace Naos.AWS.S3
         private static HashAlgorithmName ExtractHashAlgorithmNameFromMetadataKey(string metadataKey)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            if (!metadataKey.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix))
+            if (!metadataKey.EndsWith(AwsInteractionBase.MetadataKeyChecksumSuffix, StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Metadata key containing a checksum must end with with the suffix '-checksum'.", nameof(metadataKey));
             }

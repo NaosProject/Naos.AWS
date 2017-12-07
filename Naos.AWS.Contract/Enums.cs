@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Enums.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Key only based AWS authorization.
         /// </summary>
-        Keys
+        Keys,
     }
 
     /// <summary>
@@ -35,6 +35,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Peered VPC connection (another VPC).
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vpc", Justification = "Spelling/name is correct.")]
         VpcPeering,
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Sort descending by name and take first item.
         /// </summary>
-        FirstSortedDescending
+        FirstSortedDescending,
     }
 
     /// <summary>
@@ -149,17 +150,19 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Passed state.
         /// </summary>
-        Passed
+        Passed,
     }
 
     /// <summary>
     /// Types of AWS objects.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
     public enum AwsObjectType
     {
         /// <summary>
         /// Virtual private cloud.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vpc", Justification = "Spelling/name is correct.")]
         Vpc,
 
         /// <summary>
@@ -180,6 +183,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Network access control list.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
         NetworkAcl,
 
         /// <summary>
@@ -195,6 +199,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Elastic block storage volume.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]
         EbsVolume,
     }
 
@@ -206,11 +211,13 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// A record.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "A", Justification = "Spelling/name is correct.")]
         A,
 
         /// <summary>
         /// CNAME record.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "CNAME", Justification = "Spelling/name is correct.")]
         CNAME,
 
         /// <summary>
@@ -221,6 +228,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// TXT record.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "TXT", Justification = "Spelling/name is correct.")]
         TXT,
 
         /// <summary>
@@ -231,6 +239,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// SOA record.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "SOA", Justification = "Spelling/name is correct.")]
         SOA,
     }
 }

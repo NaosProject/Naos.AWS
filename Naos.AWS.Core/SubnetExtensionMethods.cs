@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SubnetExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ namespace Naos.AWS.Core
                               {
                                   AvailabilityZone = localSubnet.AvailabilityZone,
                                   CidrBlock = localSubnet.Cidr,
-                                  VpcId = localSubnet.ParentVpc.Id
+                                  VpcId = localSubnet.ParentVpc.Id,
                               };
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))

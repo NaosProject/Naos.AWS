@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IManageCredentials.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -24,6 +24,8 @@ namespace Naos.AWS.Contract
         /// <param name="virtualMfaDeviceId">Id/Resource path for the Virtual MFA device (found in console where MFA is configured).</param>
         /// <param name="mfaValue">Token/rotating key from the MFA device.</param>
         /// <returns>Credential object to be used when performing operations.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "mfa", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mfa", Justification = "Spelling/name is correct.")]
         Task<CredentialContainer> GetSessionTokenCredentialsAsync(
             string region,
             TimeSpan tokenLifespan,

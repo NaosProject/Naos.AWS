@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SecurityGroup.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -37,12 +37,12 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the inbound rules.
         /// </summary>
-        public ICollection<SecurityGroupRule> InboundRules { get; set; }
+        public IReadOnlyCollection<SecurityGroupRule> InboundRules { get; set; }
 
         /// <summary>
         /// Gets or sets the outbound rules.
         /// </summary>
-        public ICollection<SecurityGroupRule> OutboundRules { get; set; }
+        public IReadOnlyCollection<SecurityGroupRule> OutboundRules { get; set; }
 
         /// <summary>
         /// Gets a deep clone of the object.
@@ -53,10 +53,10 @@ namespace Naos.AWS.Contract
             var ret = new SecurityGroup()
                           {
                               Id = this.Id,
-                              InboundRules = this.InboundRules == null ? null : this.InboundRules.Select(_ => _.DeepClone()).ToList(),
+                              InboundRules = this.InboundRules?.Select(_ => _.DeepClone()).ToList(),
                               IsDefault = this.IsDefault,
                               Name = this.Name,
-                              OutboundRules = this.OutboundRules == null ? null : this.OutboundRules.Select(_ => _.DeepClone()).ToList(),
+                              OutboundRules = this.OutboundRules?.Select(_ => _.DeepClone()).ToList(),
                               Region = this.Region,
                           };
 

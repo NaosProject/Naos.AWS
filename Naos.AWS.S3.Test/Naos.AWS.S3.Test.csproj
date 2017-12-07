@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,16 +37,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.4.1\lib\net45\AWSSDK.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\AWSSDK.Core.3.3.20\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.S3.3.3.1.1\lib\net45\AWSSDK.S3.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\AWSSDK.S3.3.3.15\lib\net45\AWSSDK.S3.dll</HintPath>
     </Reference>
-    <Reference Include="FakeItEasy, Version=2.3.3.0, Culture=neutral, PublicKeyToken=eff28e2146d5fd2c, processorArchitecture=MSIL">
-      <HintPath>..\packages\FakeItEasy.2.3.3\lib\net40\FakeItEasy.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FakeItEasy, Version=4.0.0.0, Culture=neutral, PublicKeyToken=eff28e2146d5fd2c, processorArchitecture=MSIL">
+      <HintPath>..\packages\FakeItEasy.4.1.0\lib\net45\FakeItEasy.dll</HintPath>
     </Reference>
     <Reference Include="FluentAssertions, Version=4.19.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.4.19.0\lib\net45\FluentAssertions.dll</HintPath>
@@ -58,9 +57,11 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OBeautifulCode.AutoFakeItEasy, Version=1.0.84.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OBeautifulCode.AutoFakeItEasy.1.0.84\lib\net45\OBeautifulCode.AutoFakeItEasy.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="OBeautifulCode.AutoFakeItEasy, Version=1.0.96.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OBeautifulCode.AutoFakeItEasy.1.0.96\lib\net45\OBeautifulCode.AutoFakeItEasy.dll</HintPath>
+    </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.51.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.3.51.0\lib\net40\Ploeh.AutoFixture.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -88,20 +89,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".Naos.Recipes\Cryptography.Hashing\HashGenerator.cs" />
-    <Compile Include=".Naos.Recipes\InitializeTestProject\ExampleDummyFactory.cs" />
-    <Compile Include=".OBeautifulCode.Recipes\OBeautifulCode.AutoFakeItEasy\AutoFakeItEasyBootstrapper.cs" />
+    <Compile Include=".recipes\Naos.Cryptography.Hashing\HashGenerator.cs" />
+    <Compile Include=".recipes\Naos.InitializeTestProject\ExampleDummyFactory.cs" />
+    <Compile Include=".recipes\OBeautifulCode.AutoFakeItEasy\AutoFakeItEasyBootstrapper.cs" />
+    <Compile Include=".recipes\Spritely.MustValidation\MakeRule.cs" />
+    <Compile Include=".recipes\Spritely.MustValidation\MustExtensions.cs" />
+    <Compile Include=".recipes\Spritely.MustValidation\RuleExtensions.cs" />
+    <Compile Include=".recipes\Spritely.MustValidation\Rules.cs" />
+    <Compile Include=".recipes\Spritely.MustValidation\ValidatedNotNullAttribute.cs" />
     <Compile Include=".Spritely.Recipes\CamelStrictConstructorContractResolver\CamelStrictConstructorContractResolver.cs" />
     <Compile Include=".Spritely.Recipes\InheritedTypeJsonConverter\InheritedTypeJsonConverter.cs" />
     <Compile Include=".Spritely.Recipes\JsonConfiguration\CompactJsonSerializer.cs" />
     <Compile Include=".Spritely.Recipes\JsonConfiguration\DefaultJsonSerializer.cs" />
     <Compile Include=".Spritely.Recipes\JsonConfiguration\JsonConfiguration.cs" />
     <Compile Include=".Spritely.Recipes\JsonConfiguration\MinimalJsonSerializer.cs" />
-    <Compile Include=".Spritely.Recipes\MustValidation\MakeRule.cs" />
-    <Compile Include=".Spritely.Recipes\MustValidation\MustExtensions.cs" />
-    <Compile Include=".Spritely.Recipes\MustValidation\RuleExtensions.cs" />
-    <Compile Include=".Spritely.Recipes\MustValidation\Rules.cs" />
-    <Compile Include=".Spritely.Recipes\MustValidation\ValidatedNotNullAttribute.cs" />
     <Compile Include=".Spritely.Recipes\SecureStringJsonConverter\SecureStringJsonConverter.cs" />
     <Compile Include=".Spritely.Recipes\SecureString\SecureString.cs" />
     <Compile Include="AwsConfiguration.cs" />
@@ -114,6 +115,8 @@
     <Compile Include="UploadFileResultTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include=".analyzers\stylecop.json" />
+    <None Include=".analyzers\test.ruleset" />
     <None Include="config\awsConfiguration.json.example" />
     <None Include="packages.config" />
     <None Include="Settings.StyleCop">
@@ -127,6 +130,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".analyzers\dictionary.xml" />
     <Content Include="TestFiles\LoremIpsum.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -135,12 +139,20 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.S3.3.3.1.1\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta004\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta004\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST $(ProjectDir)config\awsConfiguration.json xcopy $(ProjectDir)config\awsConfiguration.json $(TargetDir)config\awsConfiguration.json* /S /K /Y</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Naos.Build.Analyzers.1.51.0-dealwithstylecopbeta\build\Naos.Build.Analyzers.targets" Condition="Exists('..\packages\Naos.Build.Analyzers.1.51.0-dealwithstylecopbeta\build\Naos.Build.Analyzers.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Naos.Build.Analyzers.1.51.0-dealwithstylecopbeta\build\Naos.Build.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Naos.Build.Analyzers.1.51.0-dealwithstylecopbeta\build\Naos.Build.Analyzers.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

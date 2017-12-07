@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RouteTable.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the route entries.
         /// </summary>
-        public ICollection<RouteEntry> Routes { get; set; }
+        public IReadOnlyCollection<RouteEntry> Routes { get; set; }
 
         /// <summary>
         /// Gets a deep clone of the object.
@@ -52,7 +52,7 @@ namespace Naos.AWS.Contract
                               IsDefault = this.IsDefault,
                               Name = this.Name,
                               Region = this.Region,
-                              Routes = this.Routes == null ? null : this.Routes.Select(_ => _.DeepClone()).ToList(),
+                              Routes = this.Routes?.Select(_ => _.DeepClone()).ToList(),
                           };
 
             return ret;

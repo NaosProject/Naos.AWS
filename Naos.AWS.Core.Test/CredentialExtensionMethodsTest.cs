@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CredentialExtensionMethodsTest.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -14,8 +14,9 @@ namespace Naos.AWS.Core.Test
 
     using Xunit;
 
-    public class CredentialExtensionMethodsTest
+    public static class CredentialExtensionMethodsTest
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         [Fact]
         public static void ToAwsCredentials_TokenCredentials_ValidAwsCredentials()
         {

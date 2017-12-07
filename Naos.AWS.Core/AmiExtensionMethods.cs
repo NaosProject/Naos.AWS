@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AmiExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -42,8 +42,8 @@ namespace Naos.AWS.Core
                                   Filters =
                                       new[]
                                           {
-                                              new Filter("name", new[] { ami.SearchStrategy.SearchPattern }.ToList())
-                                          }.ToList()
+                                              new Filter("name", new[] { ami.SearchStrategy.SearchPattern }.ToList()),
+                                          }.ToList(),
                               };
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))

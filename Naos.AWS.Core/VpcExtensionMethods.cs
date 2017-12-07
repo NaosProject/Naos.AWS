@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="VpcExtensionMethods.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Operations to be performed on VPCs.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vpc", Justification = "Spelling/name is correct.")]
     public static class VpcExtensionMethods
     {
         /// <summary>
@@ -27,6 +28,7 @@ namespace Naos.AWS.Core
         /// <param name="vpc">VPC to create.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vpc", Justification = "Spelling/name is correct.")]
         public static async Task<Vpc> CreateAsync(this Vpc vpc, CredentialContainer credentials = null)
         {
             var localVpc = vpc.DeepClone();
@@ -54,6 +56,7 @@ namespace Naos.AWS.Core
         /// <param name="vpc">VPC to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vpc", Justification = "Spelling/name is correct.")]
         public static async Task DeleteAsync(this Vpc vpc, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IManageRoute53.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -23,6 +23,8 @@ namespace Naos.AWS.Contract
         /// <param name="domain">Domain to use.</param>
         /// <param name="ipAddresses">IP Addresses to attach to the domain.</param>
         /// <returns>Task for async/await</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "ip", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Upsert", Justification = "Spelling/name is correct.")]
         Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses);
 
         /// <summary>

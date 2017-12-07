@@ -1,15 +1,16 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AwsConfiguration.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.S3.Test
 {
     /// <summary>
-    /// AWS Configuration used for Integration Tests.  
+    /// AWS Configuration used for Integration Tests.
     /// Note: Do not commit this configuration information to the repository as it will reveal Amazon credentials.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Sometimes used for testing.")]
     internal class AwsConfiguration
     {
         /// <summary>

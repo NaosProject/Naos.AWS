@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Subnet.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the parent VPC.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vpc", Justification = "Spelling/name is correct.")]
         public Vpc ParentVpc { get; set; }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the CIDR block.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public string Cidr { get; set; }
 
         /// <summary>
@@ -58,9 +60,9 @@ namespace Naos.AWS.Contract
                               Cidr = this.Cidr,
                               Id = this.Id,
                               Name = this.Name,
-                              ParentVpc = this.ParentVpc == null ? null : this.ParentVpc.DeepClone(),
+                              ParentVpc = this.ParentVpc?.DeepClone(),
                               Region = this.Region,
-                              RegisteredRouteTable = this.RegisteredRouteTable == null ? null : this.RegisteredRouteTable.DeepClone(),
+                              RegisteredRouteTable = this.RegisteredRouteTable?.DeepClone(),
                           };
 
             return ret;

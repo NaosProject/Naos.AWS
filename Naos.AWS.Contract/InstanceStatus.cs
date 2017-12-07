@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="InstanceStatus.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -22,12 +22,12 @@ namespace Naos.AWS.Contract
         /// <summary>
         /// Gets or sets the system checks.
         /// </summary>
-        public Dictionary<string, CheckState> SystemChecks { get; set; }
+        public IReadOnlyDictionary<string, CheckState> SystemChecks { get; set; }
 
         /// <summary>
         /// Gets or sets the instance checks.
         /// </summary>
-        public Dictionary<string, CheckState> InstanceChecks { get; set; }
+        public IReadOnlyDictionary<string, CheckState> InstanceChecks { get; set; }
 
         /// <summary>
         /// Gets a deep clone of the object.
@@ -39,7 +39,7 @@ namespace Naos.AWS.Contract
                           {
                               InstanceState = this.InstanceState,
                               SystemChecks = (this.SystemChecks ?? new Dictionary<string, CheckState>()).ToDictionary(key => key.Key, value => value.Value),
-                              InstanceChecks = (this.InstanceChecks ?? new Dictionary<string, CheckState>()).ToDictionary(key => key.Key, value => value.Value)
+                              InstanceChecks = (this.InstanceChecks ?? new Dictionary<string, CheckState>()).ToDictionary(key => key.Key, value => value.Value),
                           };
             return ret;
         }

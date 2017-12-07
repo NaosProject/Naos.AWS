@@ -1,13 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="WaitUntil.cs" company="Naos">
-//   Copyright 2015 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.Core
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
 
     using Naos.AWS.Contract;
@@ -17,7 +16,7 @@ namespace Naos.AWS.Core
     /// <summary>
     /// Class to run an action until some condition is reached.
     /// </summary>
-    public class WaitUntil
+    public static class WaitUntil
     {
         /// <summary>
         /// Tries to describe the object against AWS API and wait for non-null response.
@@ -25,6 +24,8 @@ namespace Naos.AWS.Core
         /// <param name="awsObject">AWS object to check on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task AwsObjectExists(IAwsObject awsObject, CredentialContainer credentials = null)
         {
             var awsObjectType = awsObject.InferObjectTypeFromId();

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CustomMetadata.cs" company="Naos">
-//   Copyright 2017 Naos
+//    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -16,10 +16,10 @@ namespace Naos.AWS.S3.Test
         /// </summary>
         /// <param name="metadataItem1">First metadata item.</param>
         /// <param name="metadataItem2">Second metadata item.</param>
-        /// <param name="isMetadata">is metadata boolean.</param>
-        public CustomMetadata(string metadataItem1, int metadataItem2, bool isMetadata)
+        /// <param name="thisIsMetadata">is metadata boolean.</param>
+        public CustomMetadata(string metadataItem1, int metadataItem2, bool thisIsMetadata)
         {
-            this.IsMetadata = isMetadata;
+            this.ThisIsMetadata = thisIsMetadata;
             this.MetadataItem2 = metadataItem2;
             this.MetadataItem1 = metadataItem1;
         }
@@ -37,6 +37,6 @@ namespace Naos.AWS.S3.Test
         /// <summary>
         /// Gets a value indicating whether it's metadata.
         /// </summary>
-        public bool IsMetadata { get; private set; }
+        public bool ThisIsMetadata { get; private set; }
     }
 }
