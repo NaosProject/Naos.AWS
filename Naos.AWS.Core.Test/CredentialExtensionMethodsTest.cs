@@ -10,7 +10,7 @@ namespace Naos.AWS.Core.Test
 
     using Amazon.SecurityToken.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Xunit;
 

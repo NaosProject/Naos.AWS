@@ -14,7 +14,7 @@ namespace Naos.AWS.Core
     using Amazon.SecurityToken;
     using Amazon.SecurityToken.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     /// <inheritdoc />
     public class CredentialManager : IManageCredentials

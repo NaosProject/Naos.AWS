@@ -9,7 +9,7 @@ namespace Naos.AWS.Core
     using System;
     using System.Text;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     /// <summary>
     /// Extension methods on the UserData object.
@@ -19,7 +19,7 @@ namespace Naos.AWS.Core
         /// <summary>
         /// Converts the UserData model object to a base 64 string usable by instance creation.
         /// </summary>
-        /// <param name="userData">Contract UserData to convert.</param>
+        /// <param name="userData">Domain UserData to convert.</param>
         /// <returns>Base64 string representation of the instructions.</returns>
         public static string ToBase64Representation(this UserData userData)
         {

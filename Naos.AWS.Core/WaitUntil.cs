@@ -9,9 +9,9 @@ namespace Naos.AWS.Core
     using System;
     using System.Threading.Tasks;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
-    using Instance = Naos.AWS.Contract.Instance;
+    using Instance = Naos.AWS.Domain.Instance;
 
     /// <summary>
     /// Class to run an action until some condition is reached.

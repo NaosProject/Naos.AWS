@@ -16,7 +16,7 @@ namespace Naos.AWS.Core
     using Amazon.Route53.Model;
     using Amazon.Runtime;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     /// <inheritdoc />
     public class Route53Manager : IManageRoute53

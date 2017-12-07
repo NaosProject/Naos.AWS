@@ -9,7 +9,7 @@ namespace Naos.AWS.Core.Test
     using System;
     using System.Linq;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Xunit;
 

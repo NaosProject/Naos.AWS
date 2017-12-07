@@ -12,9 +12,9 @@ namespace Naos.AWS.Core
     using Amazon.EC2;
     using Amazon.EC2.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
-    using Subnet = Naos.AWS.Contract.Subnet;
+    using Subnet = Naos.AWS.Domain.Subnet;
 
     /// <summary>
     /// Operations to be performed on Subnet.

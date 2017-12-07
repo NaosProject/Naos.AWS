@@ -16,7 +16,7 @@ namespace Naos.AWS.S3
 
     using Its.Log.Instrumentation;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Spritely.Recipes;
     using Spritely.Redo;

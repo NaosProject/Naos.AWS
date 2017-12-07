@@ -12,9 +12,9 @@ namespace Naos.AWS.Core
     using Amazon.EC2;
     using Amazon.EC2.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
-    using InternetGateway = Naos.AWS.Contract.InternetGateway;
+    using InternetGateway = Naos.AWS.Domain.InternetGateway;
 
     /// <summary>
     /// Operations to be performed on InternetGateways.

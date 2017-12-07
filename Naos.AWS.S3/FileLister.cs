@@ -14,7 +14,7 @@ namespace Naos.AWS.S3
     using Amazon.S3;
     using Amazon.S3.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Spritely.Recipes;
 

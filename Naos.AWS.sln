@@ -1,10 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Contract", "Naos.AWS.Contract\Naos.AWS.Contract.csproj", "{43685312-C527-48E5-829C-9C7528881F72}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Domain", "Naos.AWS.Domain\Naos.AWS.Domain.csproj", "{43685312-C527-48E5-829C-9C7528881F72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Contract.Test", "Naos.AWS.Contract.Test\Naos.AWS.Contract.Test.csproj", "{3C9D2300-5CB4-4BCC-BAE6-1F8884B4F842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Domain.Test", "Naos.AWS.Domain.Test\Naos.AWS.Domain.Test.csproj", "{3C9D2300-5CB4-4BCC-BAE6-1F8884B4F842}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Core", "Naos.AWS.Core\Naos.AWS.Core.csproj", "{3D5EF13C-104C-4C62-8C1C-BBEFF6AF3C78}"
 EndProject
@@ -47,5 +47,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {232DAC44-3CCA-4160-A824-D50FB48D16C7}
 	EndGlobalSection
 EndGlobal

@@ -17,6 +17,8 @@ namespace Naos.AWS.S3.Test
     using Amazon.S3;
 
     using Naos.Recipes.Cryptography.Hashing;
+    using Naos.Serialization.Domain;
+    using Naos.Serialization.Json;
 
     using Newtonsoft.Json;
     using Spritely.Recipes;
@@ -298,7 +300,7 @@ namespace Naos.AWS.S3.Test
             var fileManager = new FileManager(awsConfiguration.AccessKey, awsConfiguration.SecretKey);
             string keyName = CreateKeyName("ManageMetadata___Should_return_return_custom_metadata___When_custom_metadata_is_added_to_upload");
             var customMetadata = new CustomMetadata("First item", 1234, true);
-            var serializedMetadata = JsonConvert.SerializeObject(customMetadata, Formatting.None, JsonConfiguration.CompactSerializerSettings);
+            var serializedMetadata = new NaosJsonSerializer(SerializationKind.Compact).SerializeToString(customMetadata);
             var customMetaDictionary = new Dictionary<string, string>
             {
                 { typeof(CustomMetadata).Name, serializedMetadata },
@@ -325,7 +327,7 @@ namespace Naos.AWS.S3.Test
             // Should be 3 metadata keys -- one for the hash, one for the custom data, and one string value.
             Assert.Equal(3, metadata.Count);
 
-            var customMetadataFromAws = JsonConvert.DeserializeObject<CustomMetadata>(metadata[typeof(CustomMetadata).Name.ToLowerInvariant()], new JsonSerializerSettings { ContractResolver = CamelStrictConstructorContractResolver.Instance });
+            var customMetadataFromAws = new NaosJsonSerializer(SerializationKind.Compact).Deserialize<CustomMetadata>(metadata[typeof(CustomMetadata).Name.ToLowerInvariant()]);
             Assert.Equal(customMetadata.ThisIsMetadata, customMetadataFromAws.ThisIsMetadata);
             Assert.Equal(customMetadata.MetadataItem1, customMetadataFromAws.MetadataItem1);
             Assert.Equal(customMetadata.MetadataItem2, customMetadataFromAws.MetadataItem2);
@@ -364,7 +366,7 @@ namespace Naos.AWS.S3.Test
         {
             var configFile = GetFilePath(@"config\awsConfiguration.json");
             var serializedAwsConfiguration = File.ReadAllText(configFile);
-            var awsConfiguration = JsonConvert.DeserializeObject<AwsConfiguration>(serializedAwsConfiguration, new JsonSerializerSettings { ContractResolver = CamelStrictConstructorContractResolver.Instance });
+            var awsConfiguration = new NaosJsonSerializer(SerializationKind.Compact).Deserialize<AwsConfiguration>(serializedAwsConfiguration);
 
             return awsConfiguration;
         }

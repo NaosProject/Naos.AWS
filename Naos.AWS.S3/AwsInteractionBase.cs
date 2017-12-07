@@ -11,7 +11,7 @@ namespace Naos.AWS.S3
     using Amazon.Runtime;
     using Amazon.SecurityToken.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Spritely.Recipes;
 

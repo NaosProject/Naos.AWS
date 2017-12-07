@@ -16,17 +16,17 @@ namespace Naos.AWS.Core
     using Amazon.EC2;
     using Amazon.EC2.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     using Newtonsoft.Json;
 
-    using Instance = Naos.AWS.Contract.Instance;
-    using InstanceState = Naos.AWS.Contract.InstanceState;
-    using InstanceStatus = Naos.AWS.Contract.InstanceStatus;
-    using KeyPair = Naos.AWS.Contract.KeyPair;
-    using SecurityGroup = Naos.AWS.Contract.SecurityGroup;
-    using Subnet = Naos.AWS.Contract.Subnet;
-    using UserData = Naos.AWS.Contract.UserData;
+    using Instance = Naos.AWS.Domain.Instance;
+    using InstanceState = Naos.AWS.Domain.InstanceState;
+    using InstanceStatus = Naos.AWS.Domain.InstanceStatus;
+    using KeyPair = Naos.AWS.Domain.KeyPair;
+    using SecurityGroup = Naos.AWS.Domain.SecurityGroup;
+    using Subnet = Naos.AWS.Domain.Subnet;
+    using UserData = Naos.AWS.Domain.UserData;
 
     /// <summary>
     /// Operations to be performed on instances.
@@ -106,9 +106,9 @@ namespace Naos.AWS.Core
             // save the EBS volume ID's and tag with name
             foreach (var mapping in newInstance.BlockDeviceMappings)
             {
-                var contractMapping = localInstance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
-                contractMapping.Id = mapping.Ebs.VolumeId;
-                await contractMapping.TagNameInAwsAsync(credentials);
+                var domainMapping = localInstance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
+                domainMapping.Id = mapping.Ebs.VolumeId;
+                await domainMapping.TagNameInAwsAsync(credentials);
             }
 
             if (localInstance.ElasticIp != null)

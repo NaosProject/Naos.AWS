@@ -11,7 +11,7 @@ namespace Naos.AWS.S3
     using System.Security.Cryptography;
     using System.Threading.Tasks;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     /// <summary>
     /// Class to manage files in Amazon S3.

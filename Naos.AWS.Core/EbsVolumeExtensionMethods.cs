@@ -16,7 +16,7 @@ namespace Naos.AWS.Core
     using Amazon.EC2;
     using Amazon.EC2.Model;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
 
     /// <summary>
     /// Extension methods to convert internal objects to AWS SDK objects.

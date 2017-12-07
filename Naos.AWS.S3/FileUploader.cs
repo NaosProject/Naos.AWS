@@ -19,7 +19,7 @@ namespace Naos.AWS.S3
 
     using Its.Log.Instrumentation;
 
-    using Naos.AWS.Contract;
+    using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
 
     using Spritely.Recipes;

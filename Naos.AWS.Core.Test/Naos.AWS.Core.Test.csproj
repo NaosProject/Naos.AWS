@@ -102,12 +102,11 @@
     <AdditionalFiles Include=".analyzers\stylecop.json" />
     <None Include=".analyzers\test.ruleset" />
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Naos.AWS.Contract\Naos.AWS.Contract.csproj">
+    <ProjectReference Include="..\Naos.AWS.Domain\Naos.AWS.Domain.csproj">
       <Project>{43685312-C527-48E5-829C-9C7528881F72}</Project>
-      <Name>Naos.AWS.Contract</Name>
+      <Name>Naos.AWS.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Naos.AWS.Core\Naos.AWS.Core.csproj">
       <Project>{3d5ef13c-104c-4c62-8c1c-bbeff6af3c78}</Project>
