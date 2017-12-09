@@ -24,7 +24,7 @@
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\Naos.AWS.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -71,6 +71,7 @@
     <Compile Include=".recipes\Spritely.MustValidation\ValidatedNotNullAttribute.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="AwsResponseNotOkException.cs" />
+    <Compile Include="Creation\Creator.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Route53Manager.cs" />
     <Compile Include="EbsVolumeExtensionMethods.cs" />

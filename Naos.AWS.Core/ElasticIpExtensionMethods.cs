@@ -23,33 +23,6 @@ namespace Naos.AWS.Core
     public static class ElasticIpExtensionMethods
     {
         /// <summary>
-        /// Allocates an elastic IP.
-        /// </summary>
-        /// <param name="elasticIp">Elastic IP to allocate.</param>
-        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Newly allocated elastic IP.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
-        public static async Task<ElasticIp> AllocateAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
-        {
-            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(elasticIp.Region);
-
-            var request = new AllocateAddressRequest { Domain = DomainType.Standard };
-
-            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
-            {
-                var response = await client.AllocateAddressAsync(request);
-                Validator.ThrowOnBadResult(request, response);
-
-                var ret = elasticIp.DeepClone();
-                ret.Id = response.AllocationId;
-                ret.PublicIpAddress = response.PublicIp;
-                return ret;
-            }
-        }
-
-        /// <summary>
         /// Releases an elastic IP.
         /// </summary>
         /// <param name="elasticIp">Elastic IP to release.</param>

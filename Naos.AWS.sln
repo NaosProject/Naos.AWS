@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.S3", "Naos.AWS.S3\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.S3.Test", "Naos.AWS.S3.Test\Naos.AWS.S3.Test.csproj", "{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naos.AWS.Console", "Naos.AWS.Console\Naos.AWS.Console.csproj", "{F30195B4-50D3-4445-980A-A1FEBE6383F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C20B1EF1-6F1D-4CD4-9F96-A549EDD1E1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F30195B4-50D3-4445-980A-A1FEBE6383F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F30195B4-50D3-4445-980A-A1FEBE6383F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F30195B4-50D3-4445-980A-A1FEBE6383F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F30195B4-50D3-4445-980A-A1FEBE6383F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

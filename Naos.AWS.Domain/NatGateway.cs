@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Ami.cs" company="Naos">
+// <copyright file="NatGateway.cs" company="Naos">
 //    Copyright (c) Naos 2017. All Rights Reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -7,9 +7,9 @@
 namespace Naos.AWS.Domain
 {
     /// <summary>
-    /// AMI model object.
+    /// TODO: Fill out the description.
     /// </summary>
-    public class Ami : IAwsObject
+    public class NatGateway : IAwsObject
     {
         /// <summary>
         /// Gets or sets the region.
@@ -27,23 +27,12 @@ namespace Naos.AWS.Domain
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the optional ability to find the AMI id using provided logic.
-        /// </summary>
-        public AmiSearchStrategy SearchStrategy { get; set; }
-
-        /// <summary>
         /// Gets a deep clone of the object.
         /// </summary>
         /// <returns>Deeply cloned version of the object.</returns>
-        public Ami DeepClone()
+        public NatGateway DeepClone()
         {
-            var ret = new Ami()
-                          {
-                              Id = this.Id,
-                              Name = this.Name,
-                              Region = this.Region,
-                              SearchStrategy = this.SearchStrategy?.DeepClone(),
-                          };
+            var ret = new NatGateway() { Id = this.Id, Name = this.Name, Region = this.Region, };
 
             return ret;
         }

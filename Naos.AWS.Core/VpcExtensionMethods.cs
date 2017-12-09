@@ -23,34 +23,6 @@ namespace Naos.AWS.Core
     public static class VpcExtensionMethods
     {
         /// <summary>
-        /// Create a new VPC.
-        /// </summary>
-        /// <param name="vpc">VPC to create.</param>
-        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Updated copy of the provided object.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vpc", Justification = "Spelling/name is correct.")]
-        public static async Task<Vpc> CreateAsync(this Vpc vpc, CredentialContainer credentials = null)
-        {
-            var localVpc = vpc.DeepClone();
-            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(localVpc.Region);
-
-            var request = new CreateVpcRequest() { CidrBlock = localVpc.Cidr, InstanceTenancy = new Tenancy(localVpc.Tenancy) };
-
-            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
-            {
-                var response = await client.CreateVpcAsync(request);
-                Validator.ThrowOnBadResult(request, response);
-
-                localVpc.Id = response.Vpc.VpcId;
-            }
-
-            await localVpc.TagNameInAwsAsync(credentials);
-
-            return localVpc;
-        }
-
-        /// <summary>
         /// Deletes a VPC.
         /// </summary>
         /// <param name="vpc">VPC to delete.</param>

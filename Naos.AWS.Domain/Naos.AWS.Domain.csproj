@@ -24,7 +24,7 @@
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\Naos.AWS.Domain.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -42,6 +42,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".recipes\Spritely.MustValidation\MakeRule.cs" />
@@ -51,6 +52,17 @@
     <Compile Include=".recipes\Spritely.MustValidation\ValidatedNotNullAttribute.cs" />
     <Compile Include="Ami.cs" />
     <Compile Include="AmiSearchStrategy.cs" />
+    <Compile Include="Config\ConfigElasticIp.cs" />
+    <Compile Include="Config\ConfigInternetGateway.cs" />
+    <Compile Include="Config\ConfigNatGateway.cs" />
+    <Compile Include="Config\ConfigNetworkAcl.cs" />
+    <Compile Include="Config\ConfigEnvironment.cs" />
+    <Compile Include="Config\ConfigRoute.cs" />
+    <Compile Include="Config\ConfigRouteTable.cs" />
+    <Compile Include="Config\ConfigSecurityGroup.cs" />
+    <Compile Include="Config\ConfigSubnet.cs" />
+    <Compile Include="Config\ConfigTrafficRuleBase.cs" />
+    <Compile Include="Config\ConfigVpc.cs" />
     <Compile Include="CredentialContainer.cs" />
     <Compile Include="EbsVolume.cs" />
     <Compile Include="ElasticIp.cs" />
@@ -65,6 +77,7 @@
     <Compile Include="InstanceStatus.cs" />
     <Compile Include="InstanceWithStatus.cs" />
     <Compile Include="Instance.cs" />
+    <Compile Include="NatGateway.cs" />
     <Compile Include="KeyPair.cs" />
     <Compile Include="Route53Entry.cs" />
     <Compile Include="SecurityGroup.cs" />

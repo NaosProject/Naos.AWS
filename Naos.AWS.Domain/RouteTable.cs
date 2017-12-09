@@ -36,6 +36,12 @@ namespace Naos.AWS.Domain
         public bool IsDefault { get; set; }
 
         /// <summary>
+        /// Gets or sets the parent VPC Id.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vpc", Justification = "Spelling/name is correct.")]
+        public string VpcId { get; set; }
+
+        /// <summary>
         /// Gets or sets the route entries.
         /// </summary>
         public IReadOnlyCollection<RouteEntry> Routes { get; set; }
@@ -52,6 +58,7 @@ namespace Naos.AWS.Domain
                               IsDefault = this.IsDefault,
                               Name = this.Name,
                               Region = this.Region,
+                              VpcId = this.VpcId,
                               Routes = this.Routes?.Select(_ => _.DeepClone()).ToList(),
                           };
 

@@ -22,34 +22,6 @@ namespace Naos.AWS.Core
     public static class InternetGatewayExtensionMethods
     {
         /// <summary>
-        /// Create a new internet gateway.
-        /// </summary>
-        /// <param name="internetGateway">Internet gateway to create.</param>
-        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Updated copy of the provided object.</returns>
-        public static async Task<InternetGateway> CreateAsync(this InternetGateway internetGateway, CredentialContainer credentials = null)
-        {
-            var localInternetGateway = internetGateway.DeepClone();
-
-            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(localInternetGateway.Region);
-
-            var request = new CreateInternetGatewayRequest();
-
-            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
-            {
-                var response = await client.CreateInternetGatewayAsync(request);
-                Validator.ThrowOnBadResult(request, response);
-
-                localInternetGateway.Id = response.InternetGateway.InternetGatewayId;
-            }
-
-            await localInternetGateway.TagNameInAwsAsync(credentials);
-
-            return localInternetGateway;
-        }
-
-        /// <summary>
         /// Deletes an internet gateway.
         /// </summary>
         /// <param name="internetGateway">Internet gateway to delete.</param>

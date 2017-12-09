@@ -116,7 +116,7 @@ namespace Naos.AWS.Core
                 if (string.IsNullOrEmpty(localInstance.ElasticIp.Id)
                     || string.IsNullOrEmpty(localInstance.ElasticIp.PublicIpAddress))
                 {
-                    localInstance.ElasticIp = await localInstance.ElasticIp.AllocateAsync(credentials);
+                    localInstance.ElasticIp = await Creator.AllocateElasticIp(credentials, regionEndpoint.SystemName, localInstance.ElasticIp.Name);
                     await localInstance.ElasticIp.ExistsOnAwsAsync(credentials);
                 }
 

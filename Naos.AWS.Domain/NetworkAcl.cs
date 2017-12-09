@@ -13,6 +13,11 @@ namespace Naos.AWS.Domain
     public class NetworkAcl : IAwsObject
     {
         /// <summary>
+        /// Rule number that indicates the last catch all rule.
+        /// </summary>
+        public const long FallThroughRuleNumber = 32767;
+
+        /// <summary>
         /// Gets or sets the region.
         /// </summary>
         public string Region { get; set; }
@@ -49,5 +54,5 @@ namespace Naos.AWS.Domain
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Want these clearly ordered.")]
         public NetworkAclRule[] OutboundRules { get; set; }
-     }
+    }
 }
