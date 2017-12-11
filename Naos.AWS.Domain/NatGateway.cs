@@ -37,4 +37,40 @@ namespace Naos.AWS.Domain
             return ret;
         }
     }
+
+    /// <summary>
+    /// Enumeration of possible states.
+    /// </summary>
+    public enum NatGatewayState
+    {
+        /// <summary>
+        /// Invalid default state.
+        /// </summary>
+        Invalid,
+
+        /// <summary>
+        /// Available state.
+        /// </summary>
+        Available,
+
+        /// <summary>
+        /// Deleted state.
+        /// </summary>
+        Deleted,
+
+        /// <summary>
+        /// Deleting state.
+        /// </summary>
+        Deleting,
+
+        /// <summary>
+        /// Failed state.
+        /// </summary>
+        Failed,
+
+        /// <summary>
+        /// Pending state.
+        /// </summary>
+        Pending,
+    }
 }

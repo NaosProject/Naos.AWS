@@ -71,8 +71,13 @@
     <Compile Include=".recipes\Spritely.MustValidation\ValidatedNotNullAttribute.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="AwsResponseNotOkException.cs" />
+    <Compile Include="Creation\Destroyer.cs" />
     <Compile Include="Creation\Creator.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="NetworkAclExtensionMethods.cs" />
+    <Compile Include="NatGatewayExtensionMethods.cs" />
+    <Compile Include="SecurityGroupExtensionMethods.cs" />
+    <Compile Include="RouteTableExtensionMethods.cs" />
     <Compile Include="Route53Manager.cs" />
     <Compile Include="EbsVolumeExtensionMethods.cs" />
     <Compile Include="CredentialExtensionMethods.cs" />

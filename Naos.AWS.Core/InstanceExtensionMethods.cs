@@ -38,9 +38,10 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to create.</param>
         /// <param name="userData">User data to use for instance creation.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Updated copy of the provided object.</returns>
-        public static async Task<Instance> CreateAsync(this Instance instance, UserData userData, CredentialContainer credentials = null)
+        public static async Task<Instance> CreateAsync(this Instance instance, UserData userData, TimeSpan timeout, CredentialContainer credentials = null)
         {
             var localInstance = instance.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -84,10 +85,15 @@ namespace Naos.AWS.Core
 
             // save the instance ID and tag the name in AWS
             localInstance.Id = newInstance.InstanceId;
-            await localInstance.TagNameInAwsAsync(credentials);
+            await localInstance.TagNameInAwsAsync(timeout, credentials);
 
             // wait until instance is "running" before proceeding.
-            await localInstance.WaitForStateAsync(InstanceState.Running, credentials);
+            await WaitUntil.InstanceInState(
+                localInstance,
+                InstanceState.Running,
+                new[] { InstanceState.ShuttingDown, InstanceState.Stopped, InstanceState.Stopping, InstanceState.Terminated },
+                timeout,
+                credentials);
 
             // re-fetch the instance details now that everything should be setup
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
@@ -108,7 +114,7 @@ namespace Naos.AWS.Core
             {
                 var domainMapping = localInstance.MappedVolumes.Single(_ => _.DeviceName == mapping.DeviceName);
                 domainMapping.Id = mapping.Ebs.VolumeId;
-                await domainMapping.TagNameInAwsAsync(credentials);
+                await domainMapping.TagNameInAwsAsync(timeout, credentials);
             }
 
             if (localInstance.ElasticIp != null)
@@ -294,67 +300,13 @@ namespace Naos.AWS.Core
         }
 
         /// <summary>
-        /// Waits until the instance gets to a certain expected state.
-        /// </summary>
-        /// <param name="instance">Instance to operate on.</param>
-        /// <param name="expectedState">State of instance to wait for.</param>
-        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
-        public static async Task WaitForStateAsync(this Instance instance, InstanceState expectedState, CredentialContainer credentials = null)
-        {
-            try
-            {
-                var timeToSleepInSeconds = .25;
-                var success = false;
-                while (!success)
-                {
-                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-
-                    var status = await instance.GetStatusAsync(credentials);
-                    success = status.InstanceState == expectedState;
-                }
-            }
-            catch (Exception)
-            {
-                /* swallow exceptions on purpose... */
-            }
-        }
-
-        /// <summary>
-        /// Waits until the instance has successful status checks.
-        /// </summary>
-        /// <param name="instance">Instance to operate on.</param>
-        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
-        public static async Task WaitForSuccessfulChecksAsync(this Instance instance, CredentialContainer credentials = null)
-        {
-            try
-            {
-                var timeToSleepInSeconds = .25;
-                var success = false;
-                while (!success)
-                {
-                    timeToSleepInSeconds = timeToSleepInSeconds * 2;
-                    Thread.Sleep(TimeSpan.FromSeconds(timeToSleepInSeconds));
-                    var instanceStatus = await instance.GetStatusAsync(credentials);
-                    success = instanceStatus.SystemChecks.All(_ => _.Value == CheckState.Passed)
-                           && instanceStatus.InstanceChecks.All(_ => _.Value == CheckState.Passed);
-                }
-            }
-            catch (Exception)
-            {
-                /* swallow exceptions on purpose... */
-            }
-        }
-
-        /// <summary>
         /// Deletes an instance.
         /// </summary>
         /// <param name="instance">Instance to delete.</param>
+        /// <param name="timeout">Optional timeout to wait until object reaches <see cref="InstanceState.Terminated" />; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
-        public static async Task TerminateAsync(this Instance instance, CredentialContainer credentials = null)
+        public static async Task TerminateAsync(this Instance instance, TimeSpan timeout, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
@@ -367,7 +319,7 @@ namespace Naos.AWS.Core
                 Validator.ThrowOnBadResult(request, response);
             }
 
-            await instance.WaitForStateAsync(InstanceState.Terminated, credentials);
+            await WaitUntil.InstanceInState(instance, InstanceState.Terminated, new[] { InstanceState.Pending, InstanceState.Running }, timeout, credentials);
         }
 
         /// <summary>

@@ -64,8 +64,9 @@ namespace Naos.AWS.Domain
         /// <summary>
         /// Throws an exception if it is invalidly structured.
         /// </summary>
+        /// <param name="checkForIds">Value indicating whether to force missing IDs.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Like this for readability.")]
-        public void ThrowIfInvalid()
+        public void ThrowIfInvalid(bool checkForIds)
         {
             var ids =
                 new string[0].Concat(this.ElasticIps.Select(_ => _.AllocationId))
@@ -79,7 +80,7 @@ namespace Naos.AWS.Domain
                                 .Concat(v.SecurityGroups.Select(p => p.SecurityGroupId))
                                 .Concat(v.Subnets.Select(s => s.SubnetId)))).ToList();
 
-            if (ids.Any(_ => !string.IsNullOrWhiteSpace(_)))
+            if (checkForIds && ids.Any(_ => !string.IsNullOrWhiteSpace(_)))
             {
                 throw new ArgumentException("Cannot have any IDs present to create an enviroment; there are non-null/empty ids in: " + string.Join(",", ids));
             }

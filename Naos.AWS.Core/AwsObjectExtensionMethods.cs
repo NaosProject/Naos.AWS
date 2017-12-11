@@ -42,6 +42,38 @@ namespace Naos.AWS.Core
             {
                 return AwsObjectType.EbsVolume;
             }
+            else if (awsObject.Id.StartsWith("igw-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.InternetGateway;
+            }
+            else if (awsObject.Id.StartsWith("eipalloc-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.ElasticIp;
+            }
+            else if (awsObject.Id.StartsWith("vpc-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.Vpc;
+            }
+            else if (awsObject.Id.StartsWith("rtb-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.RouteTable;
+            }
+            else if (awsObject.Id.StartsWith("subnet-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.Subnet;
+            }
+            else if (awsObject.Id.StartsWith("acl-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.NetworkAcl;
+            }
+            else if (awsObject.Id.StartsWith("sg-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.SecurityGroup;
+            }
+            else if (awsObject.Id.StartsWith("nat-", StringComparison.OrdinalIgnoreCase))
+            {
+                return AwsObjectType.NatGateway;
+            }
             else
             {
                 throw new ArgumentException("Can't infer AWS object type from the ID: " + awsObject.Id, nameof(awsObject));
@@ -52,13 +84,14 @@ namespace Naos.AWS.Core
         /// Adds a tag to the object.
         /// </summary>
         /// <param name="awsObject">Object to tag with name.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
-        public static async Task TagNameInAwsAsync(this IAwsObject awsObject, CredentialContainer credentials = null)
+        public static async Task TagNameInAwsAsync(this IAwsObject awsObject, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
         {
-            await AddTagInAwsAsync(awsObject, Constants.NameTagKey, awsObject.Name, credentials);
+            await AddTagInAwsAsync(awsObject, Constants.NameTagKey, awsObject.Name, timeout, credentials);
         }
 
         /// <summary>
@@ -67,17 +100,18 @@ namespace Naos.AWS.Core
         /// <param name="awsObject">Object to tag.</param>
         /// <param name="tagName">Name of tag.</param>
         /// <param name="tagValue">Value of tag.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
-        public static async Task AddTagInAwsAsync(this IAwsObject awsObject, string tagName, string tagValue, CredentialContainer credentials = null)
+        public static async Task AddTagInAwsAsync(this IAwsObject awsObject, string tagName, string tagValue, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(awsObject.Region);
 
             // make sure the object is there so we can tag it (eventual consistency issue...)
-            await WaitUntil.AwsObjectExists(awsObject, credentials);
+            await WaitUntil.AwsObjectExists(awsObject, timeout, credentials);
 
             var request = new CreateTagsRequest()
             {

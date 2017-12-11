@@ -6,15 +6,13 @@
 
 namespace Naos.AWS.Core
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Amazon;
     using Amazon.EC2;
-    using Amazon.EC2.Model;
 
     using Naos.AWS.Domain;
-
-    using Subnet = Naos.AWS.Domain.Subnet;
 
     /// <summary>
     /// Operations to be performed on Subnet.
@@ -22,35 +20,25 @@ namespace Naos.AWS.Core
     public static class SubnetExtensionMethods
     {
         /// <summary>
-        /// Create a new subnet.
+        /// Checks to see if the object exists on the AWS servers.
         /// </summary>
-        /// <param name="subnet">Subnet to create.</param>
+        /// <param name="subnet">Object to operate on.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Updated copy of the provided object.</returns>
-        public static async Task<Subnet> CreateAsync(this Subnet subnet, CredentialContainer credentials = null)
+        /// <returns>Whether or not is was found.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
+        public static async Task<bool> ExistsOnAwsAsync(this Subnet subnet, CredentialContainer credentials = null)
         {
-            var localSubnet = subnet.DeepClone();
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
-            var regionEndpoint = RegionEndpoint.GetBySystemName(localSubnet.Region);
-
-            var request = new CreateSubnetRequest()
-                              {
-                                  AvailabilityZone = localSubnet.AvailabilityZone,
-                                  CidrBlock = localSubnet.Cidr,
-                                  VpcId = localSubnet.ParentVpc.Id,
-                              };
+            var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
-                var response = await client.CreateSubnetAsync(request);
+                var request = new Amazon.EC2.Model.DescribeSubnetsRequest() { SubnetIds = new[] { subnet.Id }.ToList() };
+
+                var response = await client.DescribeSubnetsAsync(request);
                 Validator.ThrowOnBadResult(request, response);
-
-                localSubnet.Id = response.Subnet.SubnetId;
+                return response.Subnets.Any(_ => _.SubnetId == subnet.Id);
             }
-
-            await localSubnet.TagNameInAwsAsync(credentials);
-
-            return localSubnet;
         }
 
         /// <summary>
@@ -64,7 +52,7 @@ namespace Naos.AWS.Core
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = RegionEndpoint.GetBySystemName(subnet.Region);
 
-            var request = new DeleteSubnetRequest() { SubnetId = subnet.Id };
+            var request = new Amazon.EC2.Model.DeleteSubnetRequest() { SubnetId = subnet.Id };
 
             using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
             {
