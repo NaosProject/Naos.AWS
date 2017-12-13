@@ -62,6 +62,7 @@
     <Compile Include="Config\ConfigSecurityGroup.cs" />
     <Compile Include="Config\ConfigSubnet.cs" />
     <Compile Include="Config\ConfigTrafficRuleBase.cs" />
+    <Compile Include="Config\ConfigCidr.cs" />
     <Compile Include="Config\ConfigVpc.cs" />
     <Compile Include="CredentialContainer.cs" />
     <Compile Include="EbsVolume.cs" />

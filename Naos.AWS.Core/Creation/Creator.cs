@@ -25,12 +25,6 @@ namespace Naos.AWS.Core
     public static class Creator
     {
         /// <summary>
-        /// Magic string to use all CIDR (0.0.0.0/0).
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
-        public const string AllTrafficCidrName = "AllTrafficCidr";
-
-        /// <summary>
         /// Create an environment in a region.
         /// </summary>
         /// <param name="credentials">Credentials to use.</param>
@@ -68,7 +62,7 @@ namespace Naos.AWS.Core
                 Log.Write(() => Invariant($"< {nameof(ElasticIp)} - {elasticIp.AllocationId}"));
             }
 
-            var nameToCidrMap = new Dictionary<string, string> { { AllTrafficCidrName, "0.0.0.0/0" } };
+            var nameToCidrMap = new Dictionary<string, string> { { ConfigCidr.AllTrafficCidrName, "0.0.0.0/0" } };
             foreach (var vpc in environment.Vpcs)
             {
                 Log.Write(() => Invariant($"> {nameof(Vpc)} - {vpc.Name}"));
@@ -843,7 +837,7 @@ namespace Naos.AWS.Core
                                                             NetworkAclId = networkAclId,
                                                             Egress = egress,
                                                             RuleNumber = rule.RuleNumber,
-                                                            RuleAction = rule.Action,
+                                                            RuleAction = rule.Action.ToUpper(),
                                                             CidrBlock = cidr,
                                                             IcmpTypeCode = new Amazon.EC2.Model.IcmpTypeCode { Type = type },
                                                             PortRange = new Amazon.EC2.Model.PortRange { From = portRange.From, To = portRange.To },
