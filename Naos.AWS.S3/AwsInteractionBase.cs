@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AwsInteractionBase.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="AwsInteractionBase.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace Naos.AWS.S3
 
     using Naos.AWS.Domain;
 
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Base class for Amazon S3 operations.
@@ -27,7 +27,7 @@ namespace Naos.AWS.S3
         /// <param name="credentials">Credentials with rights to read and write  files in specified buckets.</param>
         protected AwsInteractionBase(CredentialContainer credentials)
         {
-            new { credentials }.Must().NotBeNull().OrThrow();
+            new { credentials }.Must().NotBeNull();
 
             this.Credentials = credentials;
         }
@@ -76,7 +76,7 @@ namespace Naos.AWS.S3
         /// <returns>AWSCredentials using supplied values.</returns>
         public static AWSCredentials ToAwsCredentials(this CredentialContainer credentials)
         {
-            new { credentials }.Must().NotBeNull().OrThrow();
+            new { credentials }.Must().NotBeNull();
 
             AWSCredentials ret = null;
             switch (credentials.CredentialType)

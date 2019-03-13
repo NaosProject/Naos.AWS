@@ -1,14 +1,13 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CredentialContainer.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="CredentialContainer.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.Domain
 {
     using System;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Wrapper object to hold the AWSCredentials and allow abstraction from changes in it.
@@ -29,8 +28,8 @@ namespace Naos.AWS.Domain
         /// <param name="secretKey">Secret key.</param>
         public CredentialContainer(string accessKey, string secretKey)
         {
-            new { accessKey }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { secretKey }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+            new { accessKey }.Must().NotBeNullNorWhiteSpace();
+            new { secretKey }.Must().NotBeNullNorWhiteSpace();
 
             this.CredentialType = CredentialType.Keys;
             this.AccessKeyId = accessKey;
@@ -44,7 +43,7 @@ namespace Naos.AWS.Domain
         /// <param name="expiration">Token expiration.</param>
         public CredentialContainer(string sessionToken, DateTime expiration)
         {
-            new { sessionToken }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+            new { sessionToken }.Must().NotBeNullNorWhiteSpace();
 
             this.CredentialType = CredentialType.Token;
             this.Expiration = expiration;

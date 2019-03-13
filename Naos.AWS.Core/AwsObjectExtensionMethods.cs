@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AwsObjectExtensionMethods.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="AwsObjectExtensionMethods.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Domain;
 
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Extension methods on the AWS object.
@@ -32,7 +32,7 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         public static AwsObjectType InferObjectTypeFromId(this IHaveId awsObject)
         {
-            new { awsObject }.Must().NotBeNull().OrThrow();
+            new { awsObject }.Must().NotBeNull();
 
             if (awsObject.Id.StartsWith("i-", StringComparison.OrdinalIgnoreCase))
             {

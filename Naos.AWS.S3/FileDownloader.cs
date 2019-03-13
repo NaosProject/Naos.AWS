@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileDownloader.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="FileDownloader.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -17,12 +17,9 @@ namespace Naos.AWS.S3
     using Amazon.S3;
     using Amazon.S3.Model;
 
-    using Its.Log.Instrumentation;
-
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
     using Spritely.Redo;
 
     /// <summary>
@@ -45,7 +42,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
 
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
@@ -58,7 +55,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
 
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
@@ -71,7 +68,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
-            destinationFilePath.Named(nameof(destinationFilePath)).Must().NotBeWhiteSpace().OrThrow();
+            destinationFilePath.Named(nameof(destinationFilePath)).Must().NotBeNullNorWhiteSpace();
 
             using (var fileStream = File.Create(destinationFilePath))
             {
@@ -82,10 +79,10 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
-            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
-            destinationStream.Named(nameof(destinationStream)).Must().NotBeNull().OrThrow();
+            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            destinationStream.Named(nameof(destinationStream)).Must().NotBeNull();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();
@@ -101,7 +98,6 @@ namespace Naos.AWS.S3
                 using (var response = await
                                           Using.LinearBackOff(TimeSpan.FromSeconds(5))
                                               .WithMaxRetries(3)
-                                              .WithReporter(_ => Log.Write(new LogEntry("Retrying Download File due to error.", _)))
                                               .RunAsync(() => localClient.GetObjectAsync(request))
                                               .Now())
                 {

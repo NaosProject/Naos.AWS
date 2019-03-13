@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IManageRoute53.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="IManageRoute53.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -21,11 +21,11 @@ namespace Naos.AWS.Domain
         /// <param name="domainZoneHostingId">AWS id of the zone.</param>
         /// <param name="type">Type of entry to add.</param>
         /// <param name="domain">Domain to use.</param>
-        /// <param name="ipAddresses">IP Addresses to attach to the domain.</param>
+        /// <param name="targetAddresses">IP Addresses to attach to the domain.</param>
         /// <returns>Task for async/await</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Upsert", Justification = "Spelling/name is correct.")]
-        Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses);
+        Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> targetAddresses);
 
         /// <summary>
         /// Gets the DNS entries of the specified zone.

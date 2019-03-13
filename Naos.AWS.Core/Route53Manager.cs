@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Route53Manager.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="Route53Manager.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -33,18 +33,18 @@ namespace Naos.AWS.Core
         }
 
         /// <inheritdoc />
-        public async Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> ipAddresses)
+        public async Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> targetAddresses)
         {
             var action = "UPSERT";
 
-            await this.InternalRunActionAsync(region, domainZoneHostingId, domain, ipAddresses, type.ToString(), action);
+            await this.InternalRunActionAsync(region, domainZoneHostingId, domain, targetAddresses, type.ToString(), action);
         }
 
         private async Task InternalRunActionAsync(
             string region,
             string domainZoneHostingId,
             string domain,
-            ICollection<string> ipAddresses,
+            ICollection<string> targetAddresses,
             string type,
             string action)
         {
@@ -57,7 +57,7 @@ namespace Naos.AWS.Core
                                             Type = type,
                                             TTL = 300,
                                             ResourceRecords =
-                                                ipAddresses.Select(_ => new ResourceRecord(_)).ToList(),
+                                                targetAddresses.Select(_ => new ResourceRecord(_)).ToList(),
                                         };
 
             var changes = new[] { new Change(new ChangeAction(action), resourceRecordSet) };

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileManagerTest.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="FileManagerTest.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ namespace Naos.AWS.S3.Test
         /// <summary>
         /// Test constructor when passed invalid input
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Keeping instance for base class.")]
         [Fact]
         public void Constructor___Should_instantiate_file_manager___When_passed_valid_input()
         {
@@ -40,6 +41,7 @@ namespace Naos.AWS.S3.Test
         /// <summary>
         /// Test constructor when passed invalid input
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Keeping instance for base class.")]
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_invalid_input()
         {
@@ -64,19 +66,19 @@ namespace Naos.AWS.S3.Test
         {
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(null, TestBase.BucketName, TestBase.KeyName, FilePath, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(null, TestBase.BucketName, TestBase.KeyName, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(string.Empty, TestBase.BucketName, TestBase.KeyName, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync("   ", TestBase.BucketName, TestBase.KeyName, FilePath, HashAlgorithmNames));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, null, TestBase.KeyName, FilePath, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(TestBase.Region, null, TestBase.KeyName, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, string.Empty, TestBase.KeyName, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, "   ", TestBase.KeyName, FilePath, HashAlgorithmNames));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, null, FilePath, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, null, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, string.Empty, FilePath, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, "   ", FilePath, HashAlgorithmNames));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, (string)null, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, (string)null, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, string.Empty, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, "   ", HashAlgorithmNames));
 
@@ -92,15 +94,15 @@ namespace Naos.AWS.S3.Test
             var stream = new MemoryStream();
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(null, TestBase.BucketName, TestBase.KeyName, stream, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(null, TestBase.BucketName, TestBase.KeyName, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(string.Empty, TestBase.BucketName, TestBase.KeyName, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync("   ", TestBase.BucketName, TestBase.KeyName, stream, HashAlgorithmNames));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, null, TestBase.KeyName, stream, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(TestBase.Region, null, TestBase.KeyName, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, string.Empty, TestBase.KeyName, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, "   ", TestBase.KeyName, stream, HashAlgorithmNames));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, null, stream, HashAlgorithmNames));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, null, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, string.Empty, stream, HashAlgorithmNames));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.UploadFileAsync(TestBase.Region, TestBase.BucketName, "   ", stream, HashAlgorithmNames));
 
@@ -121,19 +123,19 @@ namespace Naos.AWS.S3.Test
         {
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(null, TestBase.BucketName, TestBase.KeyName, FilePath));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(null, TestBase.BucketName, TestBase.KeyName, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(string.Empty, TestBase.BucketName, TestBase.KeyName, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync("   ", TestBase.BucketName, TestBase.KeyName, FilePath));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, null, TestBase.KeyName, FilePath));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(TestBase.Region, null, TestBase.KeyName, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, string.Empty, TestBase.KeyName, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, "   ", TestBase.KeyName, FilePath));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, null, FilePath));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, null, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, string.Empty, FilePath));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, "   ", FilePath));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, (string)null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, (string)null));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, string.Empty));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, TestBase.KeyName, "   "));
         }
@@ -147,15 +149,15 @@ namespace Naos.AWS.S3.Test
             var stream = new MemoryStream();
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(null, TestBase.BucketName, TestBase.KeyName, stream));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(null, TestBase.BucketName, TestBase.KeyName, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(string.Empty, TestBase.BucketName, TestBase.KeyName, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync("   ", TestBase.BucketName, TestBase.KeyName, stream));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, null, TestBase.KeyName, stream));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(TestBase.Region, null, TestBase.KeyName, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, string.Empty, TestBase.KeyName, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, "   ", TestBase.KeyName, stream));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, null, stream));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, null, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, string.Empty, stream));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.DownloadFileAsync(TestBase.Region, TestBase.BucketName, "   ", stream));
 
@@ -197,11 +199,11 @@ namespace Naos.AWS.S3.Test
         {
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync(null, TestBase.BucketName));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.ListFilesAsync(null, TestBase.BucketName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync(string.Empty, TestBase.BucketName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync("   ", TestBase.BucketName));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync(TestBase.Region, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.ListFilesAsync(TestBase.Region, null));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync(TestBase.Region, string.Empty));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.ListFilesAsync(TestBase.Region, "   "));
         }
@@ -218,15 +220,15 @@ namespace Naos.AWS.S3.Test
         {
             var fileManager = new FileManager(AccessKey, SecretKey);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(null, TestBase.BucketName, TestBase.KeyName));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.GetFileMetadataAsync(null, TestBase.BucketName, TestBase.KeyName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(string.Empty, TestBase.BucketName, TestBase.KeyName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync("   ", TestBase.BucketName, TestBase.KeyName));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, null, TestBase.KeyName));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, null, TestBase.KeyName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, string.Empty, TestBase.KeyName));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, "   ", TestBase.KeyName));
 
-            await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, TestBase.BucketName, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, TestBase.BucketName, null));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, TestBase.BucketName, string.Empty));
             await Assert.ThrowsAsync<ArgumentException>(() => fileManager.GetFileMetadataAsync(TestBase.Region, TestBase.BucketName, "   "));
         }

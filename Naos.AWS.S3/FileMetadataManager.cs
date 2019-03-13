@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileMetadataManager.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="FileMetadataManager.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -14,11 +14,8 @@ namespace Naos.AWS.S3
     using Amazon;
     using Amazon.S3;
 
-    using Its.Log.Instrumentation;
-
     using Naos.AWS.Domain;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
     using Spritely.Redo;
 
     /// <summary>
@@ -41,7 +38,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult, bool shouldSanitizeKeys = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull().OrThrow();
+            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
 
             return await this.GetFileMetadataAsync(uploadFileResult.Region, uploadFileResult.BucketName, uploadFileResult.KeyName, shouldSanitizeKeys);
         }
@@ -49,9 +46,9 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName, bool shouldSanitizeKeys = true)
         {
-            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
+            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();
@@ -61,7 +58,6 @@ namespace Naos.AWS.S3
                 var response = await
                                    Using.LinearBackOff(TimeSpan.FromSeconds(5))
                                        .WithMaxRetries(3)
-                                       .WithReporter(_ => Log.Write(new LogEntry("Retrying Get File Metadata due to error.", _)))
                                        .RunAsync(() => localClient.GetObjectMetadataAsync(bucketName, keyName))
                                        .Now();
 

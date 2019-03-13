@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigElasticIp.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="ConfigElasticIp.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ namespace Naos.AWS.Domain
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
-        [XmlAttribute("ipAddress")]
+        [XmlAttribute("networkAddress")]
         public string IpAddress { get; set; }
 
         /// <summary>
@@ -51,13 +51,13 @@ namespace Naos.AWS.Domain
         /// <summary>
         /// Updates the IP Address.
         /// </summary>
-        /// <param name="ipAddress">IP address to update with.</param>
+        /// <param name="networkAddress">IP address to update with.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
-        public void UpdateIpAddress(string ipAddress)
+        public void UpdateIpAddress(string networkAddress)
         {
-            this.IpAddress = ipAddress;
+            this.IpAddress = networkAddress;
         }
 
         /// <inheritdoc />

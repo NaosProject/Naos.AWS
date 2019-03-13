@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigNetworkAcl.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="ConfigNetworkAcl.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -111,6 +111,8 @@ namespace Naos.AWS.Domain
         /// The get <see cref="Type" /> value for use with the API.
         /// </summary>
         /// <returns>Type to use with API.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Name/spelling is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Api", Justification = "Name/spelling is correct.")]
         public int GetTypeForApi()
         {
             if (this.Type.Equals(AllTypesValue, StringComparison.CurrentCultureIgnoreCase))

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UploadFileResult.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="UploadFileResult.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ namespace Naos.AWS.S3
     using System.Collections.Generic;
     using System.Security.Cryptography;
 
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Result of uploading a file to S3.
@@ -25,10 +25,10 @@ namespace Naos.AWS.S3
         /// <param name="computedChecksums">Computed checksums of the uploaded file.</param>
         public UploadFileResult(string region, string bucketName, string keyName, IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums)
         {
-            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
-            computedChecksums.Named(nameof(computedChecksums)).Must().NotBeNull().OrThrow();
+            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            computedChecksums.Named(nameof(computedChecksums)).Must().NotBeNull();
 
             this.Region = region;
             this.BucketName = bucketName;

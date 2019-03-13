@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigTrafficRuleBase.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="ConfigTrafficRuleBase.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -10,8 +10,7 @@ namespace Naos.AWS.Domain
     using System.Collections.Generic;
     using System.Globalization;
     using System.Xml.Serialization;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Base configuration for a <see cref="ConfigNetworkAclRuleBase" /> or <see cref="ConfigSecurityGroupRuleBase" />.
@@ -74,6 +73,8 @@ namespace Naos.AWS.Domain
         /// The get <see cref="Protocol" /> value for use with the API.
         /// </summary>
         /// <returns>Protocol to use with API.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Name/spelling is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Api", Justification = "Name/spelling is correct.")]
         public string GetProtocolForApi()
         {
             if (this.Protocol.Equals(AllProtocolsValue, StringComparison.CurrentCultureIgnoreCase))
@@ -98,6 +99,8 @@ namespace Naos.AWS.Domain
         /// The get <see cref="PortRange" /> value for use with the API.
         /// </summary>
         /// <returns>PortRange to use with API.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Name/spelling is correct.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Api", Justification = "Name/spelling is correct.")]
         public PortRangeContainer GetPortRangeForApi()
         {
             if (this.PortRange.Equals(AllPortsValue, StringComparison.CurrentCultureIgnoreCase))
@@ -120,12 +123,13 @@ namespace Naos.AWS.Domain
         /// </summary>
         /// <param name="nameToCidrMap">Name to available CIDR map.</param>
         /// <returns>Dererenced CIDR to use with API.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Api", Justification = "Name/spelling is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public string GetCidrForApi(IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { nameToCidrMap }.Must().NotBeNull().OrThrowFirstFailure();
+            new { nameToCidrMap }.Must().NotBeNull();
 
-            nameToCidrMap.TryGetValue(this.CidrNameRef, out string cidr).Named(FormattableString.Invariant($"Did-not-find-cidr-for-{this.CidrNameRef}")).Must().BeTrue().OrThrow();
+            nameToCidrMap.TryGetValue(this.CidrNameRef, out string cidr).Named(FormattableString.Invariant($"Did-not-find-cidr-for-{this.CidrNameRef}")).Must().BeTrue();
 
             return cidr;
         }

@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileUploader.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="FileUploader.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -17,12 +17,11 @@ namespace Naos.AWS.S3
     using Amazon.S3;
     using Amazon.S3.Transfer;
 
-    using Its.Log.Instrumentation;
-
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
 
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
+
     using Spritely.Redo;
 
     /// <summary>
@@ -51,7 +50,7 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
-            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeWhiteSpace().OrThrow();
+            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
 
             return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, hashAlgorithmNames, userDefinedMetadata);
         }
@@ -65,7 +64,7 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
-            sourceStream.Named(nameof(sourceStream)).Must().NotBeNull().OrThrow();
+            sourceStream.Named(nameof(sourceStream)).Must().NotBeNull();
 
             return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, hashAlgorithmNames, userDefinedMetadata);
         }
@@ -79,10 +78,10 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata)
         {
-            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
-            keyName.Named(nameof(keyName)).Must().NotBeWhiteSpace().OrThrow();
-            hashAlgorithmNames.Named(nameof(hashAlgorithmNames)).Must().NotBeNull().OrThrow();
+            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            hashAlgorithmNames.Named(nameof(hashAlgorithmNames)).Must().NotBeNull();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();
@@ -139,7 +138,6 @@ namespace Naos.AWS.S3
                     await
                         Using.LinearBackOff(TimeSpan.FromSeconds(5))
                             .WithMaxRetries(3)
-                            .WithReporter(_ => Log.Write(new LogEntry("Retrying Upload File due to error.", _)))
                             .RunAsync(() => localTransferUtility.UploadAsync(transferUtilityUploadRequest))
                             .Now();
 

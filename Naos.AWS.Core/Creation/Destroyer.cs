@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Destroyer.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="Destroyer.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -9,8 +9,6 @@ namespace Naos.AWS.Core
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Its.Log.Instrumentation;
 
     using Naos.AWS.Domain;
 
@@ -27,9 +25,10 @@ namespace Naos.AWS.Core
         /// <param name="credentials">Credentials to use.</param>
         /// <param name="environment">Environment config to use.</param>
         /// <param name="updateCallback">Optional callback to perform on object model update.</param>
+        /// <param name="announcer">Optional callback to log announcements.</param>
         /// <param name="timeout">Optional timeout to wait for operations to complete; DEFAULT is ininity.</param>
         /// <returns>Environment config updated with IDs stripped out.</returns>
-        public static async Task<ConfigEnvironment> RemoveEnvironment(CredentialContainer credentials, ConfigEnvironment environment, Action<ConfigEnvironment> updateCallback = null, TimeSpan timeout = default(TimeSpan))
+        public static async Task<ConfigEnvironment> RemoveEnvironment(CredentialContainer credentials, ConfigEnvironment environment, Action<ConfigEnvironment> updateCallback = null, Action<Func<object>> announcer = null, TimeSpan timeout = default(TimeSpan))
         {
             environment.ThrowIfInvalid(false);
 
@@ -38,7 +37,13 @@ namespace Naos.AWS.Core
                 /* no-op */
             }
 
+            void NullAnnounce(object announcement)
+            {
+                /* no-op */
+            }
+
             var localOnUpdate = updateCallback ?? NullUpdate;
+            var localAnnouncer = announcer ?? NullAnnounce;
 
             foreach (var vpc in environment.Vpcs)
             {
@@ -46,7 +51,7 @@ namespace Naos.AWS.Core
                 {
                     if (!string.IsNullOrWhiteSpace(natGateway.NatGatewayId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(NatGateway)} - {natGateway.Name} ({natGateway.NatGatewayId})"));
+                        localAnnouncer(() => Invariant($"> {nameof(NatGateway)} - {natGateway.Name} ({natGateway.NatGatewayId})"));
                         await RemoveNatGateway(credentials, environment.RegionName, natGateway.NatGatewayId);
 
                         // make sure we get this before the ID is nulled out...
@@ -59,7 +64,7 @@ namespace Naos.AWS.Core
                             new[] { NatGatewayState.Failed, NatGatewayState.Available, NatGatewayState.Pending },
                             timeout,
                             credentials);
-                        Log.Write(() => Invariant($"< {nameof(NatGateway)}"));
+                        localAnnouncer(() => Invariant($"< {nameof(NatGateway)}"));
                     }
                 }
 
@@ -67,11 +72,11 @@ namespace Naos.AWS.Core
                 {
                     if (!string.IsNullOrWhiteSpace(subnet.SubnetId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(Subnet)} - {subnet.Name} ({subnet.SubnetId})"));
+                        localAnnouncer(() => Invariant($"> {nameof(Subnet)} - {subnet.Name} ({subnet.SubnetId})"));
                         await RemoveSubnet(credentials, environment.RegionName, subnet.SubnetId);
                         subnet.UpdateId(null);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(Subnet)}"));
+                        localAnnouncer(() => Invariant($"< {nameof(Subnet)}"));
                     }
                 }
 
@@ -79,11 +84,11 @@ namespace Naos.AWS.Core
                 {
                     if (!networkAcl.IsDefault && !string.IsNullOrWhiteSpace(networkAcl.NetworkAclId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
+                        localAnnouncer(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
                         await RemoveNetworkAcl(credentials, environment.RegionName, networkAcl.NetworkAclId);
                         networkAcl.UpdateId(null);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(NetworkAcl)}"));
+                        localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)}"));
                     }
                 }
 
@@ -91,11 +96,11 @@ namespace Naos.AWS.Core
                 {
                     if (!securityGroup.IsDefault && !string.IsNullOrWhiteSpace(securityGroup.SecurityGroupId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
+                        localAnnouncer(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
                         await RemoveSecurityGroup(credentials, environment.RegionName, securityGroup.SecurityGroupId);
                         securityGroup.UpdateId(null);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(SecurityGroup)}"));
+                        localAnnouncer(() => Invariant($"< {nameof(SecurityGroup)}"));
                     }
                 }
 
@@ -103,11 +108,11 @@ namespace Naos.AWS.Core
                 {
                     if (!routeTable.IsDefault && !string.IsNullOrWhiteSpace(routeTable.RouteTableId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(RouteTable)} - {routeTable.Name} ({routeTable.RouteTableId})"));
+                        localAnnouncer(() => Invariant($"> {nameof(RouteTable)} - {routeTable.Name} ({routeTable.RouteTableId})"));
                         await RemoveRouteTable(credentials, environment.RegionName, routeTable.RouteTableId);
                         routeTable.UpdateId(null);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(RouteTable)}"));
+                        localAnnouncer(() => Invariant($"< {nameof(RouteTable)}"));
                     }
                 }
 
@@ -116,16 +121,16 @@ namespace Naos.AWS.Core
                     var internetGatewayForVpc = environment.InternetGateways.SingleOrDefault(_ => _.Name.Equals(vpc.InternetGatewayRef, StringComparison.InvariantCultureIgnoreCase));
                     if (internetGatewayForVpc != null && !string.IsNullOrWhiteSpace(internetGatewayForVpc.InternetGatewayId))
                     {
-                        Log.Write(() => Invariant($"> {nameof(Vpc)} - Detach Internet Gateway - {vpc.Name} ({vpc.VpcId}) {internetGatewayForVpc.InternetGatewayId}"));
+                        localAnnouncer(() => Invariant($"> {nameof(Vpc)} - Detach Internet Gateway - {vpc.Name} ({vpc.VpcId}) {internetGatewayForVpc.InternetGatewayId}"));
                         await DetachInternetGatewayToVpc(credentials, environment.RegionName, vpc.VpcId, internetGatewayForVpc.InternetGatewayId);
-                        Log.Write(() => Invariant($"< {nameof(Vpc)} - Detach Internet Gateway"));
+                        localAnnouncer(() => Invariant($"< {nameof(Vpc)} - Detach Internet Gateway"));
                     }
 
-                    Log.Write(() => Invariant($"> {nameof(Vpc)} - {vpc.Name} ({vpc.VpcId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(Vpc)} - {vpc.Name} ({vpc.VpcId})"));
                     await RemoveVpc(credentials, environment.RegionName, vpc.VpcId);
                     vpc.UpdatedId(null);
                     localOnUpdate(environment);
-                    Log.Write(() => Invariant($"< {nameof(Vpc)}"));
+                    localAnnouncer(() => Invariant($"< {nameof(Vpc)}"));
                 }
             }
 
@@ -133,12 +138,12 @@ namespace Naos.AWS.Core
             {
                 if (!string.IsNullOrWhiteSpace(elasticIp.AllocationId))
                 {
-                    Log.Write(() => Invariant($"> {nameof(ElasticIp)} - {elasticIp.Name} ({elasticIp.AllocationId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(ElasticIp)} - {elasticIp.Name} ({elasticIp.AllocationId})"));
                     await ReleaseElasticIp(credentials, environment.RegionName, elasticIp.AllocationId);
                     elasticIp.UpdateId(null);
                     elasticIp.UpdateIpAddress(null);
                     localOnUpdate(environment);
-                    Log.Write(() => Invariant($"< {nameof(ElasticIp)}"));
+                    localAnnouncer(() => Invariant($"< {nameof(ElasticIp)}"));
                 }
             }
 
@@ -146,11 +151,11 @@ namespace Naos.AWS.Core
             {
                 if (!string.IsNullOrWhiteSpace(internetGateway.InternetGatewayId))
                 {
-                    Log.Write(() => Invariant($"> {nameof(InternetGateway)} - {internetGateway.Name} ({internetGateway.InternetGatewayId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(InternetGateway)} - {internetGateway.Name} ({internetGateway.InternetGatewayId})"));
                     await RemoveInternetGateway(credentials, environment.RegionName, internetGateway.InternetGatewayId);
                     internetGateway.UpdateId(null);
                     localOnUpdate(environment);
-                    Log.Write(() => Invariant($"< {nameof(InternetGateway)}"));
+                    localAnnouncer(() => Invariant($"< {nameof(InternetGateway)}"));
                 }
             }
 

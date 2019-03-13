@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Creator.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="Creator.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -11,11 +11,8 @@ namespace Naos.AWS.Core
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Its.Log.Instrumentation;
-
     using Naos.AWS.Domain;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     using static System.FormattableString;
 
@@ -30,9 +27,10 @@ namespace Naos.AWS.Core
         /// <param name="credentials">Credentials to use.</param>
         /// <param name="environment">Environment config to use.</param>
         /// <param name="updateCallback">Optional callback to perform on object model update.</param>
-        /// <param name="timeout">Optional timeout to wait for operations to complete; DEFAULT is ininity.</param>
+        /// <param name="announcer">Optional callback to log announcements.</param>
+        /// <param name="timeout">Optional timeout to wait for operations to complete; DEFAULT is infinity.</param>
         /// <returns>Environment config updated with IDs.</returns>
-        public static async Task<ConfigEnvironment> CreateEnvironment(CredentialContainer credentials, ConfigEnvironment environment, Action<ConfigEnvironment> updateCallback = null, TimeSpan timeout = default(TimeSpan))
+        public static async Task<ConfigEnvironment> CreateEnvironment(CredentialContainer credentials, ConfigEnvironment environment, Action<ConfigEnvironment> updateCallback = null, Action<Func<object>> announcer = null, TimeSpan timeout = default(TimeSpan))
         {
             environment.ThrowIfInvalid(true);
 
@@ -41,79 +39,85 @@ namespace Naos.AWS.Core
                 /* no-op */
             }
 
+            void NullAnnounce(object announcement)
+            {
+                /* no-op */
+            }
+
             var localOnUpdate = updateCallback ?? NullUpdate;
+            var localAnnouncer = announcer ?? NullAnnounce;
 
             foreach (var internetGateway in environment.InternetGateways)
             {
-                Log.Write(() => Invariant($"> {nameof(InternetGateway)} - {internetGateway.Name}"));
+                localAnnouncer(() => Invariant($"> {nameof(InternetGateway)} - {internetGateway.Name}"));
                 var createdInternetGateway = await CreateInternetGateway(credentials, environment.RegionName, internetGateway.Name, timeout);
                 internetGateway.UpdateId(createdInternetGateway.Id);
                 localOnUpdate(environment);
-                Log.Write(() => Invariant($"< {nameof(InternetGateway)} - {internetGateway.InternetGatewayId}"));
+                localAnnouncer(() => Invariant($"< {nameof(InternetGateway)} - {internetGateway.InternetGatewayId}"));
             }
 
             foreach (var elasticIp in environment.ElasticIps)
             {
-                Log.Write(() => Invariant($"> {nameof(ElasticIp)} - {elasticIp.Name}"));
+                localAnnouncer(() => Invariant($"> {nameof(ElasticIp)} - {elasticIp.Name}"));
                 var createdElasticIp = await AllocateElasticIp(credentials, environment.RegionName, elasticIp.Name);
                 elasticIp.UpdateId(createdElasticIp.Id);
                 elasticIp.UpdateIpAddress(createdElasticIp.PublicIpAddress);
                 localOnUpdate(environment);
-                Log.Write(() => Invariant($"< {nameof(ElasticIp)} - {elasticIp.AllocationId}"));
+                localAnnouncer(() => Invariant($"< {nameof(ElasticIp)} - {elasticIp.AllocationId}"));
             }
 
             var nameToCidrMap = new Dictionary<string, string> { { ConfigCidr.AllTrafficCidrName, "0.0.0.0/0" } };
             foreach (var vpc in environment.Vpcs)
             {
-                Log.Write(() => Invariant($"> {nameof(Vpc)} - {vpc.Name}"));
+                localAnnouncer(() => Invariant($"> {nameof(Vpc)} - {vpc.Name}"));
                 var createdVpc = await CreateVpc(credentials, environment.RegionName, vpc.Name, vpc.Cidr, vpc.Tenancy, timeout);
                 vpc.UpdatedId(createdVpc.Id);
                 localOnUpdate(environment);
                 nameToCidrMap.Add(vpc.Name, vpc.Cidr);
-                Log.Write(() => Invariant($"< {nameof(Vpc)} - {vpc.VpcId}"));
+                localAnnouncer(() => Invariant($"< {nameof(Vpc)} - {vpc.VpcId}"));
 
                 var internetGatewayForVpc = environment.InternetGateways.SingleOrDefault(_ => _.Name.Equals(vpc.InternetGatewayRef, StringComparison.InvariantCultureIgnoreCase));
                 if (internetGatewayForVpc != null)
                 {
-                    Log.Write(() => Invariant($"> {nameof(Vpc)} - Attach Internet Gateway - {vpc.Name} ({vpc.VpcId}) {internetGatewayForVpc.InternetGatewayId}"));
+                    localAnnouncer(() => Invariant($"> {nameof(Vpc)} - Attach Internet Gateway - {vpc.Name} ({vpc.VpcId}) {internetGatewayForVpc.InternetGatewayId}"));
                     await AttachInternetGatewayToVpc(credentials, environment.RegionName, vpc.VpcId, internetGatewayForVpc.InternetGatewayId);
-                    Log.Write(() => Invariant($"< {nameof(Vpc)} - Attach Internet Gateway"));
+                    localAnnouncer(() => Invariant($"< {nameof(Vpc)} - Attach Internet Gateway"));
                 }
 
                 var defaultRouteTable = vpc.RouteTables.Single(_ => _.IsDefault);
-                Log.Write(() => Invariant($"> {nameof(RouteTable)} - {defaultRouteTable.Name}"));
+                localAnnouncer(() => Invariant($"> {nameof(RouteTable)} - {defaultRouteTable.Name}"));
                 var updatedRouteTable = await NameDefaultRouteTable(credentials, environment.RegionName, defaultRouteTable.Name, vpc.VpcId, timeout);
                 defaultRouteTable.UpdateId(updatedRouteTable.Id);
                 localOnUpdate(environment);
-                Log.Write(() => Invariant($"< {nameof(RouteTable)} - {defaultRouteTable.RouteTableId}"));
+                localAnnouncer(() => Invariant($"< {nameof(RouteTable)} - {defaultRouteTable.RouteTableId}"));
 
                 foreach (var routeTable in vpc.RouteTables)
                 {
                     if (!routeTable.IsDefault)
                     {
-                        Log.Write(() => Invariant($"> {nameof(RouteTable)} - {routeTable.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(RouteTable)} - {routeTable.Name}"));
                         var createdRouteTable = await CreateRouteTable(credentials, environment.RegionName, routeTable.Name, vpc.VpcId, timeout);
                         routeTable.UpdateId(createdRouteTable.Id);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(RouteTable)} - {routeTable.RouteTableId}"));
+                        localAnnouncer(() => Invariant($"< {nameof(RouteTable)} - {routeTable.RouteTableId}"));
                     }
                 }
 
                 foreach (var subnet in vpc.Subnets)
                 {
-                    Log.Write(() => Invariant($"> {nameof(Subnet)} - {subnet.Name}"));
+                    localAnnouncer(() => Invariant($"> {nameof(Subnet)} - {subnet.Name}"));
                     var createdSubnet = await CreateSubnet(credentials, environment.RegionName, subnet.Name, vpc.VpcId, subnet.Cidr, subnet.AvailabilityZone, timeout);
                     subnet.UpdateId(createdSubnet.Id);
                     localOnUpdate(environment);
                     nameToCidrMap.Add(subnet.Name, subnet.Cidr);
-                    Log.Write(() => Invariant($"< {nameof(Subnet)} - {subnet.SubnetId}"));
+                    localAnnouncer(() => Invariant($"< {nameof(Subnet)} - {subnet.SubnetId}"));
 
                     var routeTable = vpc.RouteTables.SingleOrDefault(_ => _.Name.Equals(subnet.RouteTableRef, StringComparison.CurrentCultureIgnoreCase));
                     if (routeTable != null)
                     {
-                        Log.Write(() => Invariant($"> {nameof(Subnet)} - Associate Route Table - {subnet.Name} ({subnet.SubnetId}) {routeTable.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(Subnet)} - Associate Route Table - {subnet.Name} ({subnet.SubnetId}) {routeTable.Name}"));
                         await AssociateRouteTableWithSubnet(credentials, environment.RegionName, routeTable.RouteTableId, subnet.SubnetId);
-                        Log.Write(() => Invariant($"< {nameof(Subnet)} - Associate Route Table"));
+                        localAnnouncer(() => Invariant($"< {nameof(Subnet)} - Associate Route Table"));
                     }
                 }
 
@@ -121,11 +125,11 @@ namespace Naos.AWS.Core
                 {
                     if (!networkAcl.IsDefault)
                     {
-                        Log.Write(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name}"));
                         var createdNetworkAcl = await CreateNetworkAcl(credentials, environment.RegionName, networkAcl.Name, vpc.VpcId, timeout);
                         networkAcl.UpdateId(createdNetworkAcl.Id);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(NetworkAcl)} - {networkAcl.NetworkAclId}"));
+                        localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)} - {networkAcl.NetworkAclId}"));
 
                         if (!string.IsNullOrWhiteSpace(networkAcl.SubnetRef))
                         {
@@ -139,58 +143,58 @@ namespace Naos.AWS.Core
                                         Invariant($"Must specify a valid subnet name if trying to associate an ACL; {subnetRef} is invalid."));
                                 }
 
-                                Log.Write(
+                                localAnnouncer(
                                     () => Invariant(
                                         $"> {nameof(NetworkAcl)} - Associate Subnet - {networkAcl.Name} ({networkAcl.NetworkAclId}) {subnet.Name}"));
                                 await AssociateNetworkAclWithSubnet(credentials, environment.RegionName, networkAcl.NetworkAclId, subnet.SubnetId);
-                                Log.Write(() => Invariant($"< {nameof(NetworkAcl)} - Associate Subnet"));
+                                localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)} - Associate Subnet"));
                             }
                         }
                     }
                     else
                     {
-                        Log.Write(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(NetworkAcl)} - {networkAcl.Name}"));
                         var defaultNetworkAcl = await NameDefaultNetworkAcl(credentials, environment.RegionName, networkAcl.Name, vpc.VpcId, timeout);
                         networkAcl.UpdateId(defaultNetworkAcl.Id);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(NetworkAcl)} - {networkAcl.NetworkAclId}"));
+                        localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)} - {networkAcl.NetworkAclId}"));
                     }
 
-                    Log.Write(() => Invariant($"> {nameof(NetworkAcl)} - Remove All Rules - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(NetworkAcl)} - Remove All Rules - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
                     await RemoveAllRulesFromNetworkAcl(credentials, environment.RegionName, networkAcl.NetworkAclId);
-                    Log.Write(() => Invariant($"< {nameof(NetworkAcl)} - Remove All Rules"));
+                    localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)} - Remove All Rules"));
 
-                    Log.Write(() => Invariant($"> {nameof(NetworkAcl)} - Add Rules - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(NetworkAcl)} - Add Rules - {networkAcl.Name} ({networkAcl.NetworkAclId})"));
                     await AddRulesToNetworkAcl(credentials, environment.RegionName, networkAcl.NetworkAclId, networkAcl.InboundRules, networkAcl.OutboundRules, nameToCidrMap);
-                    Log.Write(() => Invariant($"< {nameof(NetworkAcl)} - Add Rules"));
+                    localAnnouncer(() => Invariant($"< {nameof(NetworkAcl)} - Add Rules"));
                 }
 
                 foreach (var securityGroup in vpc.SecurityGroups)
                 {
                     if (!securityGroup.IsDefault)
                     {
-                        Log.Write(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name}"));
                         var createdSecurityGroup = await CreateSecurityGroup(credentials, environment.RegionName, securityGroup.Name, vpc.VpcId, timeout);
                         securityGroup.UpdateId(createdSecurityGroup.Id);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(SecurityGroup)} - {securityGroup.SecurityGroupId}"));
+                        localAnnouncer(() => Invariant($"< {nameof(SecurityGroup)} - {securityGroup.SecurityGroupId}"));
                     }
                     else
                     {
-                        Log.Write(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name}"));
+                        localAnnouncer(() => Invariant($"> {nameof(SecurityGroup)} - {securityGroup.Name}"));
                         var defaultSecurityGroup = await NameDefaultSecurityGroup(credentials, environment.RegionName, securityGroup.Name, vpc.VpcId, timeout);
                         securityGroup.UpdateId(defaultSecurityGroup.Id);
                         localOnUpdate(environment);
-                        Log.Write(() => Invariant($"< {nameof(SecurityGroup)} - {securityGroup.SecurityGroupId}"));
+                        localAnnouncer(() => Invariant($"< {nameof(SecurityGroup)} - {securityGroup.SecurityGroupId}"));
                     }
 
-                    Log.Write(() => Invariant($"> {nameof(SecurityGroup)} - Remove All Rules - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(SecurityGroup)} - Remove All Rules - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
                     await RemoveAllRulesFromSecurityGroup(credentials, environment.RegionName, securityGroup.SecurityGroupId);
-                    Log.Write(() => Invariant($"< {nameof(SecurityGroup)} - Remove All Rules"));
+                    localAnnouncer(() => Invariant($"< {nameof(SecurityGroup)} - Remove All Rules"));
 
-                    Log.Write(() => Invariant($"> {nameof(SecurityGroup)} - Add Rules - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(SecurityGroup)} - Add Rules - {securityGroup.Name} ({securityGroup.SecurityGroupId})"));
                     await AddRulesToSecurityGroup(credentials, environment.RegionName, securityGroup.SecurityGroupId, securityGroup.InboundRules, securityGroup.OutboundRules, nameToCidrMap);
-                    Log.Write(() => Invariant($"< {nameof(SecurityGroup)} - Add Rules"));
+                    localAnnouncer(() => Invariant($"< {nameof(SecurityGroup)} - Add Rules"));
                 }
 
                 foreach (var natGateway in vpc.NatGateways)
@@ -207,11 +211,11 @@ namespace Naos.AWS.Core
                         throw new ArgumentException(Invariant($"Must specify a valid elastic ip name to create a Nat Gateway; {natGateway.ElasticIpRef} is invalid."));
                     }
 
-                    Log.Write(() => Invariant($"> {nameof(NatGateway)} - {natGateway.Name}"));
+                    localAnnouncer(() => Invariant($"> {nameof(NatGateway)} - {natGateway.Name}"));
                     var createdNatGateway = await CreateNatGateway(credentials, environment.RegionName, natGateway.Name, parentSubnet.SubnetId, elasticIp.AllocationId, timeout);
                     natGateway.UpdateId(createdNatGateway.Id);
                     localOnUpdate(environment);
-                    Log.Write(() => Invariant($"< {nameof(NatGateway)} - {natGateway.NatGatewayId}"));
+                    localAnnouncer(() => Invariant($"< {nameof(NatGateway)} - {natGateway.NatGatewayId}"));
                 }
 
                 foreach (var natGateway in vpc.NatGateways)
@@ -227,11 +231,11 @@ namespace Naos.AWS.Core
 
                 foreach (var routeTable in vpc.RouteTables)
                 {
-                    Log.Write(() => Invariant($"> {nameof(RouteTable)} - Remove Routes - {routeTable.Name} ({routeTable.RouteTableId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(RouteTable)} - Remove Routes - {routeTable.Name} ({routeTable.RouteTableId})"));
                     await RemoveAllRoutesFromRouteTable(credentials, environment.RegionName, routeTable.RouteTableId);
-                    Log.Write(() => Invariant($"< {nameof(RouteTable)} - Remove Routes"));
+                    localAnnouncer(() => Invariant($"< {nameof(RouteTable)} - Remove Routes"));
 
-                    Log.Write(() => Invariant($"> {nameof(RouteTable)} - Add Routes - {routeTable.Name} ({routeTable.RouteTableId})"));
+                    localAnnouncer(() => Invariant($"> {nameof(RouteTable)} - Add Routes - {routeTable.Name} ({routeTable.RouteTableId})"));
                     await AddRoutesToRouteTable(
                         credentials,
                         environment.RegionName,
@@ -240,7 +244,7 @@ namespace Naos.AWS.Core
                         nameToCidrMap,
                         environment.InternetGateways.ToDictionary(k => k.Name, v => v.InternetGatewayId),
                         vpc.NatGateways.ToDictionary(k => k.Name, v => v.NatGatewayId));
-                    Log.Write(() => Invariant($"< {nameof(RouteTable)} - Add Routes"));
+                    localAnnouncer(() => Invariant($"< {nameof(RouteTable)} - Add Routes"));
                 }
             }
 
@@ -457,8 +461,8 @@ namespace Naos.AWS.Core
         /// <returns>Task for async.</returns>
         public static async Task RemoveAllRoutesFromRouteTable(CredentialContainer credentials, string regionName, string routeTableId)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { routeTableId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { routeTableId }.Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -509,10 +513,10 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public static async Task AddRoutesToRouteTable(CredentialContainer credentials, string regionName, string routeTableId, IReadOnlyCollection<ConfigRoute> routes, IReadOnlyDictionary<string, string> nameToCidrMap, IReadOnlyDictionary<string, string> nameToInternetGatewayId, IReadOnlyDictionary<string, string> nameToNatGatewayId)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { routeTableId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { routes }.Must().NotBeNull().OrThrowFirstFailure();
-            new { nameToCidrMap }.Must().NotBeNull().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { routeTableId }.Must().NotBeNullNorWhiteSpace();
+            new { routes }.Must().NotBeNull();
+            new { nameToCidrMap }.Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -521,7 +525,7 @@ namespace Naos.AWS.Core
             {
                 foreach (var route in routes)
                 {
-                    nameToCidrMap.TryGetValue(route.DestinationRef, out string cidr).Named(Invariant($"Did-not-find-cidr-for-{route.DestinationRef}")).Must().BeTrue().OrThrow();
+                    nameToCidrMap.TryGetValue(route.DestinationRef, out string cidr).Named(Invariant($"Did-not-find-cidr-for-{route.DestinationRef}")).Must().BeTrue();
                     nameToInternetGatewayId.TryGetValue(route.TargetRef, out string igwId);
                     nameToNatGatewayId.TryGetValue(route.TargetRef, out string ngwId);
 
@@ -739,8 +743,8 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
         public static async Task RemoveAllRulesFromNetworkAcl(CredentialContainer credentials, string regionName, string networkAclId)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { networkAclId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { networkAclId }.Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -794,11 +798,11 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
         public static async Task AddRulesToNetworkAcl(CredentialContainer credentials, string regionName, string networkAclId, IReadOnlyCollection<ConfigNetworkAclInboundRule> inboundRules, IReadOnlyCollection<ConfigNetworkAclOutboundRule> outboundRules, IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { networkAclId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { inboundRules }.Must().NotBeNull().OrThrowFirstFailure();
-            new { outboundRules }.Must().NotBeNull().OrThrowFirstFailure();
-            new { nameToCidrMap }.Must().NotBeNull().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { networkAclId }.Must().NotBeNullNorWhiteSpace();
+            new { inboundRules }.Must().NotBeNull();
+            new { outboundRules }.Must().NotBeNull();
+            new { nameToCidrMap }.Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -937,8 +941,8 @@ namespace Naos.AWS.Core
         /// <returns>Task for async.</returns>
         public static async Task RemoveAllRulesFromSecurityGroup(CredentialContainer credentials, string regionName, string securityGroupId)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { securityGroupId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { securityGroupId }.Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -993,11 +997,11 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public static async Task AddRulesToSecurityGroup(CredentialContainer credentials, string regionName, string securityGroupId, IReadOnlyCollection<ConfigSecurityGroupInboundRule> inboundRules, IReadOnlyCollection<ConfigSecurityGroupOutboundRule> outboundRules, IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { regionName }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { securityGroupId }.Must().NotBeNull().And().NotBeWhiteSpace().OrThrowFirstFailure();
-            new { inboundRules }.Must().NotBeNull().OrThrowFirstFailure();
-            new { outboundRules }.Must().NotBeNull().OrThrowFirstFailure();
-            new { nameToCidrMap }.Must().NotBeNull().OrThrowFirstFailure();
+            new { regionName }.Must().NotBeNullNorWhiteSpace();
+            new { securityGroupId }.Must().NotBeNullNorWhiteSpace();
+            new { inboundRules }.Must().NotBeNull();
+            new { outboundRules }.Must().NotBeNull();
+            new { nameToCidrMap }.Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);

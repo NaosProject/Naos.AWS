@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FileLister.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="FileLister.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -15,8 +15,7 @@ namespace Naos.AWS.S3
     using Amazon.S3.Model;
 
     using Naos.AWS.Domain;
-
-    using Spritely.Recipes;
+    using OBeautifulCode.Validation.Recipes;
 
     /// <summary>
     /// Class to list files from Amazon S3.
@@ -44,8 +43,8 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
         {
-            region.Named(nameof(region)).Must().NotBeWhiteSpace().OrThrow();
-            bucketName.Named(nameof(bucketName)).Must().NotBeWhiteSpace().OrThrow();
+            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();

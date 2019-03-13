@@ -1,11 +1,12 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigSerializationTest.cs" company="Naos">
-//    Copyright (c) Naos 2017. All Rights Reserved.
+// <copyright file="ConfigSerializationTest.cs" company="Naos Project">
+//    Copyright (c) Naos Project 2019. All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Naos.AWS.Domain.Test
 {
+    using System.Globalization;
     using System.IO;
     using System.Text;
     using System.Xml.Serialization;
@@ -17,10 +18,10 @@ namespace Naos.AWS.Domain.Test
     /// <summary>
     /// Test the serialization of config.
     /// </summary>
-    public class ConfigSerializationTest
+    public static class ConfigSerializationTest
     {
         [Fact]
-        public void Region_should_serialize_to_xml()
+        public static void Region_should_serialize_to_xml()
         {
             // Arrange
             var serializer = new NaosXmlSerializer();
@@ -249,14 +250,16 @@ namespace Naos.AWS.Domain.Test
 
     public class NaosXmlSerializer
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Test harness.")]
         public string SerializeToString<T>(T obj)
         {
             var serializer = new XmlSerializer(typeof(T));
-            var stringWriter = new StringWriter();
+            var stringWriter = new StringWriter(CultureInfo.CurrentCulture);
             serializer.Serialize(stringWriter, obj);
             return stringWriter.ToString();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Test harness.")]
         public T Deserialize<T>(string serialized)
         {
             var serializer = new XmlSerializer(typeof(T));
