@@ -17,7 +17,7 @@ namespace Naos.AWS.S3
     public interface IUploadFiles
     {
         /// <summary>
-        /// Uploads the provided file to the specified region and bucket named using the provided key.
+        /// Uploads the provided file to the specified region and bucket named using the provided key; existing items will be overwritten.
         /// </summary>
         /// <param name="region">Region bucket is in.</param>
         /// <param name="bucketName">Bucket name to upload to.</param>
@@ -35,7 +35,7 @@ namespace Naos.AWS.S3
             IReadOnlyDictionary<string, string> userDefinedMetadata = null);
 
         /// <summary>
-        /// Uploads the provided file to the specified region and bucket named using the provided key.
+        /// Uploads the provided file to the specified region and bucket named using the provided key; existing items will be overwritten.
         /// </summary>
         /// <param name="region">Region bucket is in.</param>
         /// <param name="bucketName">Bucket name to upload to.</param>
