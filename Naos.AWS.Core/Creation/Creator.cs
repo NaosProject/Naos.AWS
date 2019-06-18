@@ -378,9 +378,9 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="credentials">Credentials to use.</param>
         /// <param name="regionName">Region name to use.</param>
-        /// <param name="routeTableName">Route table name</param>
+        /// <param name="routeTableName">Route table name.</param>
         /// <param name="vpcId">ID or parent VPC.</param>
-        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is infinity.</param>
         /// <returns>Populated object.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vpc", Justification = "Spelling/name is correct.")]
         public static async Task<RouteTable> NameDefaultRouteTable(CredentialContainer credentials, string regionName, string routeTableName, string vpcId, TimeSpan timeout)
@@ -838,15 +838,15 @@ namespace Naos.AWS.Core
 
                     var addRuleRequest = new Amazon.EC2.Model.CreateNetworkAclEntryRequest
                     {
-                                                            NetworkAclId = networkAclId,
-                                                            Egress = egress,
-                                                            RuleNumber = rule.RuleNumber,
-                                                            RuleAction = rule.Action.ToUpper(),
-                                                            CidrBlock = cidr,
-                                                            IcmpTypeCode = new Amazon.EC2.Model.IcmpTypeCode { Type = type },
-                                                            PortRange = new Amazon.EC2.Model.PortRange { From = portRange.From, To = portRange.To },
-                                                            Protocol = protocol,
-                                                        };
+                        NetworkAclId = networkAclId,
+                        Egress = egress,
+                        RuleNumber = rule.RuleNumber,
+                        RuleAction = rule.Action.ToUpper(),
+                        CidrBlock = cidr,
+                        IcmpTypeCode = new Amazon.EC2.Model.IcmpTypeCode { Type = type },
+                        PortRange = new Amazon.EC2.Model.PortRange { From = portRange.From, To = portRange.To },
+                        Protocol = protocol,
+                    };
 
                     var addRuleResponse = await client.CreateNetworkAclEntryAsync(addRuleRequest);
                     Validator.ThrowOnBadResult(addRuleRequest, addRuleResponse);
@@ -871,12 +871,12 @@ namespace Naos.AWS.Core
 
             var request = new Amazon.EC2.Model.DescribeSecurityGroupsRequest
             {
-                                  Filters = new[]
-                                                {
-                                                    new Amazon.EC2.Model.Filter("vpc-id", new[] { vpcId }.ToList()),
-                                                    new Amazon.EC2.Model.Filter("group-name", new[] { "default" }.ToList()),
-                                                }.ToList(),
-                              };
+                Filters = new[]
+                {
+                    new Amazon.EC2.Model.Filter("vpc-id", new[] { vpcId }.ToList()),
+                    new Amazon.EC2.Model.Filter("group-name", new[] { "default" }.ToList()),
+                }.ToList(),
+            };
 
             Amazon.EC2.Model.SecurityGroup responseObject;
             using (var client = new Amazon.EC2.AmazonEC2Client(awsCredentials, regionEndpoint))
@@ -1078,9 +1078,9 @@ namespace Naos.AWS.Core
 
             var request = new Amazon.EC2.Model.CreateNatGatewayRequest
             {
-                                  SubnetId = subnetId,
-                                  AllocationId = elasticIpAllocationId,
-                              };
+                SubnetId = subnetId,
+                AllocationId = elasticIpAllocationId,
+            };
 
             Amazon.EC2.Model.NatGateway responseObject;
             using (var client = new Amazon.EC2.AmazonEC2Client(awsCredentials, regionEndpoint))

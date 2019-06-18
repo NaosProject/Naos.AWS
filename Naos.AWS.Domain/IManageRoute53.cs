@@ -22,7 +22,7 @@ namespace Naos.AWS.Domain
         /// <param name="type">Type of entry to add.</param>
         /// <param name="domain">Domain to use.</param>
         /// <param name="targetAddresses">IP Addresses to attach to the domain.</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Upsert", Justification = "Spelling/name is correct.")]
         Task UpsertDnsEntryAsync(string region, string domainZoneHostingId, Route53EntryType type, string domain, ICollection<string> targetAddresses);
@@ -33,7 +33,7 @@ namespace Naos.AWS.Domain
         /// <param name="region">Region the call should be made against.</param>
         /// <param name="domainZoneHostingId">AWS id of the zone.</param>
         /// <returns>Collection of DNS entries in the zone.</returns>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         Task<ICollection<Route53Entry>> GetDnsEntriesAsync(string region, string domainZoneHostingId);
     }
 }

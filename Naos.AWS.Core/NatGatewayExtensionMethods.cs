@@ -17,7 +17,7 @@ namespace Naos.AWS.Core
     using static System.FormattableString;
 
     /// <summary>
-    /// Extensions on <see cref="NatGateway" />
+    /// Extensions on <see cref="NatGateway" />.
     /// </summary>
     public static class NatGatewayExtensionMethods
     {

@@ -16,7 +16,7 @@ namespace Naos.AWS.Core
     using Naos.AWS.Domain;
 
     /// <summary>
-    /// Extensions on <see cref="NetworkAcl" />
+    /// Extensions on <see cref="NetworkAcl" />.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
     public static class NetworkAclExtensionMethods

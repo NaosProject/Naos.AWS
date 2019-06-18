@@ -46,7 +46,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="internetGateway">Internet gateway to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task DeleteAsync(this InternetGateway internetGateway, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);

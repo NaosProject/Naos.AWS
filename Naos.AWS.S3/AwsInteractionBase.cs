@@ -65,7 +65,7 @@ namespace Naos.AWS.S3
     }
 
     /// <summary>
-    /// Extension methods to convert internal objects to AWS SDK objects. (Duplicate from Naos.AWS.Core!!!)
+    /// Extension methods to convert internal objects to AWS SDK objects. (Duplicate from Naos.AWS.Core!!!).
     /// </summary>
     internal static class CredentialExtensionMethods
     {

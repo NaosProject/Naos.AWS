@@ -51,7 +51,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="vpc">VPC to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "vpc", Justification = "Spelling/name is correct.")]
         public static async Task DeleteAsync(this Vpc vpc, CredentialContainer credentials = null)
         {

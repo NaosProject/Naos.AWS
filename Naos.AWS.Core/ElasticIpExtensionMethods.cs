@@ -27,7 +27,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="elasticIp">Elastic IP to release.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         public static async Task ReleaseAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)
@@ -53,7 +53,7 @@ namespace Naos.AWS.Core
         /// <param name="elasticIp">Elastic IP to connect to the provided instance.</param>
         /// <param name="instanceId">Instance to attach elastic IP to.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         public static async Task AssociateToInstanceAsync(this ElasticIp elasticIp, string instanceId, CredentialContainer credentials = null)
@@ -75,7 +75,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="elasticIp">Elastic IP to remove from the provided instance.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ip", Justification = "Spelling/name is correct.")]
         public static async Task DisassociateFromInstanceAsync(this ElasticIp elasticIp, CredentialContainer credentials = null)

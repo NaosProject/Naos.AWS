@@ -17,7 +17,7 @@ namespace Naos.AWS.Core
     using Naos.AWS.Domain;
 
     /// <summary>
-    /// Extensions on <see cref="RouteTable" />
+    /// Extensions on <see cref="RouteTable" />.
     /// </summary>
     public static class RouteTableExtensionMethods
     {

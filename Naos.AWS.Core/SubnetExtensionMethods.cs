@@ -46,7 +46,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="subnet">Subnet to delete.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task DeleteAsync(this Subnet subnet, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);

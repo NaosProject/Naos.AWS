@@ -86,7 +86,7 @@ namespace Naos.AWS.Core
         /// <param name="awsObject">Object to tag with name.</param>
         /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task TagNameInAwsAsync(this IAwsObject awsObject, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
@@ -102,7 +102,7 @@ namespace Naos.AWS.Core
         /// <param name="tagValue">Value of tag.</param>
         /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task AddTagInAwsAsync(this IAwsObject awsObject, string tagName, string tagValue, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)

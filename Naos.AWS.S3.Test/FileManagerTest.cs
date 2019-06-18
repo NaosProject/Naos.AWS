@@ -28,7 +28,7 @@ namespace Naos.AWS.S3.Test
         #region Constructor Tests
 
         /// <summary>
-        /// Test constructor when passed invalid input
+        /// Test constructor when passed invalid input.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Keeping instance for base class.")]
         [Fact]
@@ -39,7 +39,7 @@ namespace Naos.AWS.S3.Test
         }
 
         /// <summary>
-        /// Test constructor when passed invalid input
+        /// Test constructor when passed invalid input.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Keeping instance for base class.")]
         [Fact]

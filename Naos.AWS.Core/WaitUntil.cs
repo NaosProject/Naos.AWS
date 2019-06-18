@@ -26,7 +26,7 @@ namespace Naos.AWS.Core
         /// <param name="awsObject">AWS object to check on.</param>
         /// <param name="timeout">Optional timeout - default is infinity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static async Task AwsObjectExists(IAwsObject awsObject, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
@@ -138,7 +138,7 @@ namespace Naos.AWS.Core
         /// <param name="unexpectedStates">Optional unexpected states to throw on.</param>
         /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "InState", Justification = "Spelling/name is correct.")]
         public static async Task InstanceInState(Instance instance, InstanceState expectedState, IReadOnlyCollection<InstanceState> unexpectedStates = null, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
         {
@@ -172,7 +172,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task SuccessfulChecks(Instance instance, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
         {
             async Task<bool> Operation()

@@ -17,7 +17,7 @@ namespace Naos.AWS.Core
     using Naos.AWS.Domain;
 
     /// <summary>
-    /// Extensions on <see cref="SecurityGroup" />
+    /// Extensions on <see cref="SecurityGroup" />.
     /// </summary>
     public static class SecurityGroupExtensionMethods
     {

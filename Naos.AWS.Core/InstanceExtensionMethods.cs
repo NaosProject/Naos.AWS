@@ -170,7 +170,7 @@ namespace Naos.AWS.Core
         /// <summary>
         /// Fills the list.
         /// </summary>
-        /// <param name="instances">List to fill </param>
+        /// <param name="instances">List to fill. </param>
         /// <param name="region">Region to make call against.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Same collection operating on for fluent usage.</returns>
@@ -305,7 +305,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to delete.</param>
         /// <param name="timeout">Optional timeout to wait until object reaches <see cref="InstanceState.Terminated" />; DEFAULT is ininity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task TerminateAsync(this Instance instance, TimeSpan timeout, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -356,7 +356,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to stop.</param>
         /// <param name="force">Force the instance to stop (default is FALSE).</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task StopAsync(this Instance instance, bool force = false, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -376,7 +376,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to start.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task StartAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -396,7 +396,7 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="instance">Instance to true up the type of.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
-        /// <returns>Task for async/await</returns>
+        /// <returns>Task for async/await.</returns>
         public static async Task UpdateInstanceTypeAsync(this Instance instance, CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
