@@ -19,7 +19,7 @@ namespace Naos.AWS.S3
 
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
     using Spritely.Redo;
 
     /// <summary>
@@ -42,7 +42,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
+            uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
@@ -55,7 +55,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
+            uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
             await this.DownloadFileAsync(
                 uploadFileResult.Region,
@@ -68,7 +68,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath, bool validateChecksumsIfPresent = true)
         {
-            destinationFilePath.Named(nameof(destinationFilePath)).Must().NotBeNullNorWhiteSpace();
+            destinationFilePath.AsArg(nameof(destinationFilePath)).Must().NotBeNullNorWhiteSpace();
 
             using (var fileStream = File.Create(destinationFilePath))
             {
@@ -79,10 +79,10 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream, bool validateChecksumsIfPresent = true)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
-            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
-            destinationStream.Named(nameof(destinationStream)).Must().NotBeNull();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            destinationStream.AsArg(nameof(destinationStream)).Must().NotBeNull();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();

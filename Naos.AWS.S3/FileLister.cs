@@ -15,7 +15,7 @@ namespace Naos.AWS.S3
     using Amazon.S3.Model;
 
     using Naos.AWS.Domain;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Class to list files from Amazon S3.
@@ -43,8 +43,8 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();

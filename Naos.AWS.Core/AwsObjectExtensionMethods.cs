@@ -16,7 +16,7 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Domain;
 
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Extension methods on the AWS object.
@@ -32,7 +32,7 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         public static AwsObjectType InferObjectTypeFromId(this IHaveId awsObject)
         {
-            new { awsObject }.Must().NotBeNull();
+            new { awsObject }.AsArg().Must().NotBeNull();
 
             if (awsObject.Id.StartsWith("i-", StringComparison.OrdinalIgnoreCase))
             {

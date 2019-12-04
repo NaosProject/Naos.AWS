@@ -7,7 +7,7 @@
 namespace Naos.AWS.S3
 {
     using System;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Representation of a file in S3.
@@ -26,11 +26,11 @@ namespace Naos.AWS.S3
         /// <param name="size">Size of the file.</param>
         public CloudFile(string region, string bucketName, string keyName, string ownerId, string ownerName, DateTime lastModified, long size)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
-            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
-            ownerId.Named(nameof(ownerId)).Must().NotBeNullNorWhiteSpace();
-            size.Named(nameof(size)).Must().BeGreaterThanOrEqualTo(0L);
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            ownerId.AsArg(nameof(ownerId)).Must().NotBeNullNorWhiteSpace();
+            size.AsArg(nameof(size)).Must().BeGreaterThanOrEqualTo(0L);
 
             this.Region = region;
             this.BucketName = bucketName;

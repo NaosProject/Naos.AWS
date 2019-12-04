@@ -9,7 +9,7 @@ namespace Naos.AWS.S3
     using System.Collections.Generic;
     using System.Security.Cryptography;
 
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Result of uploading a file to S3.
@@ -25,10 +25,10 @@ namespace Naos.AWS.S3
         /// <param name="computedChecksums">Computed checksums of the uploaded file.</param>
         public UploadFileResult(string region, string bucketName, string keyName, IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
-            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
-            computedChecksums.Named(nameof(computedChecksums)).Must().NotBeNull();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            computedChecksums.AsArg(nameof(computedChecksums)).Must().NotBeNull();
 
             this.Region = region;
             this.BucketName = bucketName;

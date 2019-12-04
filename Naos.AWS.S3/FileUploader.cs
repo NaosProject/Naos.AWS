@@ -20,7 +20,7 @@ namespace Naos.AWS.S3
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
 
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     using Spritely.Redo;
 
@@ -50,7 +50,7 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
-            sourceFilePath.Named(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
+            sourceFilePath.AsArg(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
 
             return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, hashAlgorithmNames, userDefinedMetadata);
         }
@@ -64,7 +64,7 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null)
         {
-            sourceStream.Named(nameof(sourceStream)).Must().NotBeNull();
+            sourceStream.AsArg(nameof(sourceStream)).Must().NotBeNull();
 
             return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, hashAlgorithmNames, userDefinedMetadata);
         }
@@ -78,10 +78,10 @@ namespace Naos.AWS.S3
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
-            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
-            hashAlgorithmNames.Named(nameof(hashAlgorithmNames)).Must().NotBeNull();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            hashAlgorithmNames.AsArg(nameof(hashAlgorithmNames)).Must().NotBeNull();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();

@@ -8,7 +8,7 @@ namespace Naos.AWS.S3
 {
     using System;
 
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Helper class for computing hash values.
@@ -24,7 +24,7 @@ namespace Naos.AWS.S3
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "string", Justification = "Spelling/name is correct.")]
         public static string ConvertHexStringToBase64(string hexString)
         {
-            new { hexString }.Must().NotBeNullNorWhiteSpace();
+            new { hexString }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             var buffer = new byte[hexString.Length / 2];
             for (var i = 0; i < hexString.Length; i += 2)

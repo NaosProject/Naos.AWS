@@ -15,7 +15,7 @@ namespace Naos.AWS.S3
     using Amazon.S3;
 
     using Naos.AWS.Domain;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
     using Spritely.Redo;
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult, bool shouldSanitizeKeys = true)
         {
-            uploadFileResult.Named(nameof(uploadFileResult)).Must().NotBeNull();
+            uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
             return await this.GetFileMetadataAsync(uploadFileResult.Region, uploadFileResult.BucketName, uploadFileResult.KeyName, shouldSanitizeKeys);
         }
@@ -46,9 +46,9 @@ namespace Naos.AWS.S3
         /// <inheritdoc />
         public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName, bool shouldSanitizeKeys = true)
         {
-            region.Named(nameof(region)).Must().NotBeNullNorWhiteSpace();
-            bucketName.Named(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
-            keyName.Named(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();

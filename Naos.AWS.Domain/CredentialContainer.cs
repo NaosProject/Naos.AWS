@@ -7,7 +7,7 @@
 namespace Naos.AWS.Domain
 {
     using System;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Wrapper object to hold the AWSCredentials and allow abstraction from changes in it.
@@ -28,8 +28,8 @@ namespace Naos.AWS.Domain
         /// <param name="secretKey">Secret key.</param>
         public CredentialContainer(string accessKey, string secretKey)
         {
-            new { accessKey }.Must().NotBeNullNorWhiteSpace();
-            new { secretKey }.Must().NotBeNullNorWhiteSpace();
+            new { accessKey }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { secretKey }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             this.CredentialType = CredentialType.Keys;
             this.AccessKeyId = accessKey;
@@ -43,7 +43,7 @@ namespace Naos.AWS.Domain
         /// <param name="expiration">Token expiration.</param>
         public CredentialContainer(string sessionToken, DateTime expiration)
         {
-            new { sessionToken }.Must().NotBeNullNorWhiteSpace();
+            new { sessionToken }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             this.CredentialType = CredentialType.Token;
             this.Expiration = expiration;

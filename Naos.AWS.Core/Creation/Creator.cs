@@ -12,7 +12,7 @@ namespace Naos.AWS.Core
     using System.Threading.Tasks;
 
     using Naos.AWS.Domain;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     using static System.FormattableString;
 
@@ -461,8 +461,8 @@ namespace Naos.AWS.Core
         /// <returns>Task for async.</returns>
         public static async Task RemoveAllRoutesFromRouteTable(CredentialContainer credentials, string regionName, string routeTableId)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { routeTableId }.Must().NotBeNullNorWhiteSpace();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { routeTableId }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -513,10 +513,10 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public static async Task AddRoutesToRouteTable(CredentialContainer credentials, string regionName, string routeTableId, IReadOnlyCollection<ConfigRoute> routes, IReadOnlyDictionary<string, string> nameToCidrMap, IReadOnlyDictionary<string, string> nameToInternetGatewayId, IReadOnlyDictionary<string, string> nameToNatGatewayId)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { routeTableId }.Must().NotBeNullNorWhiteSpace();
-            new { routes }.Must().NotBeNull();
-            new { nameToCidrMap }.Must().NotBeNull();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { routeTableId }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { routes }.AsArg().Must().NotBeNull();
+            new { nameToCidrMap }.AsArg().Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -525,7 +525,7 @@ namespace Naos.AWS.Core
             {
                 foreach (var route in routes)
                 {
-                    nameToCidrMap.TryGetValue(route.DestinationRef, out string cidr).Named(Invariant($"Did-not-find-cidr-for-{route.DestinationRef}")).Must().BeTrue();
+                    nameToCidrMap.TryGetValue(route.DestinationRef, out string cidr).AsOp(Invariant($"Did-not-find-cidr-for-{route.DestinationRef}")).Must().BeTrue();
                     nameToInternetGatewayId.TryGetValue(route.TargetRef, out string igwId);
                     nameToNatGatewayId.TryGetValue(route.TargetRef, out string ngwId);
 
@@ -743,8 +743,8 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
         public static async Task RemoveAllRulesFromNetworkAcl(CredentialContainer credentials, string regionName, string networkAclId)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { networkAclId }.Must().NotBeNullNorWhiteSpace();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { networkAclId }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -798,11 +798,11 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Acl", Justification = "Spelling/name is correct.")]
         public static async Task AddRulesToNetworkAcl(CredentialContainer credentials, string regionName, string networkAclId, IReadOnlyCollection<ConfigNetworkAclInboundRule> inboundRules, IReadOnlyCollection<ConfigNetworkAclOutboundRule> outboundRules, IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { networkAclId }.Must().NotBeNullNorWhiteSpace();
-            new { inboundRules }.Must().NotBeNull();
-            new { outboundRules }.Must().NotBeNull();
-            new { nameToCidrMap }.Must().NotBeNull();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { networkAclId }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { inboundRules }.AsArg().Must().NotBeNull();
+            new { outboundRules }.AsArg().Must().NotBeNull();
+            new { nameToCidrMap }.AsArg().Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -941,8 +941,8 @@ namespace Naos.AWS.Core
         /// <returns>Task for async.</returns>
         public static async Task RemoveAllRulesFromSecurityGroup(CredentialContainer credentials, string regionName, string securityGroupId)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { securityGroupId }.Must().NotBeNullNorWhiteSpace();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { securityGroupId }.AsArg().Must().NotBeNullNorWhiteSpace();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);
@@ -997,11 +997,11 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public static async Task AddRulesToSecurityGroup(CredentialContainer credentials, string regionName, string securityGroupId, IReadOnlyCollection<ConfigSecurityGroupInboundRule> inboundRules, IReadOnlyCollection<ConfigSecurityGroupOutboundRule> outboundRules, IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { regionName }.Must().NotBeNullNorWhiteSpace();
-            new { securityGroupId }.Must().NotBeNullNorWhiteSpace();
-            new { inboundRules }.Must().NotBeNull();
-            new { outboundRules }.Must().NotBeNull();
-            new { nameToCidrMap }.Must().NotBeNull();
+            new { regionName }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { securityGroupId }.AsArg().Must().NotBeNullNorWhiteSpace();
+            new { inboundRules }.AsArg().Must().NotBeNull();
+            new { outboundRules }.AsArg().Must().NotBeNull();
+            new { nameToCidrMap }.AsArg().Must().NotBeNull();
 
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
             var regionEndpoint = Amazon.RegionEndpoint.GetBySystemName(regionName);

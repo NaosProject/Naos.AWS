@@ -10,7 +10,7 @@ namespace Naos.AWS.Domain
     using System.Collections.Generic;
     using System.Globalization;
     using System.Xml.Serialization;
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Base configuration for a <see cref="ConfigNetworkAclRuleBase" /> or <see cref="ConfigSecurityGroupRuleBase" />.
@@ -127,9 +127,9 @@ namespace Naos.AWS.Domain
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cidr", Justification = "Spelling/name is correct.")]
         public string GetCidrForApi(IReadOnlyDictionary<string, string> nameToCidrMap)
         {
-            new { nameToCidrMap }.Must().NotBeNull();
+            new { nameToCidrMap }.AsArg().Must().NotBeNull();
 
-            nameToCidrMap.TryGetValue(this.CidrNameRef, out string cidr).Named(FormattableString.Invariant($"Did-not-find-cidr-for-{this.CidrNameRef}")).Must().BeTrue();
+            nameToCidrMap.TryGetValue(this.CidrNameRef, out string cidr).AsOp(FormattableString.Invariant($"Did-not-find-cidr-for-{this.CidrNameRef}")).Must().BeTrue();
 
             return cidr;
         }

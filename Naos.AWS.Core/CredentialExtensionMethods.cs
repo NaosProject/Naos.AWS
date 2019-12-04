@@ -13,7 +13,7 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Domain;
 
-    using OBeautifulCode.Validation.Recipes;
+    using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Extension methods to convert internal objects to AWS SDK objects.
@@ -28,7 +28,7 @@ namespace Naos.AWS.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static AWSCredentials ToAwsCredentials(this CredentialContainer credentials)
         {
-            new { credentials }.Must().NotBeNull();
+            new { credentials }.AsArg().Must().NotBeNull();
 
             AWSCredentials ret = null;
             switch (credentials.CredentialType)
