@@ -300,6 +300,33 @@ namespace Naos.AWS.Core
         }
 
         /// <summary>
+        /// Gets the status of an instance.
+        /// </summary>
+        /// <param name="instance">Instance to operate on.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        /// <param name="shouldGetLatest">Should pull latest output; DEFAULT is false (consistent with AWS).</param>
+        /// <returns>Status of instance.</returns>
+        public static async Task<string> GetConsoleOutputAsync(this Instance instance, CredentialContainer credentials = null, bool shouldGetLatest = false)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(instance.Region);
+
+            var request = new GetConsoleOutputRequest(instance.Id)
+                          {
+                              Latest = shouldGetLatest,
+                          };
+
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var response = await client.GetConsoleOutputAsync(request);
+                Validator.ThrowOnBadResult(request, response);
+
+                var result = response.Output;
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Deletes an instance.
         /// </summary>
         /// <param name="instance">Instance to delete.</param>
