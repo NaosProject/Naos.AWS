@@ -55,7 +55,7 @@ namespace Naos.AWS.Core
 
                                 if (iops > maxIops)
                                 {
-                                    throw new ArgumentException("Specified IOPS: " + iops + " was greated than allowed (30 IOPS:1GB): " + maxIops);
+                                    throw new ArgumentException(FormattableString.Invariant($"Specified IOPS: {iops} was greated than allowed (30 IOPS:1GB): {maxIops}"));
                                 }
                             }
 

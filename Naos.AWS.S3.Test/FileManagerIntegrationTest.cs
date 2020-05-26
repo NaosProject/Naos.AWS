@@ -295,7 +295,7 @@ namespace Naos.AWS.S3.Test
             var fileManager = new FileManager(awsConfiguration.AccessKey, awsConfiguration.SecretKey);
             string keyName = CreateKeyName("ManageMetadata___Should_return_return_custom_metadata___When_custom_metadata_is_added_to_upload");
             var customMetadata = new CustomMetadata("First item", 1234, true);
-            var serializedMetadata = new ObcJsonSerializer(formattingKind: JsonFormattingKind.Compact).SerializeToString(customMetadata);
+            var serializedMetadata = new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>().SerializeToString(customMetadata);
             var customMetaDictionary = new Dictionary<string, string>
             {
                 { typeof(CustomMetadata).Name, serializedMetadata },
@@ -317,12 +317,12 @@ namespace Naos.AWS.S3.Test
             Assert.NotEmpty(metadata);
 
             // Ensure keys are sanitized by stripping of user defined metadata prefix.
-            Assert.False(metadata.Keys.Any(_ => _.Contains("x-amz-meta-")));
+            Assert.DoesNotContain(metadata.Keys, _ => _.Contains("x-amz-meta-"));
 
             // Should be 3 metadata keys -- one for the hash, one for the custom data, and one string value.
             Assert.Equal(3, metadata.Count);
 
-            var customMetadataFromAws = new ObcJsonSerializer(formattingKind: JsonFormattingKind.Compact).Deserialize<CustomMetadata>(metadata[typeof(CustomMetadata).Name.ToLowerInvariant()]);
+            var customMetadataFromAws = new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>().Deserialize<CustomMetadata>(metadata[typeof(CustomMetadata).Name.ToLowerInvariant()]);
             Assert.Equal(customMetadata.ThisIsMetadata, customMetadataFromAws.ThisIsMetadata);
             Assert.Equal(customMetadata.MetadataItem1, customMetadataFromAws.MetadataItem1);
             Assert.Equal(customMetadata.MetadataItem2, customMetadataFromAws.MetadataItem2);
@@ -361,7 +361,7 @@ namespace Naos.AWS.S3.Test
         {
             var configFile = GetFilePath(@"config\awsConfiguration.json");
             var serializedAwsConfiguration = File.ReadAllText(configFile);
-            var awsConfiguration = new ObcJsonSerializer(formattingKind: JsonFormattingKind.Compact).Deserialize<AwsConfiguration>(serializedAwsConfiguration);
+            var awsConfiguration = new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>().Deserialize<AwsConfiguration>(serializedAwsConfiguration);
 
             return awsConfiguration;
         }

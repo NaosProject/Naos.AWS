@@ -42,7 +42,7 @@ namespace Naos.AWS.Core.Test
             Assert.Equal(volumes.First().VirtualName, blockMappings.First().VirtualName);
             Assert.Equal(volumes.First().SizeInGb, blockMappings.First().Ebs.VolumeSize);
             Assert.Equal(volumes.First().VolumeType, blockMappings.First().Ebs.VolumeType);
-            Assert.Equal(true, blockMappings.First().Ebs.DeleteOnTermination);
+            Assert.True(blockMappings.First().Ebs.DeleteOnTermination);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Iops", Justification = "Spelling/name is correct.")]
