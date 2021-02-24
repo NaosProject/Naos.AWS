@@ -15,8 +15,6 @@ namespace Naos.AWS.S3.Test
     using System.Security.Cryptography;
     using Amazon.S3;
     using Naos.Recipes.Cryptography.Hashing;
-    using Newtonsoft.Json;
-    using OBeautifulCode.Serialization;
     using OBeautifulCode.Serialization.Json;
     using Xunit;
     using static System.FormattableString;

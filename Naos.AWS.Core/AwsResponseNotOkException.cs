@@ -9,8 +9,8 @@ namespace Naos.AWS.Core
     using System;
 
     using Amazon.Runtime;
-
-    using Newtonsoft.Json;
+    using OBeautifulCode.Serialization;
+    using OBeautifulCode.Serialization.Json;
 
     /// <summary>
     /// Exception signaling that a result from AWS was not HttpStatus of 200 (OK).
@@ -21,13 +21,15 @@ namespace Naos.AWS.Core
     [Serializable]
     public class AwsResponseNotOkException : Exception
     {
+        private static readonly IStringSerialize ErrorSerializer = new ObcJsonSerializer();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AwsResponseNotOkException"/> class.
         /// </summary>
         /// <param name="request">Request sent.</param>
         /// <param name="response">Response received.</param>
         public AwsResponseNotOkException(AmazonWebServiceRequest request, AmazonWebServiceResponse response)
-            : base("Request: " + JsonConvert.SerializeObject(request) + Environment.NewLine + "Response: " + JsonConvert.SerializeObject(response))
+            : base("Request: " + ErrorSerializer.SerializeToString(request) + Environment.NewLine + "Response: " + ErrorSerializer.SerializeToString(response))
         {
             this.Request = request;
             this.Response = response;

@@ -17,9 +17,8 @@ namespace Naos.AWS.Core
     using Amazon.EC2.Model;
 
     using Naos.AWS.Domain;
-
-    using Newtonsoft.Json;
-
+    using OBeautifulCode.Serialization;
+    using OBeautifulCode.Serialization.Json;
     using Instance = Naos.AWS.Domain.Instance;
     using InstanceState = Naos.AWS.Domain.InstanceState;
     using InstanceStatus = Naos.AWS.Domain.InstanceStatus;
@@ -33,6 +32,8 @@ namespace Naos.AWS.Core
     /// </summary>
     public static class InstanceExtensionMethods
     {
+        private static readonly IStringSerialize ErrorSerializer = new ObcJsonSerializer();
+
         /// <summary>
         /// Create a new Instance.
         /// </summary>
@@ -80,7 +81,7 @@ namespace Naos.AWS.Core
             if (newInstance == null)
             {
                 throw new ApplicationException(
-                    "Instance failed to get created: " + JsonConvert.SerializeObject(localInstance));
+                    "Instance failed to get created: " + ErrorSerializer.SerializeToString(localInstance));
             }
 
             // save the instance ID and tag the name in AWS
