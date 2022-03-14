@@ -104,6 +104,18 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
     <Compile Include="Ami.cs" />
     <Compile Include="AmiSearchStrategy.cs" />
+    <Compile Include="CloudStorageReaderSettings.designer.cs">
+      <DependentUpon>CloudStorageReaderSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CloudStorageSettingsBase.designer.cs">
+      <DependentUpon>CloudStorageSettingsBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CloudStorageWriterSettings.cs" />
+    <Compile Include="CloudStorageReaderSettings.cs" />
+    <Compile Include="CloudStorageSettingsBase.cs" />
+    <Compile Include="CloudStorageWriterSettings.designer.cs">
+      <DependentUpon>CloudStorageWriterSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\ConfigElasticIp.cs" />
     <Compile Include="Config\ConfigInternetGateway.cs" />
     <Compile Include="Config\ConfigNatGateway.cs" />
