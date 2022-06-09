@@ -64,6 +64,9 @@ namespace Naos.AWS.S3
         public override StreamRecord Execute(
             StandardGetLatestRecordOp operation)
         {
+            var identifierTypeRepresentation = typeof(string).ToRepresentation();
+            var objectTypeRepresentation = typeof(byte[]).ToRepresentation();
+
             operation.RecordNotFoundStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordNotFoundStrategy)}"))
                      .BeEqualTo(RecordNotFoundStrategy.ReturnDefault);
             operation.RecordFilter.DeprecatedIdTypes.MustForArg(
@@ -75,9 +78,9 @@ namespace Naos.AWS.S3
             operation.RecordFilter.InternalRecordIds.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
                      .BeNull();
-            operation.RecordFilter.ObjectTypes.MustForArg(
+            operation.RecordFilter.ObjectTypes.Single().MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}"))
-                     .BeNull();
+                     .BeEqualTo(objectTypeRepresentation);
             operation.RecordFilter.Tags.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}"))
                      .BeNull();
@@ -85,8 +88,6 @@ namespace Naos.AWS.S3
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
                      .NotBeEmptyEnumerable().And().HaveCount(1);
 
-            var identifierTypeRepresentation = typeof(string).ToRepresentation();
-            var objectTypeRepresentation = typeof(byte[]).ToRepresentation();
             var id = operation.RecordFilter.Ids.Select(
                                    _ =>
                                    {
@@ -140,8 +141,9 @@ namespace Naos.AWS.S3
             var userDefinedMetadata = operation
                                      .Metadata
                                      .Tags
-                                     .Select(_ => new KeyValuePair<string, string>(_.Name, _.Value))
-                                     .ToDictionary(k => k.Key, v => v.Value);
+                                    ?.Select(_ => new KeyValuePair<string, string>(_.Name, _.Value))
+                                     .ToDictionary(k => k.Key, v => v.Value)
+                                   ?? new Dictionary<string, string>();
 
             if (operation.Metadata.ObjectTimestampUtc != null)
             {
@@ -211,12 +213,14 @@ namespace Naos.AWS.S3
         public override IReadOnlyCollection<StringSerializedIdentifier> Execute(
             StandardGetDistinctStringSerializedIdsOp operation)
         {
+            var identifierType = typeof(string).ToRepresentation();
+
             operation.RecordFilter.DeprecatedIdTypes.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}"))
                      .BeNull();
-            operation.RecordFilter.IdTypes.MustForArg(
+            operation.RecordFilter.IdTypes.Single().MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}"))
-                     .BeNull();
+                     .BeEqualTo(identifierType);
             operation.RecordFilter.InternalRecordIds.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}"))
                      .BeNull();
@@ -228,14 +232,11 @@ namespace Naos.AWS.S3
                      .BeNull();
             operation.RecordFilter.Ids.MustForArg(
                           Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}"))
-                     .NotBeEmptyEnumerable()
-                     .And()
-                     .HaveCount(1);
+                     .BeNull();
 
             var resourceLocator = this.TryGetSingleLocator(operation);
             var listedFiles = this.fileManager.ListFilesAsync(resourceLocator.Region, resourceLocator.BucketName).RunUntilCompletion();
 
-            var identifierType = typeof(string).ToRepresentation();
             var result = listedFiles
                         .Select(_ => new StringSerializedIdentifier(_.KeyName, identifierType))
                         .ToList();

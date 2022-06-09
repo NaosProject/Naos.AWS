@@ -237,6 +237,7 @@
     <Compile Include="CloudFileTest.cs" />
     <Compile Include="CustomMetadata.cs" />
     <Compile Include="FileManagerIntegrationTest.cs" />
+    <Compile Include="StreamTest.cs" />
     <Compile Include="FileManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\ProjectInfo.cs" />
@@ -258,6 +259,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Naos.AWS.Domain\Naos.AWS.Domain.csproj">
+      <Project>{43685312-C527-48E5-829C-9C7528881F72}</Project>
+      <Name>Naos.AWS.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Naos.AWS.S3\Naos.AWS.S3.csproj">
       <Project>{7ae47cd9-4e04-49cb-a0d7-298bfe2908ec}</Project>
       <Name>Naos.AWS.S3</Name>
