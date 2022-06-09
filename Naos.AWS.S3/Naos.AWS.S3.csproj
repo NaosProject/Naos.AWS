@@ -100,6 +100,7 @@
     <Compile Include=".recipes\OBeautifulCode.Assertion\Verifications.TypeValidation.cs" />
     <Compile Include=".recipes\OBeautifulCode.Assertion\Verifications.Workflow.cs" />
     <Compile Include=".recipes\OBeautifulCode.Assertion\WorkflowExtensions.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Cloning\CloningExtensions.cs" />
     <Compile Include=".recipes\OBeautifulCode.CodeAnalysis\ObcSuppressBecause.cs" />
     <Compile Include=".recipes\OBeautifulCode.Collection\EnumerableExtensions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Equality\ByteArrayEqualityComparer.cs" />
@@ -136,7 +137,13 @@
     <Compile Include="Domain\CloudFile.cs" />
     <Compile Include="Domain\ComputedChecksum.cs" />
     <Compile Include="Domain\S3ResourceLocator.cs" />
+    <Compile Include="Domain\S3ResourceLocator.designer.cs">
+      <DependentUpon>S3ResourceLocator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Domain\S3StreamRepresentation.cs" />
+    <Compile Include="Domain\S3StreamRepresentation.designer.cs">
+      <DependentUpon>S3StreamRepresentation.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileDownloader.cs" />
     <Compile Include="S3Stream.cs" />
     <Compile Include="FileManager.cs" />
