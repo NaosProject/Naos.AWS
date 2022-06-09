@@ -50,26 +50,39 @@ namespace Naos.AWS.S3
             var awsCredentials = this.Credentials.ToAwsCredentials();
             using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
-                var request = new ListObjectsRequest { BucketName = bucketName, Prefix = keyPrefixSearchPattern };
+                var result = new List<CloudFile>();
 
-                var objects = await client.ListObjectsAsync(request);
-                var ret = new List<CloudFile>();
-                if (objects?.S3Objects != null && objects.S3Objects.Count > 0)
+                ListObjectsResponse response = null;
+
+                do
                 {
-                    ret.AddRange(
-                        objects.S3Objects.Select(
-                            _ =>
-                                new CloudFile(
-                                    region,
-                                    bucketName,
-                                    _.Key,
-                                    _.Owner == null ? "[Null Owner]" : _.Owner.Id,
-                                    _.Owner == null ? "[Null Owner]" : _.Owner.DisplayName,
-                                    _.LastModified,
-                                    _.Size)));
-                }
+                    var request = new ListObjectsRequest
+                    {
+                        BucketName = bucketName,
+                        Prefix = keyPrefixSearchPattern,
+                        Marker = response?.NextMarker,
+                    };
 
-                return ret;
+                    response = await client.ListObjectsAsync(request);
+
+                    if (response?.S3Objects != null && response.S3Objects.Count > 0)
+                    {
+                        result.AddRange(
+                            response.S3Objects.Select(
+                                _ =>
+                                    new CloudFile(
+                                        region,
+                                        bucketName,
+                                        _.Key,
+                                        _.Owner == null ? "[Null Owner]" : _.Owner.Id,
+                                        _.Owner == null ? "[Null Owner]" : _.Owner.DisplayName,
+                                        _.LastModified,
+                                        _.Size)));
+                    }
+                }
+                while (response?.IsTruncated ?? false);
+
+                return result;
             }
         }
     }
