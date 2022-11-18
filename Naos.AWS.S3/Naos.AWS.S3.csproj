@@ -49,8 +49,8 @@
     <Reference Include="AWSSDK.SecurityToken, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.SecurityToken.3.3.4.58\lib\net45\AWSSDK.SecurityToken.dll</HintPath>
     </Reference>
-    <Reference Include="Naos.Database.Domain, Version=1.1.381.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Naos.Database.Domain.1.1.381\lib\net462\Naos.Database.Domain.dll</HintPath>
+    <Reference Include="Naos.Database.Domain, Version=1.1.382.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Naos.Database.Domain.1.1.382\lib\net462\Naos.Database.Domain.dll</HintPath>
     </Reference>
     <Reference Include="OBeautifulCode.Compression, Version=1.0.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\OBeautifulCode.Compression.1.0.26\lib\net462\OBeautifulCode.Compression.dll</HintPath>
@@ -136,6 +136,7 @@
     <Compile Include="ChecksumVerificationException.cs" />
     <Compile Include="Domain\CloudFile.cs" />
     <Compile Include="Domain\ComputedChecksum.cs" />
+    <Compile Include="Domain\S3StreamConfig.cs" />
     <Compile Include="Domain\S3ResourceLocator.cs" />
     <Compile Include="Domain\S3ResourceLocator.designer.cs">
       <DependentUpon>S3ResourceLocator.cs</DependentUpon>

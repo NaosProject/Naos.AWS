@@ -193,7 +193,6 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
     <Compile Include="EbsVolumeExtensionMethodsTest.cs" />
     <Compile Include="CredentialExtensionMethodsTest.cs" />
-    <Compile Include="InstanceTypeHelperTest - Copy.cs" />
     <Compile Include="InstanceTypeHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\ProjectInfo.cs" />
