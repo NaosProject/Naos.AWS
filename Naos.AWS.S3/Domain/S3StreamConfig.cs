@@ -7,6 +7,7 @@
 namespace Naos.AWS.S3
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
@@ -43,6 +44,7 @@ namespace Naos.AWS.S3
             defaultSerializerRepresentation.MustForArg(nameof(defaultSerializerRepresentation)).NotBeNull();
             defaultSerializationFormat.MustForArg(nameof(defaultSerializationFormat)).NotBeEqualTo(SerializationFormat.Invalid);
             allLocators.MustForArg(nameof(allLocators)).NotBeNullNorEmptyEnumerableNorContainAnyNulls();
+            allLocators.ToList().ForEach(_ => _.MustForArg(nameof(allLocators) + "-item").BeOfType<S3ResourceLocator>());
 
             this.Name = name;
             this.AccessKinds = accessKinds;
