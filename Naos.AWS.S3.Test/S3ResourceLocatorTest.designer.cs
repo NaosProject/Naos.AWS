@@ -18,6 +18,7 @@ namespace Naos.AWS.S3.Test
 
     using global::FakeItEasy;
 
+    using global::Naos.AWS.Domain;
     using global::Naos.Database.Domain;
 
     using global::OBeautifulCode.Assertion.Recipes;
@@ -27,6 +28,8 @@ namespace Naos.AWS.S3.Test
     using global::OBeautifulCode.Math.Recipes;
     using global::OBeautifulCode.Reflection.Recipes;
     using global::OBeautifulCode.Representation.System;
+    using global::OBeautifulCode.Serialization;
+    using global::OBeautifulCode.Serialization.Recipes;
     using global::OBeautifulCode.Type;
 
     using global::Xunit;
@@ -47,7 +50,7 @@ namespace Naos.AWS.S3.Test
                         var result = new SystemUnderTestExpectedStringRepresentation<S3ResourceLocator>
                         {
                             SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.AWS.S3.S3ResourceLocator: Region = {systemUnderTest.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {systemUnderTest.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}."),
+                            ExpectedStringRepresentation = Invariant($"Naos.AWS.S3.S3ResourceLocator: Region = {systemUnderTest.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {systemUnderTest.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Credentials = {systemUnderTest.Credentials?.ToString() ?? "<null>"}."),
                         };
 
                         return result;
@@ -94,6 +97,26 @@ namespace Naos.AWS.S3.Test
 
                         return result;
                     },
+                })
+            .AddScenario(() =>
+                new DeepCloneWithTestScenario<S3ResourceLocator>
+                {
+                    Name = "DeepCloneWithCredentials should deep clone object and replace Credentials with the provided credentials",
+                    WithPropertyName = "Credentials",
+                    SystemUnderTestDeepCloneWithValueFunc = () =>
+                    {
+                        var systemUnderTest = A.Dummy<S3ResourceLocator>();
+
+                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.Credentials.IsEqualTo(_.Credentials));
+
+                        var result = new SystemUnderTestDeepCloneWithValue<S3ResourceLocator>
+                        {
+                            SystemUnderTest = systemUnderTest,
+                            DeepCloneWithValue = referenceObject.Credentials,
+                        };
+
+                        return result;
+                    },
                 });
 
         private static readonly S3ResourceLocator ReferenceObjectForEquatableTestScenarios = A.Dummy<S3ResourceLocator>();
@@ -108,21 +131,30 @@ namespace Naos.AWS.S3.Test
                     {
                         new S3ResourceLocator
                             {
-                                Region     = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
                             },
                     },
                     ObjectsThatAreNotEqualToReferenceObject = new S3ResourceLocator[]
                     {
                         new S3ResourceLocator
                             {
-                                Region     = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Region.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Region)).Region,
-                                BucketName = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                Region      = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Region.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Region)).Region,
+                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
                             },
                         new S3ResourceLocator
                             {
-                                Region     = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName = A.Dummy<S3ResourceLocator>().Whose(_ => !_.BucketName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.BucketName)).BucketName,
+                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName  = A.Dummy<S3ResourceLocator>().Whose(_ => !_.BucketName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.BucketName)).BucketName,
+                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
+                            },
+                        new S3ResourceLocator
+                            {
+                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                Credentials = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Credentials.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Credentials)).Credentials,
                             },
                     },
                     ObjectsThatAreNotOfTheSameTypeAsReferenceObject = new object[]
@@ -288,6 +320,18 @@ namespace Naos.AWS.S3.Test
                 // Assert
                 actual.AsTest().Must().BeEqualTo(systemUnderTest);
                 actual.AsTest().Must().NotBeSameReferenceAs(systemUnderTest);
+
+                if (systemUnderTest.Credentials == null)
+                {
+                    actual.Credentials.AsTest().Must().BeNull();
+                }
+                else if (!actual.Credentials.GetType().IsValueType)
+                {
+                    // When the declared type is a reference type, we still have to check the runtime type.
+                    // The object could be a boxed value type, which will fail this asseration because
+                    // a deep clone of a value type object is the same object.
+                    actual.Credentials.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.Credentials);
+                }
             }
 
             [Fact]
@@ -306,7 +350,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
             public static void DeepCloneWith___Should_deep_clone_object_and_replace_the_associated_property_with_the_provided_value___When_called()
             {
-                var propertyNames = new string[] { "Region", "BucketName" };
+                var propertyNames = new string[] { "Region", "BucketName", "Credentials" };
 
                 var scenarios = DeepCloneWithTestScenarios.ValidateAndPrepareForTesting();
 
@@ -362,6 +406,127 @@ namespace Naos.AWS.S3.Test
                         }
                     }
                 }
+            }
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
+        public static class Serialization
+        {
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_string_using_ObcBsonSerializer()
+            {
+                // Arrange
+                var expected = A.Dummy<S3ResourceLocator>();
+
+                var serializationConfigurationType = SerializationConfigurationTypes.BsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
+
+                var serializationFormats = new[] { SerializationFormat.String };
+
+                var appDomainScenarios = AppDomainScenarios.RoundtripInCurrentAppDomain | AppDomainScenarios.SerializeInCurrentAppDomainAndDeserializeInNewAppDomain;
+
+                // Act, Assert
+                expected.RoundtripSerializeViaBsonWithBeEqualToAssertion(serializationConfigurationType, serializationFormats, appDomainScenarios);
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_bytes_using_ObcBsonSerializer()
+            {
+                // Arrange
+                var expected = A.Dummy<S3ResourceLocator>();
+
+                var serializationConfigurationType = SerializationConfigurationTypes.BsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
+
+                var serializationFormats = new[] { SerializationFormat.Binary };
+
+                var appDomainScenarios = AppDomainScenarios.RoundtripInCurrentAppDomain | AppDomainScenarios.SerializeInCurrentAppDomainAndDeserializeInNewAppDomain;
+
+                // Act, Assert
+                expected.RoundtripSerializeViaBsonWithBeEqualToAssertion(serializationConfigurationType, serializationFormats, appDomainScenarios);
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_string_using_ObcJsonSerializer()
+            {
+                // Arrange
+                var expected = A.Dummy<S3ResourceLocator>();
+
+                var serializationConfigurationType = SerializationConfigurationTypes.JsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
+
+                var serializationFormats = new[] { SerializationFormat.String };
+
+                var appDomainScenarios = AppDomainScenarios.RoundtripInCurrentAppDomain | AppDomainScenarios.SerializeInCurrentAppDomainAndDeserializeInNewAppDomain;
+
+                // Act, Assert
+                expected.RoundtripSerializeViaJsonWithBeEqualToAssertion(serializationConfigurationType, serializationFormats, appDomainScenarios);
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_bytes_using_ObcJsonSerializer()
+            {
+                // Arrange
+                var expected = A.Dummy<S3ResourceLocator>();
+
+                var serializationConfigurationType = SerializationConfigurationTypes.JsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
+
+                var serializationFormats = new[] { SerializationFormat.Binary };
+
+                var appDomainScenarios = AppDomainScenarios.RoundtripInCurrentAppDomain | AppDomainScenarios.SerializeInCurrentAppDomainAndDeserializeInNewAppDomain;
+
+                // Act, Assert
+                expected.RoundtripSerializeViaJsonWithBeEqualToAssertion(serializationConfigurationType, serializationFormats, appDomainScenarios);
             }
         }
 

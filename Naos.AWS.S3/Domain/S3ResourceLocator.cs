@@ -6,6 +6,7 @@
 
 namespace Naos.AWS.S3
 {
+    using Naos.AWS.Domain;
     using Naos.Database.Domain;
 
     /// <summary>
@@ -22,5 +23,10 @@ namespace Naos.AWS.S3
         /// Gets or sets the name of the bucket.
         /// </summary>
         public string BucketName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the credentials.
+        /// </summary>
+        public CredentialContainer Credentials { get; set; }
     }
 }

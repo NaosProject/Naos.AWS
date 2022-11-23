@@ -129,6 +129,9 @@
     <Compile Include="Config\ConfigCidr.cs" />
     <Compile Include="Config\ConfigVpc.cs" />
     <Compile Include="CredentialContainer.cs" />
+    <Compile Include="CredentialContainer.designer.cs">
+      <DependentUpon>CredentialContainer.cs</DependentUpon>
+    </Compile>
     <Compile Include="EbsVolume.cs" />
     <Compile Include="ElasticIp.cs" />
     <Compile Include="Enums.cs" />

@@ -15,6 +15,7 @@ namespace Naos.AWS.S3
     using global::System.Globalization;
     using global::System.Linq;
 
+    using global::Naos.AWS.Domain;
     using global::Naos.Database.Domain;
 
     using global::OBeautifulCode.Cloning.Recipes;
@@ -72,7 +73,8 @@ namespace Naos.AWS.S3
             }
 
             var result = this.Region.IsEqualTo(other.Region, StringComparer.Ordinal)
-                      && this.BucketName.IsEqualTo(other.BucketName, StringComparer.Ordinal);
+                      && this.BucketName.IsEqualTo(other.BucketName, StringComparer.Ordinal)
+                      && this.Credentials.IsEqualTo(other.Credentials);
 
             return result;
         }
@@ -84,6 +86,7 @@ namespace Naos.AWS.S3
         public override int GetHashCode() => HashCodeHelper.Initialize()
             .Hash(this.Region)
             .Hash(this.BucketName)
+            .Hash(this.Credentials)
             .Value;
 
         /// <inheritdoc />
@@ -115,8 +118,9 @@ namespace Naos.AWS.S3
         {
             var result = new S3ResourceLocator
                              {
-                                 Region     = region,
-                                 BucketName = this.BucketName?.DeepClone(),
+                                 Region      = region,
+                                 BucketName  = this.BucketName?.DeepClone(),
+                                 Credentials = this.Credentials?.DeepClone(),
                              };
 
             return result;
@@ -148,8 +152,43 @@ namespace Naos.AWS.S3
         {
             var result = new S3ResourceLocator
                              {
-                                 Region     = this.Region?.DeepClone(),
-                                 BucketName = bucketName,
+                                 Region      = this.Region?.DeepClone(),
+                                 BucketName  = bucketName,
+                                 Credentials = this.Credentials?.DeepClone(),
+                             };
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deep clones this object with a new <see cref="Credentials" />.
+        /// </summary>
+        /// <param name="credentials">The new <see cref="Credentials" />.  This object will NOT be deep cloned; it is used as-is.</param>
+        /// <returns>New <see cref="S3ResourceLocator" /> using the specified <paramref name="credentials" /> for <see cref="Credentials" /> and a deep clone of every other property.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public S3ResourceLocator DeepCloneWithCredentials(CredentialContainer credentials)
+        {
+            var result = new S3ResourceLocator
+                             {
+                                 Region      = this.Region?.DeepClone(),
+                                 BucketName  = this.BucketName?.DeepClone(),
+                                 Credentials = credentials,
                              };
 
             return result;
@@ -161,8 +200,9 @@ namespace Naos.AWS.S3
         {
             var result = new S3ResourceLocator
                              {
-                                 Region     = this.Region?.DeepClone(),
-                                 BucketName = this.BucketName?.DeepClone(),
+                                 Region      = this.Region?.DeepClone(),
+                                 BucketName  = this.BucketName?.DeepClone(),
+                                 Credentials = this.Credentials?.DeepClone(),
                              };
 
             return result;
@@ -172,7 +212,7 @@ namespace Naos.AWS.S3
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public override string ToString()
         {
-            var result = Invariant($"Naos.AWS.S3.S3ResourceLocator: Region = {this.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {this.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
+            var result = Invariant($"Naos.AWS.S3.S3ResourceLocator: Region = {this.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {this.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Credentials = {this.Credentials?.ToString() ?? "<null>"}.");
 
             return result;
         }
