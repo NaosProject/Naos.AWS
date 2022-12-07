@@ -11,11 +11,12 @@ namespace Naos.AWS.S3
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
+    using OBeautifulCode.Type;
 
     /// <summary>
     /// S3 Implementation of <see cref="IStreamConfig" />.
     /// </summary>
-    public class S3StreamConfig : IStreamConfig
+    public partial class S3StreamConfig : IStreamConfig, IModelViaCodeGen
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="S3StreamConfig"/> class.

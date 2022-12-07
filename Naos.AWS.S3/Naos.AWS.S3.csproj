@@ -141,6 +141,9 @@
     <Compile Include="Domain\S3ResourceLocator.designer.cs">
       <DependentUpon>S3ResourceLocator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Domain\S3StreamConfig.designer.cs">
+      <DependentUpon>S3StreamConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Domain\S3StreamRepresentation.cs" />
     <Compile Include="Domain\S3StreamRepresentation.designer.cs">
       <DependentUpon>S3StreamRepresentation.cs</DependentUpon>

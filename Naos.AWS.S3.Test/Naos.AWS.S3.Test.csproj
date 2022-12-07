@@ -242,7 +242,12 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
     <Compile Include="AwsConfiguration.cs" />
+    <Compile Include="S3DummyFactory.cs" />
     <Compile Include="CloudFileTest.cs" />
+    <Compile Include="S3StreamConfigTest.cs" />
+    <Compile Include="S3StreamConfigTest.designer.cs">
+      <DependentUpon>S3StreamConfigTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SerializationConfigurationTypes.cs" />
     <Compile Include="CustomMetadata.cs" />
     <Compile Include="FileManagerIntegrationTest.cs" />
