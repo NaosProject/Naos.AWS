@@ -156,9 +156,9 @@ namespace Naos.AWS.Core
                 var response = await client.CreateVolumeAsync(request);
                 Validator.ThrowOnBadResult(request, response);
 
-                await localVolume.TagNameInAwsAsync(timeout, credentials);
-
                 localVolume.Id = response.Volume.VolumeId;
+
+                await localVolume.TagNameInAwsAsync(timeout, credentials);
                 return localVolume;
             }
         }
@@ -168,13 +168,11 @@ namespace Naos.AWS.Core
         /// </summary>
         /// <param name="volume">The volume.</param>
         /// <param name="instanceId">The instance identifier.</param>
-        /// <param name="device">The device.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async.</returns>
         public static async Task AttachToInstance(
             this EbsVolume volume,
             string instanceId,
-            string device,
             CredentialContainer credentials = null)
         {
             var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
@@ -184,7 +182,7 @@ namespace Naos.AWS.Core
             {
                 var request = new AttachVolumeRequest()
                               {
-                                  Device = device,
+                                  Device = volume.DeviceName,
                                   InstanceId = instanceId,
                                   VolumeId = volume.Id,
                               };
