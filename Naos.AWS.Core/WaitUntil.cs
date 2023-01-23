@@ -8,11 +8,12 @@ namespace Naos.AWS.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
 
     using Naos.AWS.Domain;
-
+    using Naos.CodeAnalysis.Recipes;
     using static System.FormattableString;
 
     /// <summary>
@@ -136,7 +137,7 @@ namespace Naos.AWS.Core
         /// <param name="instance">Instance to operate on.</param>
         /// <param name="expectedState">State of instance to wait for.</param>
         /// <param name="unexpectedStates">Optional unexpected states to throw on.</param>
-        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is ininity.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is infinity.</param>
         /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
         /// <returns>Task for async/await.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "InState", Justification = "Spelling/name is correct.")]
@@ -160,6 +161,43 @@ namespace Naos.AWS.Core
                 if (localUnexpectedStates.Contains(currentState))
                 {
                     throw new ArgumentException(Invariant($"Unexpected state ({currentState}) reached on {nameof(Instance)} {instance.Name} ({instance.Id})."));
+                }
+            }
+
+            await CriteriaMet(Operation, SuccessCheck, ThrowOnUnexpected, timeout);
+        }
+
+        /// <summary>
+        /// Waits until the volume gets to a certain expected state.
+        /// </summary>
+        /// <param name="volume">EbsVolume to operate on.</param>
+        /// <param name="expectedStatus">State of volume to wait for.</param>
+        /// <param name="unexpectedStates">Optional unexpected states to throw on.</param>
+        /// <param name="timeout">Optional timeout to wait until object exists; DEFAULT is infinity.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        /// <returns>Task for async/await.</returns>
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = NaosSuppressBecause.CA1704_IdentifiersShouldBeSpelledCorrectly_SpellingIsCorrectInContextOfTheDomain)]
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "InState", Justification = "Spelling/name is correct.")]
+        public static async Task EbsVolumeInState(EbsVolume volume, EbsVolumeStatus expectedStatus, IReadOnlyCollection<EbsVolumeStatus> unexpectedStates = null, TimeSpan timeout = default(TimeSpan), CredentialContainer credentials = null)
+        {
+            var localUnexpectedStates = unexpectedStates ?? new List<EbsVolumeStatus>();
+
+            async Task<EbsVolumeStatus> Operation()
+            {
+                var status = await volume.GetStatusAsync(credentials);
+                return status;
+            }
+
+            bool SuccessCheck(EbsVolumeStatus currentState)
+            {
+                return currentState == expectedStatus;
+            }
+
+            void ThrowOnUnexpected(EbsVolumeStatus currentState)
+            {
+                if (localUnexpectedStates.Contains(currentState))
+                {
+                    throw new ArgumentException(Invariant($"Unexpected state ({currentState}) reached on {nameof(EbsVolume)} {volume.Name} ({volume.Id})."));
                 }
             }
 

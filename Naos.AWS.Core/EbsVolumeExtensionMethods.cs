@@ -18,6 +18,8 @@ namespace Naos.AWS.Core
 
     using Naos.AWS.Domain;
 
+    using static System.FormattableString;
+
     /// <summary>
     /// Extension methods to convert internal objects to AWS SDK objects.
     /// </summary>
@@ -189,6 +191,68 @@ namespace Naos.AWS.Core
 
                 var response = await client.AttachVolumeAsync(request);
                 Validator.ThrowOnBadResult(request, response);
+            }
+        }
+
+        /// <summary>
+        /// Gets the status of a volume.
+        /// </summary>
+        /// <param name="volume">EbsVolume to operate on.</param>
+        /// <param name="credentials">Credentials to use (will use the credentials from CredentialManager.Cached if null...).</param>
+        /// <returns>Status of volume.</returns>
+        public static async Task<EbsVolumeStatus> GetStatusAsync(this EbsVolume volume, CredentialContainer credentials = null)
+        {
+            var awsCredentials = CredentialManager.GetAwsCredentials(credentials);
+            var regionEndpoint = RegionEndpoint.GetBySystemName(volume.Region);
+
+            var request = new DescribeVolumeStatusRequest()
+                          {
+                              VolumeIds = new[]
+                                          {
+                                              volume.Id,
+                                          }.ToList(),
+                          };
+
+            using (var client = new AmazonEC2Client(awsCredentials, regionEndpoint))
+            {
+                var response = await client.DescribeVolumeStatusAsync(request);
+                Validator.ThrowOnBadResult(request, response);
+
+                var specificEbsVolumeResult = response.VolumeStatuses.SingleOrDefault(_ => _.VolumeId == volume.Id);
+                if (specificEbsVolumeResult != null)
+                {
+                    var awsStatus = specificEbsVolumeResult.VolumeStatus.Status;
+
+                    EbsVolumeStatus ConvertToEnum(
+                        VolumeStatusInfoStatus volumeStatus)
+                    {
+                        if (volumeStatus.Value == VolumeStatusInfoStatus.Ok.Value)
+                        {
+                            return EbsVolumeStatus.Ok;
+                        }
+                        else if (volumeStatus.Value == VolumeStatusInfoStatus.Impaired.Value)
+                        {
+                            return EbsVolumeStatus.Impaired;
+                        }
+                        else if (volumeStatus.Value == VolumeStatusInfoStatus.InsufficientData.Value)
+                        {
+                            return EbsVolumeStatus.InsufficientData;
+                        }
+                        else
+                        {
+                            throw new NotSupportedException(Invariant($"Unsupported value '{volumeStatus}', it cannot be converted to a '{typeof(EbsVolumeStatus)}.'"));
+                        }
+                    }
+
+                    var ret = ConvertToEnum(awsStatus);
+                    return ret;
+                }
+                else
+                {
+                    var ret = EbsVolumeStatus.Unknown;
+
+                    return ret;
+                }
             }
         }
     }

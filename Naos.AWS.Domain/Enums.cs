@@ -6,6 +6,9 @@
 
 namespace Naos.AWS.Domain
 {
+    using System.Diagnostics.CodeAnalysis;
+    using Naos.CodeAnalysis.Recipes;
+
     /// <summary>
     /// Type of credential.
     /// </summary>
@@ -120,6 +123,33 @@ namespace Naos.AWS.Domain
         /// Stopped state.
         /// </summary>
         Stopped = 80,
+    }
+
+    /// <summary>
+    /// Status a volume can be in.
+    /// </summary>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = NaosSuppressBecause.CA1704_IdentifiersShouldBeSpelledCorrectly_SpellingIsCorrectInContextOfTheDomain)]
+    public enum EbsVolumeStatus
+    {
+        /// <summary>
+        /// Unknown status.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// Available status.
+        /// </summary>
+        Ok,
+
+        /// <summary>
+        /// Impaired status.
+        /// </summary>
+        Impaired,
+
+        /// <summary>
+        /// Pending status.
+        /// </summary>
+        InsufficientData,
     }
 
     /// <summary>
