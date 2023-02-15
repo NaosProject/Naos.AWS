@@ -7,7 +7,7 @@
 namespace Naos.AWS.S3.Test
 {
     using System;
-
+    using Naos.AWS.Domain;
     using Xunit;
 
     /// <summary>

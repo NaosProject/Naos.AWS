@@ -8,9 +8,9 @@ namespace Naos.AWS.Core.Test
 {
     using System;
     using System.Linq;
-
+    using System.Threading.Tasks;
     using Naos.AWS.Domain;
-
+    using OBeautifulCode.Serialization.Json;
     using Xunit;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ebs", Justification = "Spelling/name is correct.")]

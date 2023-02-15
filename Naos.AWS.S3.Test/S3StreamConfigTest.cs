@@ -12,7 +12,7 @@ namespace Naos.AWS.S3.Test
     using System.Linq;
 
     using FakeItEasy;
-
+    using Naos.AWS.Domain;
     using OBeautifulCode.AutoFakeItEasy;
     using OBeautifulCode.CodeAnalysis.Recipes;
     using OBeautifulCode.CodeGen.ModelObject.Recipes;

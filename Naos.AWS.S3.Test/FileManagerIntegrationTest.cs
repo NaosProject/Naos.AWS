@@ -14,6 +14,7 @@ namespace Naos.AWS.S3.Test
     using System.Reflection;
     using System.Security.Cryptography;
     using Amazon.S3;
+    using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
     using OBeautifulCode.Serialization.Json;
     using Xunit;

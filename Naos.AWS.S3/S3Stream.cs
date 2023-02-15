@@ -28,6 +28,7 @@ namespace Naos.AWS.S3
     /// <summary>
     /// Implementation of <see cref="IStandardStream"/>.
     /// </summary>
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
     [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = NaosSuppressBecause.CA1711_IdentifiersShouldNotHaveIncorrectSuffix_TypeNameAddedAsSuffixForTestsWhereTypeIsPrimaryConcern)]
     public class S3Stream : StandardStreamBase
     {
@@ -63,6 +64,7 @@ namespace Naos.AWS.S3
         }
 
         /// <inheritdoc />
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
         public override StreamRecord Execute(
             StandardGetLatestRecordOp operation)
         {
@@ -137,6 +139,7 @@ namespace Naos.AWS.S3
         }
 
         /// <inheritdoc />
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
         [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "uploadResult", Justification = "Prefer to see result is coming back.")]
         public override PutRecordResult Execute(
             StandardPutRecordOp operation)
