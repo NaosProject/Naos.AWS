@@ -12,6 +12,8 @@ namespace Naos.AWS.S3
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
+    using System.Threading.Tasks;
+    using Naos.AWS.Domain;
     using Naos.CodeAnalysis.Recipes;
     using Naos.Database.Domain;
 
@@ -103,9 +105,14 @@ namespace Naos.AWS.S3
 
             using (var destinationStream = new MemoryStream())
             {
-                this.fileManager
-                    .DownloadFileAsync(resourceLocator.Region, resourceLocator.BucketName, id, destinationStream)
-                    .RunUntilCompletion();
+                Func<Task> downloadFileAsyncFunc = () => this.fileManager
+                                                             .DownloadFileAsync(
+                                                                  resourceLocator.Region,
+                                                                  resourceLocator.BucketName,
+                                                                  id,
+                                                                  destinationStream);
+
+                downloadFileAsyncFunc.ExecuteSynchronously();
                 var resultMetadata = new StreamRecordMetadata(
                     id,
                     this.DefaultSerializerRepresentation,
@@ -155,19 +162,20 @@ namespace Naos.AWS.S3
             var binaryPayload = (BinaryDescribedSerialization)operation.Payload;
             using (var sourceStream = new MemoryStream(binaryPayload.SerializedPayload))
             {
-                var uploadResult = this.fileManager.UploadFileAsync(
-                         resourceLocator.Region,
-                         resourceLocator.BucketName,
-                         operation.Metadata.StringSerializedId,
-                         sourceStream,
-                         new[]
-                         {
-                             HashAlgorithmName.MD5,
-                             HashAlgorithmName.SHA256,
-                             HashAlgorithmName.SHA1,
-                         },
-                         userDefinedMetadata)
-                    .RunUntilCompletion();
+                Func<Task<UploadFileResult>> uploadFileAsyncFunc = () => this.fileManager.UploadFileAsync(
+                                                                       resourceLocator.Region,
+                                                                       resourceLocator.BucketName,
+                                                                       operation.Metadata.StringSerializedId,
+                                                                       sourceStream,
+                                                                       new[]
+                                                                       {
+                                                                           HashAlgorithmName.MD5,
+                                                                           HashAlgorithmName.SHA256,
+                                                                           HashAlgorithmName.SHA1,
+                                                                       },
+                                                                       userDefinedMetadata);
+
+                var uploadResult = uploadFileAsyncFunc.ExecuteSynchronously();
 
                 var result = new PutRecordResult(-1);
                 return result;
@@ -235,7 +243,9 @@ namespace Naos.AWS.S3
                      .BeNull();
 
             var resourceLocator = this.TryGetSingleLocator(operation);
-            var listedFiles = this.fileManager.ListFilesAsync(resourceLocator.Region, resourceLocator.BucketName).RunUntilCompletion();
+            Func<Task<ICollection<CloudFile>>> listFilesAsyncFunc =
+                () => this.fileManager.ListFilesAsync(resourceLocator.Region, resourceLocator.BucketName);
+            var listedFiles = listFilesAsyncFunc.ExecuteSynchronously();
 
             var result = listedFiles
                         .Select(_ => new StringSerializedIdentifier(_.KeyName, identifierType))

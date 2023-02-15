@@ -18,6 +18,7 @@ namespace Naos.AWS.S3.Test
 
     using global::FakeItEasy;
 
+    using global::Naos.AWS.Domain;
     using global::Naos.Database.Domain;
 
     using global::OBeautifulCode.Assertion.Recipes;

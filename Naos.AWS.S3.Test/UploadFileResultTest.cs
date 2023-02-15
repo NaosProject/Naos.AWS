@@ -9,7 +9,7 @@ namespace Naos.AWS.S3.Test
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
-
+    using Naos.AWS.Domain;
     using Xunit;
 
     /// <summary>
