@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.S3
+namespace Naos.AWS.Domain
 {
     using System.Collections.Generic;
     using System.Linq;

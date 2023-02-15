@@ -41,6 +41,9 @@
     <CodeAnalysisRuleSet />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Naos.Database.Domain, Version=1.1.383.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Naos.Database.Domain.1.1.383\lib\net462\Naos.Database.Domain.dll</HintPath>
+    </Reference>
     <Reference Include="OBeautifulCode.Compression, Version=1.0.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\OBeautifulCode.Compression.1.0.26\lib\net462\OBeautifulCode.Compression.dll</HintPath>
     </Reference>
@@ -157,6 +160,27 @@
     <Compile Include="KeyPair.cs" />
     <Compile Include="Properties\ProjectInfo.cs" />
     <Compile Include="Route53Entry.cs" />
+    <Compile Include="S3\CloudFile.cs" />
+    <Compile Include="S3\ComputedChecksum.cs" />
+    <Compile Include="S3\EncodingHelper.cs" />
+    <Compile Include="S3\IDownloadFiles.cs" />
+    <Compile Include="S3\IListFiles.cs" />
+    <Compile Include="S3\IManageFileMetadata.cs" />
+    <Compile Include="S3\IManageFiles.cs" />
+    <Compile Include="S3\IUploadFiles.cs" />
+    <Compile Include="S3\S3ResourceLocator.cs" />
+    <Compile Include="S3\S3ResourceLocator.designer.cs">
+      <DependentUpon>S3ResourceLocator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3\S3StreamConfig.cs" />
+    <Compile Include="S3\S3StreamConfig.designer.cs">
+      <DependentUpon>S3StreamConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3\S3StreamRepresentation.cs" />
+    <Compile Include="S3\S3StreamRepresentation.designer.cs">
+      <DependentUpon>S3StreamRepresentation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3\UploadFileResult.cs" />
     <Compile Include="SecurityGroup.cs" />
     <Compile Include="NetworkAclRule.cs" />
     <Compile Include="RouteEntry.cs" />

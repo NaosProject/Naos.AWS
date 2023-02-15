@@ -4,7 +4,7 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.S3
+namespace Naos.AWS.Domain
 {
     using global::System;
     using global::System.CodeDom.Compiler;

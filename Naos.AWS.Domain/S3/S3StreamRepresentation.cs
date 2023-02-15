@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.S3
+namespace Naos.AWS.Domain
 {
     using Naos.Database.Domain;
 
