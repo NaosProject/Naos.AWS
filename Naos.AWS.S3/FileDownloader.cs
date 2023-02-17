@@ -103,6 +103,13 @@ namespace Naos.AWS.S3
                 {
                     using (var responseStream = response.ResponseStream)
                     {
+                        // On a 100MB file, without setting length we get an OutOfMemoryException.
+                        // Doesn't seem to need this on FileStream; we can download 30 GB files just fine.
+                        if (destinationStream is MemoryStream)
+                        {
+                            destinationStream.SetLength(responseStream.Length);
+                        }
+
                         await responseStream.CopyToAsync(destinationStream);
                         if (validateChecksumsIfPresent)
                         {
