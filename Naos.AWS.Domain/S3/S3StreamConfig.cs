@@ -21,13 +21,6 @@ namespace Naos.AWS.Domain
         /// <summary>
         /// Initializes a new instance of the <see cref="S3StreamConfig"/> class.
         /// </summary>
-        public S3StreamConfig()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="S3StreamConfig"/> class.
-        /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="accessKinds">The access kinds.</param>
         /// <param name="defaultSerializerRepresentation">The default serializer representation.</param>
@@ -55,18 +48,18 @@ namespace Naos.AWS.Domain
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         /// <inheritdoc />
-        public StreamAccessKinds AccessKinds { get; set; }
+        public StreamAccessKinds AccessKinds { get; private set; }
 
         /// <inheritdoc />
-        public SerializerRepresentation DefaultSerializerRepresentation { get; set; }
+        public SerializerRepresentation DefaultSerializerRepresentation { get; private set; }
 
         /// <inheritdoc />
-        public SerializationFormat DefaultSerializationFormat { get; set; }
+        public SerializationFormat DefaultSerializationFormat { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IResourceLocator> AllLocators { get; set; }
+        public IReadOnlyCollection<IResourceLocator> AllLocators { get; private set; }
     }
 }

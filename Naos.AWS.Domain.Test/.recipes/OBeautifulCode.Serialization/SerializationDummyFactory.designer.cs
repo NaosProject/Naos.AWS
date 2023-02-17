@@ -4,7 +4,7 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.Domain.Test
+namespace OBeautifulCode.Serialization.Test
 {
     using global::System;
     using global::System.CodeDom.Compiler;
@@ -15,11 +15,10 @@ namespace Naos.AWS.Domain.Test
 
     using global::FakeItEasy;
 
-    using global::Naos.AWS.Domain;
-    using global::Naos.Database.Domain;
-
     using global::OBeautifulCode.AutoFakeItEasy;
+    using global::OBeautifulCode.Compression;
     using global::OBeautifulCode.Math.Recipes;
+    using global::OBeautifulCode.Representation.System;
     using global::OBeautifulCode.Serialization;
 
     /// <summary>
@@ -28,70 +27,59 @@ namespace Naos.AWS.Domain.Test
     /// </summary>
     [ExcludeFromCodeCoverage]
     [GeneratedCode("OBeautifulCode.CodeGen.ModelObject", "1.0.178.0")]
-#if !NaosAWSSolution
+#if !OBeautifulCodeSerializationSolution
     internal
 #else
     public
 #endif
-    abstract class DefaultAWSDummyFactory : IDummyFactory
+    abstract class DefaultSerializationDummyFactory : IDummyFactory
     {
-        public DefaultAWSDummyFactory()
+        public DefaultSerializationDummyFactory()
         {
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new CloudStorageReaderSettings(
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>()));
+                () => new BinaryDescribedSerialization(
+                                 A.Dummy<TypeRepresentation>(),
+                                 A.Dummy<SerializerRepresentation>(),
+                                 A.Dummy<byte[]>()));
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
                 () =>
                 {
                     var availableTypes = new[]
                     {
-                        typeof(CloudStorageReaderSettings),
-                        typeof(CloudStorageWriterSettings)
+                        typeof(BinaryDescribedSerialization),
+                        typeof(NullDescribedSerialization),
+                        typeof(StringDescribedSerialization)
                     };
 
                     var randomIndex = ThreadSafeRandom.Next(0, availableTypes.Length);
 
                     var randomType = availableTypes[randomIndex];
 
-                    var result = (CloudStorageSettingsBase)AD.ummy(randomType);
+                    var result = (DescribedSerializationBase)AD.ummy(randomType);
 
                     return result;
                 });
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new CloudStorageWriterSettings(
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>()));
+                () => new DynamicTypePlaceholder());
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new S3Credentials(
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>()));
+                () => new NullDescribedSerialization(
+                                 A.Dummy<TypeRepresentation>(),
+                                 A.Dummy<SerializerRepresentation>()));
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new S3ResourceLocator
-                             {
-                                 Region        = A.Dummy<string>(),
-                                 BucketName    = A.Dummy<string>(),
-                                 S3Credentials = A.Dummy<S3Credentials>(),
-                             });
+                () => new SerializerRepresentation(
+                                 A.Dummy<SerializationKind>(),
+                                 A.Dummy<TypeRepresentation>(),
+                                 A.Dummy<CompressionKind>(),
+                                 A.Dummy<IReadOnlyDictionary<string, string>>()));
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new S3StreamConfig(
-                                 A.Dummy<string>(),
-                                 A.Dummy<StreamAccessKinds>(),
+                () => new StringDescribedSerialization(
+                                 A.Dummy<TypeRepresentation>(),
                                  A.Dummy<SerializerRepresentation>(),
-                                 A.Dummy<SerializationFormat>(),
-                                 A.Dummy<IReadOnlyCollection<IResourceLocator>>()));
-
-            AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new S3StreamRepresentation(
                                  A.Dummy<string>()));
         }
 

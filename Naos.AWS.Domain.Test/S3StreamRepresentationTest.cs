@@ -4,7 +4,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.S3.Test
+namespace Naos.AWS.Domain.Test
 {
     using System;
     using System.Collections.Generic;

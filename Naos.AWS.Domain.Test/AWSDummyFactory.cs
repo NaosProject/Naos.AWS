@@ -9,6 +9,12 @@
 
 namespace Naos.AWS.Domain.Test
 {
+    using System.Linq;
+    using FakeItEasy;
+    using Naos.Database.Domain;
+    using OBeautifulCode.AutoFakeItEasy;
+    using OBeautifulCode.Serialization;
+
     /// <summary>
     /// A Dummy Factory for types in <see cref="AWS"/>.
     /// </summary>
@@ -26,6 +32,19 @@ namespace Naos.AWS.Domain.Test
         /// </summary>
         public AWSDummyFactory()
         {
+            AutoFixtureBackedDummyFactory.UseRandomInterfaceImplementationForDummy<IResourceLocator>();
+
+            AutoFixtureBackedDummyFactory.AddDummyCreator(() =>
+            {
+                var result = new S3StreamConfig(
+                    A.Dummy<string>(),
+                    A.Dummy<StreamAccessKinds>().ThatIsNot(StreamAccessKinds.None),
+                    A.Dummy<SerializerRepresentation>(),
+                    A.Dummy<SerializationFormat>(),
+                    Some.ReadOnlyDummies<S3ResourceLocator>().ToList());
+
+                return result;
+            });
         }
     }
 }

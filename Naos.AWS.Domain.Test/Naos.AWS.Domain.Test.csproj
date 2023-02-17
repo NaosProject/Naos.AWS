@@ -69,6 +69,9 @@
     <Reference Include="Naos.Configuration.Domain, Version=1.0.27.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Naos.Configuration.Domain.1.0.27\lib\net462\Naos.Configuration.Domain.dll</HintPath>
     </Reference>
+    <Reference Include="Naos.Database.Domain, Version=1.1.383.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Naos.Database.Domain.1.1.383\lib\net462\Naos.Database.Domain.dll</HintPath>
+    </Reference>
     <Reference Include="OBeautifulCode.AutoFakeItEasy, Version=1.0.140.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\OBeautifulCode.AutoFakeItEasy.1.0.140\lib\net462\OBeautifulCode.AutoFakeItEasy.dll</HintPath>
     </Reference>
@@ -118,6 +121,8 @@
   <ItemGroup>
     <Compile Include=".recipes\Naos.Bootstrapper\ConfigRequiredTest.cs" />
     <Compile Include=".recipes\Naos.CodeAnalysis\NaosSuppressBecause.cs" />
+    <Compile Include=".recipes\Naos.Database\DatabaseDummyFactory.cs" />
+    <Compile Include=".recipes\Naos.Database\DatabaseDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Assertion\Actions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Assertion\ApplyBecause.cs" />
     <Compile Include=".recipes\OBeautifulCode.Assertion\AssertionKind.cs" />
@@ -166,6 +171,8 @@
     <Compile Include=".recipes\OBeautifulCode.CodeGen\StringRepresentation\SystemUnderTestExpectedStringRepresentation{T}.cs" />
     <Compile Include=".recipes\OBeautifulCode.CodeGen\StringRepresentation\ValidatedStringRepresentationTestScenario{T}.cs" />
     <Compile Include=".recipes\OBeautifulCode.Collection\EnumerableExtensions.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Compression\CompressionDummyFactory.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Compression\CompressionDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Compression\CompressorFactory.cs" />
     <Compile Include=".recipes\OBeautifulCode.Compression\DotNetZipCompressor.cs" />
     <Compile Include=".recipes\OBeautifulCode.Compression\NullCompressor.cs" />
@@ -207,17 +214,23 @@
     <Compile Include=".recipes\OBeautifulCode.Reflection\ReflectionHelper.MemberInfo.cs" />
     <Compile Include=".recipes\OBeautifulCode.Reflection\ReflectionHelper.Method.cs" />
     <Compile Include=".recipes\OBeautifulCode.Reflection\ReflectionHelper.Property.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Representation\RepresentationSystemDummyFactory.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Representation\RepresentationSystemDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\AppDomainScenarios.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\FactoryExtensions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\RoundtripSerializationExtensions.Bson.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\RoundtripSerializationExtensions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\RoundtripSerializationExtensions.Json.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\RoundtripSerializationExtensions.PropertyBag.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Serialization\SerializationDummyFactory.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Serialization\SerializationDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Serialization\SerializerFactory.cs" />
     <Compile Include=".recipes\OBeautifulCode.String\StringExtensions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\ArrayKind.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\ToStringReadableOptions.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\ToStringXmlDocOptions.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.cs" />
+    <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
     <Compile Include="AWSDummyFactory.cs" />
     <Compile Include="AWSDummyFactory.designer.cs">
@@ -240,12 +253,24 @@
       <DependentUpon>CloudStorageWriterSettingsTest.cs</DependentUpon>
     </Compile>
     <Compile Include="ConfigSerializationTest.cs" />
-    <Compile Include="CredentialContainerTest.cs" />
-    <Compile Include="CredentialContainerTest.designer.cs">
-      <DependentUpon>CredentialContainerTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\ProjectInfo.cs" />
+    <Compile Include="S3CredentialsTest.cs" />
+    <Compile Include="S3CredentialsTest.designer.cs">
+      <DependentUpon>S3CredentialsTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3ResourceLocatorTest.cs" />
+    <Compile Include="S3ResourceLocatorTest.designer.cs">
+      <DependentUpon>S3ResourceLocatorTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3StreamConfigTest.cs" />
+    <Compile Include="S3StreamConfigTest.designer.cs">
+      <DependentUpon>S3StreamConfigTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="S3StreamRepresentationTest.cs" />
+    <Compile Include="S3StreamRepresentationTest.designer.cs">
+      <DependentUpon>S3StreamRepresentationTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="SerializationConfigurationTypes.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +282,14 @@
     <ProjectReference Include="..\Naos.AWS.Domain\Naos.AWS.Domain.csproj">
       <Project>{43685312-C527-48E5-829C-9C7528881F72}</Project>
       <Name>Naos.AWS.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Naos.AWS.Serialization.Bson\Naos.AWS.Serialization.Bson.csproj">
+      <Project>{c2151f75-f5fd-49f8-b17d-4c2db9f13cd2}</Project>
+      <Name>Naos.AWS.Serialization.Bson</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Naos.AWS.Serialization.Json\Naos.AWS.Serialization.Json.csproj">
+      <Project>{31e20748-36d7-4433-9ce5-5df925bce079}</Project>
+      <Name>Naos.AWS.Serialization.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

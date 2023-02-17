@@ -4,7 +4,7 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Naos.AWS.S3.Test
+namespace Naos.AWS.Domain.Test
 {
     using global::System;
     using global::System.CodeDom.Compiler;
@@ -18,7 +18,6 @@ namespace Naos.AWS.S3.Test
 
     using global::FakeItEasy;
 
-    using global::Naos.AWS.Domain;
     using global::Naos.Database.Domain;
 
     using global::OBeautifulCode.Assertion.Recipes;
@@ -36,126 +35,417 @@ namespace Naos.AWS.S3.Test
 
     using static global::System.FormattableString;
 
-    public static partial class S3ResourceLocatorTest
+    public static partial class S3StreamConfigTest
     {
-        private static readonly StringRepresentationTestScenarios<S3ResourceLocator> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<S3ResourceLocator>()
+        private static readonly StringRepresentationTestScenarios<S3StreamConfig> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<S3StreamConfig>()
             .AddScenario(() =>
-                new StringRepresentationTestScenario<S3ResourceLocator>
+                new StringRepresentationTestScenario<S3StreamConfig>
                 {
                     Name = "Default Code Generated Scenario",
                     SystemUnderTestExpectedStringRepresentationFunc = () =>
                     {
-                        var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
 
-                        var result = new SystemUnderTestExpectedStringRepresentation<S3ResourceLocator>
+                        var result = new SystemUnderTestExpectedStringRepresentation<S3StreamConfig>
                         {
                             SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.AWS.S3.S3ResourceLocator: Region = {systemUnderTest.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {systemUnderTest.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Credentials = {systemUnderTest.Credentials?.ToString() ?? "<null>"}."),
+                            ExpectedStringRepresentation = Invariant($"Naos.AWS.Domain.S3StreamConfig: Name = {systemUnderTest.Name?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, AccessKinds = {systemUnderTest.AccessKinds.ToString() ?? "<null>"}, DefaultSerializerRepresentation = {systemUnderTest.DefaultSerializerRepresentation?.ToString() ?? "<null>"}, DefaultSerializationFormat = {systemUnderTest.DefaultSerializationFormat.ToString() ?? "<null>"}, AllLocators = {systemUnderTest.AllLocators?.ToString() ?? "<null>"}."),
                         };
 
                         return result;
                     },
                 });
 
-        private static readonly DeepCloneWithTestScenarios<S3ResourceLocator> DeepCloneWithTestScenarios = new DeepCloneWithTestScenarios<S3ResourceLocator>()
+        private static readonly ConstructorArgumentValidationTestScenarios<S3StreamConfig> ConstructorArgumentValidationTestScenarios = new ConstructorArgumentValidationTestScenarios<S3StreamConfig>()
             .AddScenario(() =>
-                new DeepCloneWithTestScenario<S3ResourceLocator>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
                 {
-                    Name = "DeepCloneWithRegion should deep clone object and replace Region with the provided region",
-                    WithPropertyName = "Region",
+                    Name = "constructor should throw ArgumentNullException when parameter 'name' is null scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             null,
+                                             referenceObject.AccessKinds,
+                                             referenceObject.DefaultSerializerRepresentation,
+                                             referenceObject.DefaultSerializationFormat,
+                                             referenceObject.AllLocators);
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentNullException),
+                    ExpectedExceptionMessageContains = new[] { "name", },
+                })
+            .AddScenario(() =>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
+                {
+                    Name = "constructor should throw ArgumentException when parameter 'name' is white space scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             Invariant($"  {Environment.NewLine}  "),
+                                             referenceObject.AccessKinds,
+                                             referenceObject.DefaultSerializerRepresentation,
+                                             referenceObject.DefaultSerializationFormat,
+                                             referenceObject.AllLocators);
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentException),
+                    ExpectedExceptionMessageContains = new[] { "name", "white space", },
+                })
+            .AddScenario(() =>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
+                {
+                    Name = "constructor should throw ArgumentNullException when parameter 'defaultSerializerRepresentation' is null scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             referenceObject.Name,
+                                             referenceObject.AccessKinds,
+                                             null,
+                                             referenceObject.DefaultSerializationFormat,
+                                             referenceObject.AllLocators);
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentNullException),
+                    ExpectedExceptionMessageContains = new[] { "defaultSerializerRepresentation", },
+                })
+            .AddScenario(() =>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
+                {
+                    Name = "constructor should throw ArgumentNullException when parameter 'allLocators' is null scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             referenceObject.Name,
+                                             referenceObject.AccessKinds,
+                                             referenceObject.DefaultSerializerRepresentation,
+                                             referenceObject.DefaultSerializationFormat,
+                                             null);
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentNullException),
+                    ExpectedExceptionMessageContains = new[] { "allLocators", },
+                })
+            .AddScenario(() =>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
+                {
+                    Name = "constructor should throw ArgumentException when parameter 'allLocators' is an empty enumerable scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             referenceObject.Name,
+                                             referenceObject.AccessKinds,
+                                             referenceObject.DefaultSerializerRepresentation,
+                                             referenceObject.DefaultSerializationFormat,
+                                             new List<IResourceLocator>());
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentException),
+                    ExpectedExceptionMessageContains = new[] { "allLocators", "is an empty enumerable", },
+                })
+            .AddScenario(() =>
+                new ConstructorArgumentValidationTestScenario<S3StreamConfig>
+                {
+                    Name = "constructor should throw ArgumentException when parameter 'allLocators' contains a null element scenario",
+                    ConstructionFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new S3StreamConfig(
+                                             referenceObject.Name,
+                                             referenceObject.AccessKinds,
+                                             referenceObject.DefaultSerializerRepresentation,
+                                             referenceObject.DefaultSerializationFormat,
+                                             new IResourceLocator[0].Concat(referenceObject.AllLocators).Concat(new IResourceLocator[] { null }).Concat(referenceObject.AllLocators).ToList());
+
+                        return result;
+                    },
+                    ExpectedExceptionType = typeof(ArgumentException),
+                    ExpectedExceptionMessageContains = new[] { "allLocators", "contains at least one null element", },
+                });
+
+        private static readonly ConstructorPropertyAssignmentTestScenarios<S3StreamConfig> ConstructorPropertyAssignmentTestScenarios = new ConstructorPropertyAssignmentTestScenarios<S3StreamConfig>()
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<S3StreamConfig>
+                {
+                    Name = "Name should return same 'name' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = new S3StreamConfig(
+                                                      referenceObject.Name,
+                                                      referenceObject.AccessKinds,
+                                                      referenceObject.DefaultSerializerRepresentation,
+                                                      referenceObject.DefaultSerializationFormat,
+                                                      referenceObject.AllLocators),
+                            ExpectedPropertyValue = referenceObject.Name,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "Name",
+                })
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<S3StreamConfig>
+                {
+                    Name = "AccessKinds should return same 'accessKinds' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = new S3StreamConfig(
+                                                      referenceObject.Name,
+                                                      referenceObject.AccessKinds,
+                                                      referenceObject.DefaultSerializerRepresentation,
+                                                      referenceObject.DefaultSerializationFormat,
+                                                      referenceObject.AllLocators),
+                            ExpectedPropertyValue = referenceObject.AccessKinds,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "AccessKinds",
+                })
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<S3StreamConfig>
+                {
+                    Name = "DefaultSerializerRepresentation should return same 'defaultSerializerRepresentation' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = new S3StreamConfig(
+                                                      referenceObject.Name,
+                                                      referenceObject.AccessKinds,
+                                                      referenceObject.DefaultSerializerRepresentation,
+                                                      referenceObject.DefaultSerializationFormat,
+                                                      referenceObject.AllLocators),
+                            ExpectedPropertyValue = referenceObject.DefaultSerializerRepresentation,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "DefaultSerializerRepresentation",
+                })
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<S3StreamConfig>
+                {
+                    Name = "DefaultSerializationFormat should return same 'defaultSerializationFormat' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = new S3StreamConfig(
+                                                      referenceObject.Name,
+                                                      referenceObject.AccessKinds,
+                                                      referenceObject.DefaultSerializerRepresentation,
+                                                      referenceObject.DefaultSerializationFormat,
+                                                      referenceObject.AllLocators),
+                            ExpectedPropertyValue = referenceObject.DefaultSerializationFormat,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "DefaultSerializationFormat",
+                })
+            .AddScenario(() =>
+                new ConstructorPropertyAssignmentTestScenario<S3StreamConfig>
+                {
+                    Name = "AllLocators should return same 'allLocators' parameter passed to constructor when getting",
+                    SystemUnderTestExpectedPropertyValueFunc = () =>
+                    {
+                        var referenceObject = A.Dummy<S3StreamConfig>();
+
+                        var result = new SystemUnderTestExpectedPropertyValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = new S3StreamConfig(
+                                                      referenceObject.Name,
+                                                      referenceObject.AccessKinds,
+                                                      referenceObject.DefaultSerializerRepresentation,
+                                                      referenceObject.DefaultSerializationFormat,
+                                                      referenceObject.AllLocators),
+                            ExpectedPropertyValue = referenceObject.AllLocators,
+                        };
+
+                        return result;
+                    },
+                    PropertyName = "AllLocators",
+                });
+
+        private static readonly DeepCloneWithTestScenarios<S3StreamConfig> DeepCloneWithTestScenarios = new DeepCloneWithTestScenarios<S3StreamConfig>()
+            .AddScenario(() =>
+                new DeepCloneWithTestScenario<S3StreamConfig>
+                {
+                    Name = "DeepCloneWithName should deep clone object and replace Name with the provided name",
+                    WithPropertyName = "Name",
                     SystemUnderTestDeepCloneWithValueFunc = () =>
                     {
-                        var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
 
-                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.Region.IsEqualTo(_.Region));
+                        var referenceObject = A.Dummy<S3StreamConfig>().ThatIs(_ => !systemUnderTest.Name.IsEqualTo(_.Name));
 
-                        var result = new SystemUnderTestDeepCloneWithValue<S3ResourceLocator>
+                        var result = new SystemUnderTestDeepCloneWithValue<S3StreamConfig>
                         {
                             SystemUnderTest = systemUnderTest,
-                            DeepCloneWithValue = referenceObject.Region,
+                            DeepCloneWithValue = referenceObject.Name,
                         };
 
                         return result;
                     },
                 })
             .AddScenario(() =>
-                new DeepCloneWithTestScenario<S3ResourceLocator>
+                new DeepCloneWithTestScenario<S3StreamConfig>
                 {
-                    Name = "DeepCloneWithBucketName should deep clone object and replace BucketName with the provided bucketName",
-                    WithPropertyName = "BucketName",
+                    Name = "DeepCloneWithAccessKinds should deep clone object and replace AccessKinds with the provided accessKinds",
+                    WithPropertyName = "AccessKinds",
                     SystemUnderTestDeepCloneWithValueFunc = () =>
                     {
-                        var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
 
-                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.BucketName.IsEqualTo(_.BucketName));
+                        var referenceObject = A.Dummy<S3StreamConfig>().ThatIs(_ => !systemUnderTest.AccessKinds.IsEqualTo(_.AccessKinds));
 
-                        var result = new SystemUnderTestDeepCloneWithValue<S3ResourceLocator>
+                        var result = new SystemUnderTestDeepCloneWithValue<S3StreamConfig>
                         {
                             SystemUnderTest = systemUnderTest,
-                            DeepCloneWithValue = referenceObject.BucketName,
+                            DeepCloneWithValue = referenceObject.AccessKinds,
                         };
 
                         return result;
                     },
                 })
             .AddScenario(() =>
-                new DeepCloneWithTestScenario<S3ResourceLocator>
+                new DeepCloneWithTestScenario<S3StreamConfig>
                 {
-                    Name = "DeepCloneWithCredentials should deep clone object and replace Credentials with the provided credentials",
-                    WithPropertyName = "Credentials",
+                    Name = "DeepCloneWithDefaultSerializerRepresentation should deep clone object and replace DefaultSerializerRepresentation with the provided defaultSerializerRepresentation",
+                    WithPropertyName = "DefaultSerializerRepresentation",
                     SystemUnderTestDeepCloneWithValueFunc = () =>
                     {
-                        var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
 
-                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.Credentials.IsEqualTo(_.Credentials));
+                        var referenceObject = A.Dummy<S3StreamConfig>().ThatIs(_ => !systemUnderTest.DefaultSerializerRepresentation.IsEqualTo(_.DefaultSerializerRepresentation));
 
-                        var result = new SystemUnderTestDeepCloneWithValue<S3ResourceLocator>
+                        var result = new SystemUnderTestDeepCloneWithValue<S3StreamConfig>
                         {
                             SystemUnderTest = systemUnderTest,
-                            DeepCloneWithValue = referenceObject.Credentials,
+                            DeepCloneWithValue = referenceObject.DefaultSerializerRepresentation,
+                        };
+
+                        return result;
+                    },
+                })
+            .AddScenario(() =>
+                new DeepCloneWithTestScenario<S3StreamConfig>
+                {
+                    Name = "DeepCloneWithDefaultSerializationFormat should deep clone object and replace DefaultSerializationFormat with the provided defaultSerializationFormat",
+                    WithPropertyName = "DefaultSerializationFormat",
+                    SystemUnderTestDeepCloneWithValueFunc = () =>
+                    {
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
+
+                        var referenceObject = A.Dummy<S3StreamConfig>().ThatIs(_ => !systemUnderTest.DefaultSerializationFormat.IsEqualTo(_.DefaultSerializationFormat));
+
+                        var result = new SystemUnderTestDeepCloneWithValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = systemUnderTest,
+                            DeepCloneWithValue = referenceObject.DefaultSerializationFormat,
+                        };
+
+                        return result;
+                    },
+                })
+            .AddScenario(() =>
+                new DeepCloneWithTestScenario<S3StreamConfig>
+                {
+                    Name = "DeepCloneWithAllLocators should deep clone object and replace AllLocators with the provided allLocators",
+                    WithPropertyName = "AllLocators",
+                    SystemUnderTestDeepCloneWithValueFunc = () =>
+                    {
+                        var systemUnderTest = A.Dummy<S3StreamConfig>();
+
+                        var referenceObject = A.Dummy<S3StreamConfig>().ThatIs(_ => !systemUnderTest.AllLocators.IsEqualTo(_.AllLocators));
+
+                        var result = new SystemUnderTestDeepCloneWithValue<S3StreamConfig>
+                        {
+                            SystemUnderTest = systemUnderTest,
+                            DeepCloneWithValue = referenceObject.AllLocators,
                         };
 
                         return result;
                     },
                 });
 
-        private static readonly S3ResourceLocator ReferenceObjectForEquatableTestScenarios = A.Dummy<S3ResourceLocator>();
+        private static readonly S3StreamConfig ReferenceObjectForEquatableTestScenarios = A.Dummy<S3StreamConfig>();
 
-        private static readonly EquatableTestScenarios<S3ResourceLocator> EquatableTestScenarios = new EquatableTestScenarios<S3ResourceLocator>()
+        private static readonly EquatableTestScenarios<S3StreamConfig> EquatableTestScenarios = new EquatableTestScenarios<S3StreamConfig>()
             .AddScenario(() =>
-                new EquatableTestScenario<S3ResourceLocator>
+                new EquatableTestScenario<S3StreamConfig>
                 {
                     Name = "Default Code Generated Scenario",
                     ReferenceObject = ReferenceObjectForEquatableTestScenarios,
-                    ObjectsThatAreEqualToButNotTheSameAsReferenceObject = new S3ResourceLocator[]
+                    ObjectsThatAreEqualToButNotTheSameAsReferenceObject = new S3StreamConfig[]
                     {
-                        new S3ResourceLocator
-                            {
-                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
-                            },
+                        new S3StreamConfig(
+                                ReferenceObjectForEquatableTestScenarios.Name,
+                                ReferenceObjectForEquatableTestScenarios.AccessKinds,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
+                                ReferenceObjectForEquatableTestScenarios.AllLocators),
                     },
-                    ObjectsThatAreNotEqualToReferenceObject = new S3ResourceLocator[]
+                    ObjectsThatAreNotEqualToReferenceObject = new S3StreamConfig[]
                     {
-                        new S3ResourceLocator
-                            {
-                                Region      = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Region.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Region)).Region,
-                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
-                            },
-                        new S3ResourceLocator
-                            {
-                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName  = A.Dummy<S3ResourceLocator>().Whose(_ => !_.BucketName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.BucketName)).BucketName,
-                                Credentials = ReferenceObjectForEquatableTestScenarios.Credentials,
-                            },
-                        new S3ResourceLocator
-                            {
-                                Region      = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName  = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                Credentials = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Credentials.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Credentials)).Credentials,
-                            },
+                        new S3StreamConfig(
+                                A.Dummy<S3StreamConfig>().Whose(_ => !_.Name.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Name)).Name,
+                                ReferenceObjectForEquatableTestScenarios.AccessKinds,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
+                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                        new S3StreamConfig(
+                                ReferenceObjectForEquatableTestScenarios.Name,
+                                A.Dummy<S3StreamConfig>().Whose(_ => !_.AccessKinds.IsEqualTo(ReferenceObjectForEquatableTestScenarios.AccessKinds)).AccessKinds,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
+                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                        new S3StreamConfig(
+                                ReferenceObjectForEquatableTestScenarios.Name,
+                                ReferenceObjectForEquatableTestScenarios.AccessKinds,
+                                A.Dummy<S3StreamConfig>().Whose(_ => !_.DefaultSerializerRepresentation.IsEqualTo(ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation)).DefaultSerializerRepresentation,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
+                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                        new S3StreamConfig(
+                                ReferenceObjectForEquatableTestScenarios.Name,
+                                ReferenceObjectForEquatableTestScenarios.AccessKinds,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
+                                A.Dummy<S3StreamConfig>().Whose(_ => !_.DefaultSerializationFormat.IsEqualTo(ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat)).DefaultSerializationFormat,
+                                ReferenceObjectForEquatableTestScenarios.AllLocators),
+                        new S3StreamConfig(
+                                ReferenceObjectForEquatableTestScenarios.Name,
+                                ReferenceObjectForEquatableTestScenarios.AccessKinds,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializerRepresentation,
+                                ReferenceObjectForEquatableTestScenarios.DefaultSerializationFormat,
+                                A.Dummy<S3StreamConfig>().Whose(_ => !_.AllLocators.IsEqualTo(ReferenceObjectForEquatableTestScenarios.AllLocators)).AllLocators),
                     },
                     ObjectsThatAreNotOfTheSameTypeAsReferenceObject = new object[]
                     {
@@ -185,12 +475,12 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void S3ResourceLocator___Should_implement_IModel_of_S3ResourceLocator___When_reflecting()
+            public static void S3StreamConfig___Should_implement_IModel_of_S3StreamConfig___When_reflecting()
             {
                 // Arrange
-                var type = typeof(S3ResourceLocator);
+                var type = typeof(S3StreamConfig);
 
-                var expectedModelMethods = typeof(IModel<S3ResourceLocator>).GetInterfaceDeclaredAndImplementedMethods();
+                var expectedModelMethods = typeof(IModel<S3StreamConfig>).GetInterfaceDeclaredAndImplementedMethods();
 
                 var expectedModelMethodHashes = expectedModelMethods.Select(_ => _.GetSignatureHash());
 
@@ -200,7 +490,7 @@ namespace Naos.AWS.S3.Test
                 var actualModelMethodHashes = actualModelMethods.Select(_ => _.GetSignatureHash());
 
                 // Assert
-                actualInterfaces.AsTest().Must().ContainElement(typeof(IModel<S3ResourceLocator>));
+                actualInterfaces.AsTest().Must().ContainElement(typeof(IModel<S3StreamConfig>));
                 expectedModelMethodHashes.Except(actualModelMethodHashes).AsTest().Must().BeEmptyEnumerable();
             }
 
@@ -218,10 +508,10 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void S3ResourceLocator___Should_be_attributed_with_Serializable____When_reflecting()
+            public static void S3StreamConfig___Should_be_attributed_with_Serializable____When_reflecting()
             {
                 // Arrange
-                var type = typeof(S3ResourceLocator);
+                var type = typeof(S3StreamConfig);
 
                 // Act
                 var actualAttributes = type.GetCustomAttributes(typeof(SerializableAttribute), false);
@@ -266,6 +556,122 @@ namespace Naos.AWS.S3.Test
 
         [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
+        public static class Constructing
+        {
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void Constructor___Should_throw___When_parameters_are_not_valid()
+            {
+                var scenarios = ConstructorArgumentValidationTestScenarios.ValidateAndPrepareForTesting();
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange, Act
+                    var actual = Record.Exception(scenario.ConstructionFunc);
+
+                    // Assert
+                    actual.AsTest().Must().BeOfType(scenario.ExpectedExceptionType, because: scenario.Id);
+
+                    foreach(var expected in scenario.ExpectedExceptionMessageContains ?? new List<string>())
+                    {
+                        actual.Message.AsTest().Must().ContainString(expected, because: scenario.Id);
+                    }
+
+                    if (scenario.ExpectedExceptionMessageEquals != null)
+                    {
+                        actual.Message.AsTest().Must().BeEqualTo(scenario.ExpectedExceptionMessageEquals, because: scenario.Id);
+                    }
+                }
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "referenceObject")]
+            public static void Properties___Should_be_assigned_by_constructor_to_expected_value___When_getting()
+            {
+                var scenarios = ConstructorPropertyAssignmentTestScenarios.ValidateAndPrepareForTesting();
+
+                var asTestMethodInfo = typeof(WorkflowExtensions).GetMethodFiltered(nameof(WorkflowExtensions.AsTest));
+
+                var beEqualToMethodInfo = typeof(Verifications).GetMethodFiltered(nameof(Verifications.BeEqualTo));
+
+                foreach (var scenario in scenarios)
+                {
+                    // Arrange
+                    if ((scenario.PropertyName == ConstructorPropertyAssignmentTestScenario.NoPropertiesAssignedInConstructorScenarioPropertyName) || (scenario.PropertyName == ConstructorPropertyAssignmentTestScenario.ForceGeneratedTestsToPassAndWriteMyOwnScenarioPropertyName))
+                    {
+                        continue;
+                    }
+
+                    // Act
+                    var actual = scenario.Property.GetValue(scenario.SystemUnderTest);
+
+                    // Assert
+                    // When the scenario specifies CompareActualToExpectedUsing.DefaultStrategy, ValidateAndPrepareForTesting()
+                    // will check if ExpectedPropertyValue == null.  If so, it sets CompareActualToExpectedUsing = ReferenceEquality.
+                    // If not, then it checks the runtime type of ExpectedPropertyValue and if it's a value type,
+                    // then it sets CompareActualToExpectedUsing = ValueEquality, otherwise it uses ValueEquality.
+                    // So a boxed value type is handled properly (using ValueEquality instead of ReferenceEquality).
+                    if (scenario.CompareActualToExpectedUsing == CompareActualToExpectedUsing.ValueEquality)
+                    {
+                        // The below reflection code is used in lieu of the following single line of code
+                        // so that equality is determined based on the property type instead of using
+                        // OBeautifulCode.Equality.Recipes.ObjectEqualityComparer, which will return false
+                        // when the objects being compared have different runtime types.  For example, if
+                        // the property type is IReadOnlyCollection<string> and we are comparing an empty array
+                        // an empty List, the assertion below would fail inappropriately.
+                        // actual.AsTest().Must().BeEqualTo(scenario.ExpectedPropertyValue, because: scenario.Id);
+
+                        var propertyType = scenario.Property.PropertyType;
+
+                        var asTestMethodInfoToInvoke = asTestMethodInfo.MakeGenericMethod(propertyType);
+
+                        var assertionTracker = asTestMethodInfoToInvoke.Invoke(null, new[] { actual, Type.Missing });
+
+                        assertionTracker.Must();
+
+                        var mustBeEqualToMethodInfoToInvoke = beEqualToMethodInfo.MakeGenericMethod(propertyType);
+
+                        mustBeEqualToMethodInfoToInvoke.Invoke(null, new[]{ assertionTracker, scenario.ExpectedPropertyValue, scenario.Id, Type.Missing, Type.Missing });
+                    }
+                    else if (scenario.CompareActualToExpectedUsing == CompareActualToExpectedUsing.ReferenceEquality)
+                    {
+                        actual.AsTest().Must().BeSameReferenceAs(scenario.ExpectedPropertyValue, because: scenario.Id);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("This CompareActualToExpectedUsing is not supported: " + scenario.CompareActualToExpectedUsing);
+                    }
+                }
+            }
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
         public static class Cloning
         {
             [Fact]
@@ -285,10 +691,10 @@ namespace Naos.AWS.S3.Test
             public static void Clone___Should_clone_object___When_called()
             {
                 // Arrange
-                var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                var systemUnderTest = A.Dummy<S3StreamConfig>();
 
                 // Act
-                var actual = (S3ResourceLocator)systemUnderTest.Clone();
+                var actual = (S3StreamConfig)systemUnderTest.Clone();
 
                 // Assert
                 actual.AsTest().Must().BeEqualTo(systemUnderTest);
@@ -312,7 +718,7 @@ namespace Naos.AWS.S3.Test
             public static void DeepClone___Should_deep_clone_object___When_called()
             {
                 // Arrange
-                var systemUnderTest = A.Dummy<S3ResourceLocator>();
+                var systemUnderTest = A.Dummy<S3StreamConfig>();
 
                 // Act
                 var actual = systemUnderTest.DeepClone();
@@ -321,16 +727,28 @@ namespace Naos.AWS.S3.Test
                 actual.AsTest().Must().BeEqualTo(systemUnderTest);
                 actual.AsTest().Must().NotBeSameReferenceAs(systemUnderTest);
 
-                if (systemUnderTest.Credentials == null)
+                if (systemUnderTest.DefaultSerializerRepresentation == null)
                 {
-                    actual.Credentials.AsTest().Must().BeNull();
+                    actual.DefaultSerializerRepresentation.AsTest().Must().BeNull();
                 }
-                else if (!actual.Credentials.GetType().IsValueType)
+                else if (!actual.DefaultSerializerRepresentation.GetType().IsValueType)
                 {
                     // When the declared type is a reference type, we still have to check the runtime type.
                     // The object could be a boxed value type, which will fail this asseration because
                     // a deep clone of a value type object is the same object.
-                    actual.Credentials.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.Credentials);
+                    actual.DefaultSerializerRepresentation.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.DefaultSerializerRepresentation);
+                }
+
+                if (systemUnderTest.AllLocators == null)
+                {
+                    actual.AllLocators.AsTest().Must().BeNull();
+                }
+                else if (!actual.AllLocators.GetType().IsValueType)
+                {
+                    // When the declared type is a reference type, we still have to check the runtime type.
+                    // The object could be a boxed value type, which will fail this asseration because
+                    // a deep clone of a value type object is the same object.
+                    actual.AllLocators.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.AllLocators);
                 }
             }
 
@@ -350,7 +768,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
             public static void DeepCloneWith___Should_deep_clone_object_and_replace_the_associated_property_with_the_provided_value___When_called()
             {
-                var propertyNames = new string[] { "Region", "BucketName", "Credentials" };
+                var propertyNames = new string[] { "Name", "AccessKinds", "DefaultSerializerRepresentation", "DefaultSerializationFormat", "AllLocators" };
 
                 var scenarios = DeepCloneWithTestScenarios.ValidateAndPrepareForTesting();
 
@@ -363,12 +781,12 @@ namespace Naos.AWS.S3.Test
                     }
 
                     // Act
-                    var actual = (S3ResourceLocator)scenario.DeepCloneWithMethod.Invoke(scenario.SystemUnderTest, new[] { scenario.WithValue });
+                    var actual = (S3StreamConfig)scenario.DeepCloneWithMethod.Invoke(scenario.SystemUnderTest, new[] { scenario.WithValue });
 
                     // Assert
                     foreach(var propertyName in propertyNames)
                     {
-                        var propertyInfo = typeof(S3ResourceLocator).GetPropertyFiltered(propertyName, MemberRelationships.DeclaredOrInherited, MemberOwners.Instance, MemberAccessModifiers.Public);
+                        var propertyInfo = typeof(S3StreamConfig).GetPropertyFiltered(propertyName, MemberRelationships.DeclaredOrInherited, MemberOwners.Instance, MemberAccessModifiers.Public);
 
                         var actualPropertyValue = propertyInfo.GetValue(actual);
 
@@ -430,7 +848,7 @@ namespace Naos.AWS.S3.Test
             public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_string_using_ObcBsonSerializer()
             {
                 // Arrange
-                var expected = A.Dummy<S3ResourceLocator>();
+                var expected = A.Dummy<S3StreamConfig>();
 
                 var serializationConfigurationType = SerializationConfigurationTypes.BsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
 
@@ -459,7 +877,7 @@ namespace Naos.AWS.S3.Test
             public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_bytes_using_ObcBsonSerializer()
             {
                 // Arrange
-                var expected = A.Dummy<S3ResourceLocator>();
+                var expected = A.Dummy<S3StreamConfig>();
 
                 var serializationConfigurationType = SerializationConfigurationTypes.BsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
 
@@ -488,7 +906,7 @@ namespace Naos.AWS.S3.Test
             public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_string_using_ObcJsonSerializer()
             {
                 // Arrange
-                var expected = A.Dummy<S3ResourceLocator>();
+                var expected = A.Dummy<S3StreamConfig>();
 
                 var serializationConfigurationType = SerializationConfigurationTypes.JsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
 
@@ -517,7 +935,7 @@ namespace Naos.AWS.S3.Test
             public static void Deserialize___Should_roundtrip_object___When_serializing_to_and_deserializing_from_bytes_using_ObcJsonSerializer()
             {
                 // Arrange
-                var expected = A.Dummy<S3ResourceLocator>();
+                var expected = A.Dummy<S3StreamConfig>();
 
                 var serializationConfigurationType = SerializationConfigurationTypes.JsonSerializationConfigurationType.ConcreteSerializationConfigurationDerivativeType;
 
@@ -551,8 +969,8 @@ namespace Naos.AWS.S3.Test
             public static void EqualsOperator___Should_return_true___When_both_sides_of_operator_are_null()
             {
                 // Arrange
-                S3ResourceLocator systemUnderTest1 = null;
-                S3ResourceLocator systemUnderTest2 = null;
+                S3StreamConfig systemUnderTest1 = null;
+                S3StreamConfig systemUnderTest2 = null;
 
                 // Act
                 var actual = systemUnderTest1 == systemUnderTest2;
@@ -582,7 +1000,7 @@ namespace Naos.AWS.S3.Test
                 foreach (var scenario in scenarios)
                 {
                     // Arrange
-                    S3ResourceLocator systemUnderTest = null;
+                    S3StreamConfig systemUnderTest = null;
 
                     // Act
                     var actual1 = systemUnderTest == scenario.ReferenceObject;
@@ -731,8 +1149,8 @@ namespace Naos.AWS.S3.Test
             public static void NotEqualsOperator___Should_return_false___When_both_sides_of_operator_are_null()
             {
                 // Arrange
-                S3ResourceLocator systemUnderTest1 = null;
-                S3ResourceLocator systemUnderTest2 = null;
+                S3StreamConfig systemUnderTest1 = null;
+                S3StreamConfig systemUnderTest2 = null;
 
                 // Act
                 var actual = systemUnderTest1 != systemUnderTest2;
@@ -762,7 +1180,7 @@ namespace Naos.AWS.S3.Test
                 foreach (var scenario in scenarios)
                 {
                     // Arrange
-                    S3ResourceLocator systemUnderTest = null;
+                    S3StreamConfig systemUnderTest = null;
 
                     // Act
                     var actual1 = systemUnderTest != scenario.ReferenceObject;
@@ -908,157 +1326,14 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_ResourceLocatorBase___Should_return_false___When_parameter_other_is_null()
+            public static void Equals_with_S3StreamConfig___Should_return_false___When_parameter_other_is_null()
             {
                 var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
 
                 foreach (var scenario in scenarios)
                 {
                     // Arrange
-                    ResourceLocatorBase systemUnderTest = null;
-
-                    // Act
-                    var actual = scenario.ReferenceObject.Equals((ResourceLocatorBase)systemUnderTest);
-
-                    // Assert
-                    actual.AsTest().Must().BeFalse(because: scenario.Id);
-                }
-            }
-
-            [Fact]
-            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
-            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_ResourceLocatorBase___Should_return_true___When_parameter_other_is_same_object()
-            {
-                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
-
-                foreach (var scenario in scenarios)
-                {
-                    // Arrange, Act
-                    var actual = scenario.ReferenceObject.Equals((ResourceLocatorBase)scenario.ReferenceObject);
-
-                    // Assert
-                    actual.AsTest().Must().BeTrue(because: scenario.Id);
-                }
-            }
-
-            [Fact]
-            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
-            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_ResourceLocatorBase___Should_return_false___When_parameter_other_is_derived_from_the_same_type_but_is_not_of_the_same_type_as_this_object()
-            {
-                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
-
-                foreach (var scenario in scenarios)
-                {
-                    // Arrange, Act
-                    var actuals = scenario.ObjectsThatDeriveFromScenarioTypeButAreNotOfTheSameTypeAsReferenceObject.Select(_ => scenario.ReferenceObject.Equals((ResourceLocatorBase)_)).ToList();
-
-                    // Assert
-                    actuals.AsTest().Must().Each().BeFalse(because: scenario.Id);
-                }
-            }
-
-            [Fact]
-            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
-            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_ResourceLocatorBase___Should_return_false___When_objects_being_compared_have_different_property_values()
-            {
-                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
-
-                foreach (var scenario in scenarios)
-                {
-                    // Arrange, Act
-                    var actuals = scenario.ObjectsThatAreNotEqualToReferenceObject.Select(_ => scenario.ReferenceObject.Equals((ResourceLocatorBase)_)).ToList();
-
-                    // Assert
-                    actuals.AsTest().Must().Each().BeFalse(because: scenario.Id);
-                }
-            }
-
-            [Fact]
-            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
-            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_ResourceLocatorBase___Should_return_true___When_objects_being_compared_have_same_property_values()
-            {
-                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
-
-                foreach (var scenario in scenarios)
-                {
-                    // Arrange, Act
-                    var actuals = scenario.ObjectsThatAreEqualToButNotTheSameAsReferenceObject.Select(_ => scenario.ReferenceObject.Equals((ResourceLocatorBase)_)).ToList();
-
-                    // Assert
-                    actuals.AsTest().Must().Each().BeTrue(because: scenario.Id);
-                }
-            }
-
-            [Fact]
-            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
-            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
-            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
-            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
-            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
-            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_S3ResourceLocator___Should_return_false___When_parameter_other_is_null()
-            {
-                var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
-
-                foreach (var scenario in scenarios)
-                {
-                    // Arrange
-                    S3ResourceLocator systemUnderTest = null;
+                    S3StreamConfig systemUnderTest = null;
 
                     // Act
                     var actual = scenario.ReferenceObject.Equals(systemUnderTest);
@@ -1082,7 +1357,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_S3ResourceLocator___Should_return_true___When_parameter_other_is_same_object()
+            public static void Equals_with_S3StreamConfig___Should_return_true___When_parameter_other_is_same_object()
             {
                 var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
 
@@ -1110,7 +1385,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_S3ResourceLocator___Should_return_false___When_parameter_other_is_derived_from_the_same_type_but_is_not_of_the_same_type_as_this_object()
+            public static void Equals_with_S3StreamConfig___Should_return_false___When_parameter_other_is_derived_from_the_same_type_but_is_not_of_the_same_type_as_this_object()
             {
                 var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
 
@@ -1138,7 +1413,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_S3ResourceLocator___Should_return_false___When_objects_being_compared_have_different_property_values()
+            public static void Equals_with_S3StreamConfig___Should_return_false___When_objects_being_compared_have_different_property_values()
             {
                 var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
 
@@ -1166,7 +1441,7 @@ namespace Naos.AWS.S3.Test
             [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
             [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
-            public static void Equals_with_S3ResourceLocator___Should_return_true___When_objects_being_compared_have_same_property_values()
+            public static void Equals_with_S3StreamConfig___Should_return_true___When_objects_being_compared_have_same_property_values()
             {
                 var scenarios = EquatableTestScenarios.ValidateAndPrepareForTesting();
 
@@ -1327,7 +1602,7 @@ namespace Naos.AWS.S3.Test
         [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
         public static class Hashing
         {
-            [Fact]
+            [Fact(Skip = "It's possible (and even probable after a few runs of this test) that two dummy, unequal models will have the same hash code.  The model being tested contains at least one property who's type (or a type nested within the generic type, or a property of the IModel type) is a dictionary with keys that are not comparable or an unordered collection with elements that are not comparable.  In these cases the hashing method cannot hash the elements and must resort to hashing the element count.  Two dummies could easily have the same element count for such a type.")]
             [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
             [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
             [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]

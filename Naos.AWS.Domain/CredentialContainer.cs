@@ -8,12 +8,11 @@ namespace Naos.AWS.Domain
 {
     using System;
     using OBeautifulCode.Assertion.Recipes;
-    using OBeautifulCode.Type;
 
     /// <summary>
     /// Wrapper object to hold the AWSCredentials and allow abstraction from changes in it.
     /// </summary>
-    public partial class CredentialContainer : IModelViaCodeGen
+    public partial class CredentialContainer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CredentialContainer"/> class.
@@ -27,7 +26,9 @@ namespace Naos.AWS.Domain
         /// </summary>
         /// <param name="accessKey">Access key.</param>
         /// <param name="secretKey">Secret key.</param>
-        public CredentialContainer(string accessKey, string secretKey)
+        public CredentialContainer(
+            string accessKey,
+            string secretKey)
         {
             new { accessKey }.AsArg().Must().NotBeNullNorWhiteSpace();
             new { secretKey }.AsArg().Must().NotBeNullNorWhiteSpace();

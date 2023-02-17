@@ -15,8 +15,6 @@ namespace Naos.AWS.Domain
     using global::System.Globalization;
     using global::System.Linq;
 
-    using global::Naos.Database.Domain;
-
     using global::OBeautifulCode.Cloning.Recipes;
     using global::OBeautifulCode.Equality.Recipes;
     using global::OBeautifulCode.Type;
@@ -25,15 +23,15 @@ namespace Naos.AWS.Domain
     using static global::System.FormattableString;
 
     [Serializable]
-    public partial class S3StreamRepresentation : IModel<S3StreamRepresentation>
+    public partial class S3Credentials : IModel<S3Credentials>
     {
         /// <summary>
-        /// Determines whether two objects of type <see cref="S3StreamRepresentation"/> are equal.
+        /// Determines whether two objects of type <see cref="S3Credentials"/> are equal.
         /// </summary>
         /// <param name="left">The object to the left of the equality operator.</param>
         /// <param name="right">The object to the right of the equality operator.</param>
         /// <returns>true if the two items are equal; otherwise false.</returns>
-        public static bool operator ==(S3StreamRepresentation left, S3StreamRepresentation right)
+        public static bool operator ==(S3Credentials left, S3Credentials right)
         {
             if (ReferenceEquals(left, right))
             {
@@ -51,15 +49,15 @@ namespace Naos.AWS.Domain
         }
 
         /// <summary>
-        /// Determines whether two objects of type <see cref="S3StreamRepresentation"/> are not equal.
+        /// Determines whether two objects of type <see cref="S3Credentials"/> are not equal.
         /// </summary>
         /// <param name="left">The object to the left of the equality operator.</param>
         /// <param name="right">The object to the right of the equality operator.</param>
         /// <returns>true if the two items are not equal; otherwise false.</returns>
-        public static bool operator !=(S3StreamRepresentation left, S3StreamRepresentation right) => !(left == right);
+        public static bool operator !=(S3Credentials left, S3Credentials right) => !(left == right);
 
         /// <inheritdoc />
-        public bool Equals(S3StreamRepresentation other)
+        public bool Equals(S3Credentials other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -71,23 +69,39 @@ namespace Naos.AWS.Domain
                 return false;
             }
 
-            var result = this.Name.IsEqualTo(other.Name, StringComparer.Ordinal);
+            var result = this.AccessKeyId.IsEqualTo(other.AccessKeyId, StringComparer.Ordinal)
+                      && this.SecretAccessKey.IsEqualTo(other.SecretAccessKey, StringComparer.Ordinal);
 
             return result;
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => this == (obj as S3StreamRepresentation);
+        public override bool Equals(object obj) => this == (obj as S3Credentials);
 
         /// <inheritdoc />
         public override int GetHashCode() => HashCodeHelper.Initialize()
-            .Hash(this.Name)
+            .Hash(this.AccessKeyId)
+            .Hash(this.SecretAccessKey)
             .Value;
 
         /// <inheritdoc />
-        public new S3StreamRepresentation DeepClone() => (S3StreamRepresentation)this.DeepCloneInternal();
+        public object Clone() => this.DeepClone();
 
         /// <inheritdoc />
+        public S3Credentials DeepClone()
+        {
+            var result = new S3Credentials(
+                                 this.AccessKeyId?.DeepClone(),
+                                 this.SecretAccessKey?.DeepClone());
+
+            return result;
+        }
+
+        /// <summary>
+        /// Deep clones this object with a new <see cref="AccessKeyId" />.
+        /// </summary>
+        /// <param name="accessKeyId">The new <see cref="AccessKeyId" />.  This object will NOT be deep cloned; it is used as-is.</param>
+        /// <returns>New <see cref="S3Credentials" /> using the specified <paramref name="accessKeyId" /> for <see cref="AccessKeyId" /> and a deep clone of every other property.</returns>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -105,20 +119,42 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public override StreamRepresentationBase DeepCloneWithName(string name)
+        public S3Credentials DeepCloneWithAccessKeyId(string accessKeyId)
         {
-            var result = new S3StreamRepresentation(
-                                 name);
+            var result = new S3Credentials(
+                                 accessKeyId,
+                                 this.SecretAccessKey?.DeepClone());
 
             return result;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Deep clones this object with a new <see cref="SecretAccessKey" />.
+        /// </summary>
+        /// <param name="secretAccessKey">The new <see cref="SecretAccessKey" />.  This object will NOT be deep cloned; it is used as-is.</param>
+        /// <returns>New <see cref="S3Credentials" /> using the specified <paramref name="secretAccessKey" /> for <see cref="SecretAccessKey" /> and a deep clone of every other property.</returns>
+        [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        protected override StreamRepresentationBase DeepCloneInternal()
+        [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+        [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+        [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+        [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+        [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public S3Credentials DeepCloneWithSecretAccessKey(string secretAccessKey)
         {
-            var result = new S3StreamRepresentation(
-                                 this.Name?.DeepClone());
+            var result = new S3Credentials(
+                                 this.AccessKeyId?.DeepClone(),
+                                 secretAccessKey);
 
             return result;
         }
@@ -127,7 +163,7 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public override string ToString()
         {
-            var result = Invariant($"Naos.AWS.Domain.S3StreamRepresentation: Name = {this.Name?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
+            var result = Invariant($"Naos.AWS.Domain.S3Credentials: AccessKeyId = {this.AccessKeyId?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SecretAccessKey = {this.SecretAccessKey?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
 
             return result;
         }

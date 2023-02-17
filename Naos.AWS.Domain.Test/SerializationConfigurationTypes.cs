@@ -6,7 +6,8 @@
 
 namespace Naos.AWS.Domain.Test
 {
-    using OBeautifulCode.Representation.System;
+    using Naos.AWS.Serialization.Bson;
+    using Naos.AWS.Serialization.Json;
     using OBeautifulCode.Serialization.Bson;
     using OBeautifulCode.Serialization.Json;
 
@@ -15,8 +16,8 @@ namespace Naos.AWS.Domain.Test
     /// </summary>
     internal static class SerializationConfigurationTypes
     {
-        public static BsonSerializationConfigurationType BsonSerializationConfigurationType => typeof(NullBsonSerializationConfiguration).ToBsonSerializationConfigurationType();
+        public static BsonSerializationConfigurationType BsonSerializationConfigurationType => typeof(AWSBsonSerializationConfiguration).ToBsonSerializationConfigurationType();
 
-        public static JsonSerializationConfigurationType JsonSerializationConfigurationType => typeof(NullJsonSerializationConfiguration).ToJsonSerializationConfigurationType();
+        public static JsonSerializationConfigurationType JsonSerializationConfigurationType => typeof(AWSJsonSerializationConfiguration).ToJsonSerializationConfigurationType();
     }
 }

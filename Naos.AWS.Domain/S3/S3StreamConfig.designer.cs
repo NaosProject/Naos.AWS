@@ -99,14 +99,12 @@ namespace Naos.AWS.Domain
         /// <inheritdoc />
         public S3StreamConfig DeepClone()
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = this.Name?.DeepClone(),
-                                 AccessKinds                     = this.AccessKinds.DeepClone(),
-                                 DefaultSerializerRepresentation = this.DefaultSerializerRepresentation?.DeepClone(),
-                                 DefaultSerializationFormat      = this.DefaultSerializationFormat.DeepClone(),
-                                 AllLocators                     = this.AllLocators?.DeepClone(),
-                             };
+            var result = new S3StreamConfig(
+                                 this.Name?.DeepClone(),
+                                 this.AccessKinds.DeepClone(),
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 this.AllLocators?.DeepClone());
 
             return result;
         }
@@ -135,14 +133,12 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public S3StreamConfig DeepCloneWithName(string name)
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = name,
-                                 AccessKinds                     = this.AccessKinds.DeepClone(),
-                                 DefaultSerializerRepresentation = this.DefaultSerializerRepresentation?.DeepClone(),
-                                 DefaultSerializationFormat      = this.DefaultSerializationFormat.DeepClone(),
-                                 AllLocators                     = this.AllLocators?.DeepClone(),
-                             };
+            var result = new S3StreamConfig(
+                                 name,
+                                 this.AccessKinds.DeepClone(),
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 this.AllLocators?.DeepClone());
 
             return result;
         }
@@ -171,14 +167,12 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public S3StreamConfig DeepCloneWithAccessKinds(StreamAccessKinds accessKinds)
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = this.Name?.DeepClone(),
-                                 AccessKinds                     = accessKinds,
-                                 DefaultSerializerRepresentation = this.DefaultSerializerRepresentation?.DeepClone(),
-                                 DefaultSerializationFormat      = this.DefaultSerializationFormat.DeepClone(),
-                                 AllLocators                     = this.AllLocators?.DeepClone(),
-                             };
+            var result = new S3StreamConfig(
+                                 this.Name?.DeepClone(),
+                                 accessKinds,
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 this.AllLocators?.DeepClone());
 
             return result;
         }
@@ -207,14 +201,12 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public S3StreamConfig DeepCloneWithDefaultSerializerRepresentation(SerializerRepresentation defaultSerializerRepresentation)
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = this.Name?.DeepClone(),
-                                 AccessKinds                     = this.AccessKinds.DeepClone(),
-                                 DefaultSerializerRepresentation = defaultSerializerRepresentation,
-                                 DefaultSerializationFormat      = this.DefaultSerializationFormat.DeepClone(),
-                                 AllLocators                     = this.AllLocators?.DeepClone(),
-                             };
+            var result = new S3StreamConfig(
+                                 this.Name?.DeepClone(),
+                                 this.AccessKinds.DeepClone(),
+                                 defaultSerializerRepresentation,
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 this.AllLocators?.DeepClone());
 
             return result;
         }
@@ -243,14 +235,12 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public S3StreamConfig DeepCloneWithDefaultSerializationFormat(SerializationFormat defaultSerializationFormat)
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = this.Name?.DeepClone(),
-                                 AccessKinds                     = this.AccessKinds.DeepClone(),
-                                 DefaultSerializerRepresentation = this.DefaultSerializerRepresentation?.DeepClone(),
-                                 DefaultSerializationFormat      = defaultSerializationFormat,
-                                 AllLocators                     = this.AllLocators?.DeepClone(),
-                             };
+            var result = new S3StreamConfig(
+                                 this.Name?.DeepClone(),
+                                 this.AccessKinds.DeepClone(),
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 defaultSerializationFormat,
+                                 this.AllLocators?.DeepClone());
 
             return result;
         }
@@ -279,14 +269,12 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         public S3StreamConfig DeepCloneWithAllLocators(IReadOnlyCollection<IResourceLocator> allLocators)
         {
-            var result = new S3StreamConfig
-                             {
-                                 Name                            = this.Name?.DeepClone(),
-                                 AccessKinds                     = this.AccessKinds.DeepClone(),
-                                 DefaultSerializerRepresentation = this.DefaultSerializerRepresentation?.DeepClone(),
-                                 DefaultSerializationFormat      = this.DefaultSerializationFormat.DeepClone(),
-                                 AllLocators                     = allLocators,
-                             };
+            var result = new S3StreamConfig(
+                                 this.Name?.DeepClone(),
+                                 this.AccessKinds.DeepClone(),
+                                 this.DefaultSerializerRepresentation?.DeepClone(),
+                                 this.DefaultSerializationFormat.DeepClone(),
+                                 allLocators);
 
             return result;
         }
@@ -295,7 +283,7 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public override string ToString()
         {
-            var result = Invariant($"Naos.AWS.S3.S3StreamConfig: Name = {this.Name?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, AccessKinds = {this.AccessKinds.ToString() ?? "<null>"}, DefaultSerializerRepresentation = {this.DefaultSerializerRepresentation?.ToString() ?? "<null>"}, DefaultSerializationFormat = {this.DefaultSerializationFormat.ToString() ?? "<null>"}, AllLocators = {this.AllLocators?.ToString() ?? "<null>"}.");
+            var result = Invariant($"Naos.AWS.Domain.S3StreamConfig: Name = {this.Name?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, AccessKinds = {this.AccessKinds.ToString() ?? "<null>"}, DefaultSerializerRepresentation = {this.DefaultSerializerRepresentation?.ToString() ?? "<null>"}, DefaultSerializationFormat = {this.DefaultSerializationFormat.ToString() ?? "<null>"}, AllLocators = {this.AllLocators?.ToString() ?? "<null>"}.");
 
             return result;
         }

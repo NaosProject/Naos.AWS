@@ -243,12 +243,7 @@
     <Compile Include=".recipes\OBeautifulCode.Type\TypeDummyFactory.designer.cs" />
     <Compile Include=".recipes\OBeautifulCode.Type\TypeExtensions.cs" />
     <Compile Include="AwsConfiguration.cs" />
-    <Compile Include="S3DummyFactory.cs" />
     <Compile Include="CloudFileTest.cs" />
-    <Compile Include="S3StreamConfigTest.cs" />
-    <Compile Include="S3StreamConfigTest.designer.cs">
-      <DependentUpon>S3StreamConfigTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="SerializationConfigurationTypes.cs" />
     <Compile Include="CustomMetadata.cs" />
     <Compile Include="FileManagerIntegrationTest.cs" />
@@ -256,14 +251,6 @@
     <Compile Include="FileManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\ProjectInfo.cs" />
-    <Compile Include="S3ResourceLocatorTest.cs" />
-    <Compile Include="S3ResourceLocatorTest.designer.cs">
-      <DependentUpon>S3ResourceLocatorTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="S3StreamRepresentationTest.cs" />
-    <Compile Include="S3StreamRepresentationTest.designer.cs">
-      <DependentUpon>S3StreamRepresentationTest.cs</DependentUpon>
-    </Compile>
     <Compile Include="TestBase.cs" />
     <Compile Include="UploadFileResultTest.cs" />
   </ItemGroup>
