@@ -1,0 +1,7 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <description>BSON Serialization Configuration for types in Naos.AWS.</description>
+    <tags>bson serialization configuration AWS</tags>
+  </metadata>
+</package>

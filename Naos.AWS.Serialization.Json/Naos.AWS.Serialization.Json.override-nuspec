@@ -1,0 +1,7 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <description>JSON Serialization Configuration for types in Naos.AWS.</description>
+    <tags>json serialization configuration AWS</tags>
+  </metadata>
+</package>
