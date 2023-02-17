@@ -30,7 +30,7 @@ namespace Naos.AWS.S3
         /// <param name="accessKey">Access key with rights to read and write files in specified buckets.</param>
         /// <param name="secretKey">Secret key with rights to read and write files in specified buckets.</param>
         public FileManager(string accessKey, string secretKey)
-            : this(new CredentialContainer(accessKey, secretKey))
+            : this(new CredentialContainer { AccessKeyId = accessKey, SecretAccessKey = secretKey })
         {
         }
 

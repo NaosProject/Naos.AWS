@@ -26,6 +26,6 @@ namespace Naos.AWS.Domain
         /// <summary>
         /// Gets or sets the S3 credentials.
         /// </summary>
-        public S3Credentials S3Credentials { get; set; }
+        public CredentialContainer CredentialContainer { get; set; }
     }
 }

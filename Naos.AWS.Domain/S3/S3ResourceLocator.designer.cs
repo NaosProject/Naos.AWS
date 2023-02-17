@@ -73,7 +73,7 @@ namespace Naos.AWS.Domain
 
             var result = this.Region.IsEqualTo(other.Region, StringComparer.Ordinal)
                       && this.BucketName.IsEqualTo(other.BucketName, StringComparer.Ordinal)
-                      && this.S3Credentials.IsEqualTo(other.S3Credentials);
+                      && this.CredentialContainer.IsEqualTo(other.CredentialContainer);
 
             return result;
         }
@@ -85,7 +85,7 @@ namespace Naos.AWS.Domain
         public override int GetHashCode() => HashCodeHelper.Initialize()
             .Hash(this.Region)
             .Hash(this.BucketName)
-            .Hash(this.S3Credentials)
+            .Hash(this.CredentialContainer)
             .Value;
 
         /// <inheritdoc />
@@ -117,9 +117,9 @@ namespace Naos.AWS.Domain
         {
             var result = new S3ResourceLocator
                              {
-                                 Region        = region,
-                                 BucketName    = this.BucketName?.DeepClone(),
-                                 S3Credentials = this.S3Credentials?.DeepClone(),
+                                 Region              = region,
+                                 BucketName          = this.BucketName?.DeepClone(),
+                                 CredentialContainer = this.CredentialContainer?.DeepClone(),
                              };
 
             return result;
@@ -151,19 +151,19 @@ namespace Naos.AWS.Domain
         {
             var result = new S3ResourceLocator
                              {
-                                 Region        = this.Region?.DeepClone(),
-                                 BucketName    = bucketName,
-                                 S3Credentials = this.S3Credentials?.DeepClone(),
+                                 Region              = this.Region?.DeepClone(),
+                                 BucketName          = bucketName,
+                                 CredentialContainer = this.CredentialContainer?.DeepClone(),
                              };
 
             return result;
         }
 
         /// <summary>
-        /// Deep clones this object with a new <see cref="S3Credentials" />.
+        /// Deep clones this object with a new <see cref="CredentialContainer" />.
         /// </summary>
-        /// <param name="s3Credentials">The new <see cref="S3Credentials" />.  This object will NOT be deep cloned; it is used as-is.</param>
-        /// <returns>New <see cref="S3ResourceLocator" /> using the specified <paramref name="s3Credentials" /> for <see cref="S3Credentials" /> and a deep clone of every other property.</returns>
+        /// <param name="credentialContainer">The new <see cref="CredentialContainer" />.  This object will NOT be deep cloned; it is used as-is.</param>
+        /// <returns>New <see cref="S3ResourceLocator" /> using the specified <paramref name="credentialContainer" /> for <see cref="CredentialContainer" /> and a deep clone of every other property.</returns>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         [SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings")]
@@ -181,13 +181,13 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public S3ResourceLocator DeepCloneWithS3Credentials(S3Credentials s3Credentials)
+        public S3ResourceLocator DeepCloneWithCredentialContainer(CredentialContainer credentialContainer)
         {
             var result = new S3ResourceLocator
                              {
-                                 Region        = this.Region?.DeepClone(),
-                                 BucketName    = this.BucketName?.DeepClone(),
-                                 S3Credentials = s3Credentials,
+                                 Region              = this.Region?.DeepClone(),
+                                 BucketName          = this.BucketName?.DeepClone(),
+                                 CredentialContainer = credentialContainer,
                              };
 
             return result;
@@ -199,9 +199,9 @@ namespace Naos.AWS.Domain
         {
             var result = new S3ResourceLocator
                              {
-                                 Region        = this.Region?.DeepClone(),
-                                 BucketName    = this.BucketName?.DeepClone(),
-                                 S3Credentials = this.S3Credentials?.DeepClone(),
+                                 Region              = this.Region?.DeepClone(),
+                                 BucketName          = this.BucketName?.DeepClone(),
+                                 CredentialContainer = this.CredentialContainer?.DeepClone(),
                              };
 
             return result;
@@ -211,7 +211,7 @@ namespace Naos.AWS.Domain
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public override string ToString()
         {
-            var result = Invariant($"Naos.AWS.Domain.S3ResourceLocator: Region = {this.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {this.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, S3Credentials = {this.S3Credentials?.ToString() ?? "<null>"}.");
+            var result = Invariant($"Naos.AWS.Domain.S3ResourceLocator: Region = {this.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {this.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, CredentialContainer = {this.CredentialContainer?.ToString() ?? "<null>"}.");
 
             return result;
         }

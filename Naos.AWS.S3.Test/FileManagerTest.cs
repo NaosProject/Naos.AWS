@@ -38,22 +38,6 @@ namespace Naos.AWS.S3.Test
             new FileManager(AccessKey, SecretKey);
         }
 
-        /// <summary>
-        /// Test constructor when passed invalid input.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Keeping instance for base class.")]
-        [Fact]
-        public void Constructor___Should_throw_exception___When_passed_invalid_input()
-        {
-            Assert.Throws<ArgumentNullException>(() => new FileManager(null, SecretKey));
-            Assert.Throws<ArgumentException>(() => new FileManager(string.Empty, SecretKey));
-            Assert.Throws<ArgumentException>(() => new FileManager("   ", SecretKey));
-
-            Assert.Throws<ArgumentNullException>(() => new FileManager(AccessKey, null));
-            Assert.Throws<ArgumentException>(() => new FileManager(AccessKey, string.Empty));
-            Assert.Throws<ArgumentException>(() => new FileManager(AccessKey, "   "));
-        }
-
         #endregion
 
         #region Upload Tests

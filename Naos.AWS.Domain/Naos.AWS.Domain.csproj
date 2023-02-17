@@ -140,6 +140,9 @@
     <Compile Include="Config\ConfigCidr.cs" />
     <Compile Include="Config\ConfigVpc.cs" />
     <Compile Include="CredentialContainer.cs" />
+    <Compile Include="CredentialContainer.designer.cs">
+      <DependentUpon>CredentialContainer.cs</DependentUpon>
+    </Compile>
     <Compile Include="EbsVolume.cs" />
     <Compile Include="ElasticIp.cs" />
     <Compile Include="Enums.cs" />
@@ -159,16 +162,12 @@
     <Compile Include="Route53Entry.cs" />
     <Compile Include="S3\CloudFile.cs" />
     <Compile Include="S3\ComputedChecksum.cs" />
-    <Compile Include="S3\S3Credentials.cs" />
     <Compile Include="S3\EncodingHelper.cs" />
     <Compile Include="S3\IDownloadFiles.cs" />
     <Compile Include="S3\IListFiles.cs" />
     <Compile Include="S3\IManageFileMetadata.cs" />
     <Compile Include="S3\IManageFiles.cs" />
     <Compile Include="S3\IUploadFiles.cs" />
-    <Compile Include="S3\S3Credentials.designer.cs">
-      <DependentUpon>S3Credentials.cs</DependentUpon>
-    </Compile>
     <Compile Include="S3\S3ResourceLocator.cs" />
     <Compile Include="S3\S3ResourceLocator.designer.cs">
       <DependentUpon>S3ResourceLocator.cs</DependentUpon>

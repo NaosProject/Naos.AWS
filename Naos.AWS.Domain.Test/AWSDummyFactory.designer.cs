@@ -70,16 +70,21 @@ namespace Naos.AWS.Domain.Test
                                  A.Dummy<string>()));
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
-                () => new S3Credentials(
-                                 A.Dummy<string>(),
-                                 A.Dummy<string>()));
+                () => new CredentialContainer
+                             {
+                                 CredentialType  = A.Dummy<CredentialType>(),
+                                 AccessKeyId     = A.Dummy<string>(),
+                                 SecretAccessKey = A.Dummy<string>(),
+                                 SessionToken    = A.Dummy<string>(),
+                                 Expiration      = A.Dummy<DateTime>(),
+                             });
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(
                 () => new S3ResourceLocator
                              {
-                                 Region        = A.Dummy<string>(),
-                                 BucketName    = A.Dummy<string>(),
-                                 S3Credentials = A.Dummy<S3Credentials>(),
+                                 Region              = A.Dummy<string>(),
+                                 BucketName          = A.Dummy<string>(),
+                                 CredentialContainer = A.Dummy<CredentialContainer>(),
                              });
 
             AutoFixtureBackedDummyFactory.AddDummyCreator(

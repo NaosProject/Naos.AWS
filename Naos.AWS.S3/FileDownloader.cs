@@ -29,7 +29,7 @@ namespace Naos.AWS.S3
     {
         /// <inheritdoc cref="AwsInteractionBase"/>
         public FileDownloader(string accessKey, string secretKey)
-            : this(new CredentialContainer(accessKey, secretKey))
+            : this(new CredentialContainer { AccessKeyId = accessKey, SecretAccessKey = secretKey })
         {
         }
 

@@ -49,7 +49,7 @@ namespace Naos.AWS.Domain.Test
                         var result = new SystemUnderTestExpectedStringRepresentation<S3ResourceLocator>
                         {
                             SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.AWS.Domain.S3ResourceLocator: Region = {systemUnderTest.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {systemUnderTest.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, S3Credentials = {systemUnderTest.S3Credentials?.ToString() ?? "<null>"}."),
+                            ExpectedStringRepresentation = Invariant($"Naos.AWS.Domain.S3ResourceLocator: Region = {systemUnderTest.Region?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, BucketName = {systemUnderTest.BucketName?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, CredentialContainer = {systemUnderTest.CredentialContainer?.ToString() ?? "<null>"}."),
                         };
 
                         return result;
@@ -100,18 +100,18 @@ namespace Naos.AWS.Domain.Test
             .AddScenario(() =>
                 new DeepCloneWithTestScenario<S3ResourceLocator>
                 {
-                    Name = "DeepCloneWithS3Credentials should deep clone object and replace S3Credentials with the provided s3Credentials",
-                    WithPropertyName = "S3Credentials",
+                    Name = "DeepCloneWithCredentialContainer should deep clone object and replace CredentialContainer with the provided credentialContainer",
+                    WithPropertyName = "CredentialContainer",
                     SystemUnderTestDeepCloneWithValueFunc = () =>
                     {
                         var systemUnderTest = A.Dummy<S3ResourceLocator>();
 
-                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.S3Credentials.IsEqualTo(_.S3Credentials));
+                        var referenceObject = A.Dummy<S3ResourceLocator>().ThatIs(_ => !systemUnderTest.CredentialContainer.IsEqualTo(_.CredentialContainer));
 
                         var result = new SystemUnderTestDeepCloneWithValue<S3ResourceLocator>
                         {
                             SystemUnderTest = systemUnderTest,
-                            DeepCloneWithValue = referenceObject.S3Credentials,
+                            DeepCloneWithValue = referenceObject.CredentialContainer,
                         };
 
                         return result;
@@ -130,30 +130,30 @@ namespace Naos.AWS.Domain.Test
                     {
                         new S3ResourceLocator
                             {
-                                Region        = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName    = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                S3Credentials = ReferenceObjectForEquatableTestScenarios.S3Credentials,
+                                Region              = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName          = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                CredentialContainer = ReferenceObjectForEquatableTestScenarios.CredentialContainer,
                             },
                     },
                     ObjectsThatAreNotEqualToReferenceObject = new S3ResourceLocator[]
                     {
                         new S3ResourceLocator
                             {
-                                Region        = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Region.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Region)).Region,
-                                BucketName    = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                S3Credentials = ReferenceObjectForEquatableTestScenarios.S3Credentials,
+                                Region              = A.Dummy<S3ResourceLocator>().Whose(_ => !_.Region.IsEqualTo(ReferenceObjectForEquatableTestScenarios.Region)).Region,
+                                BucketName          = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                CredentialContainer = ReferenceObjectForEquatableTestScenarios.CredentialContainer,
                             },
                         new S3ResourceLocator
                             {
-                                Region        = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName    = A.Dummy<S3ResourceLocator>().Whose(_ => !_.BucketName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.BucketName)).BucketName,
-                                S3Credentials = ReferenceObjectForEquatableTestScenarios.S3Credentials,
+                                Region              = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName          = A.Dummy<S3ResourceLocator>().Whose(_ => !_.BucketName.IsEqualTo(ReferenceObjectForEquatableTestScenarios.BucketName)).BucketName,
+                                CredentialContainer = ReferenceObjectForEquatableTestScenarios.CredentialContainer,
                             },
                         new S3ResourceLocator
                             {
-                                Region        = ReferenceObjectForEquatableTestScenarios.Region,
-                                BucketName    = ReferenceObjectForEquatableTestScenarios.BucketName,
-                                S3Credentials = A.Dummy<S3ResourceLocator>().Whose(_ => !_.S3Credentials.IsEqualTo(ReferenceObjectForEquatableTestScenarios.S3Credentials)).S3Credentials,
+                                Region              = ReferenceObjectForEquatableTestScenarios.Region,
+                                BucketName          = ReferenceObjectForEquatableTestScenarios.BucketName,
+                                CredentialContainer = A.Dummy<S3ResourceLocator>().Whose(_ => !_.CredentialContainer.IsEqualTo(ReferenceObjectForEquatableTestScenarios.CredentialContainer)).CredentialContainer,
                             },
                     },
                     ObjectsThatAreNotOfTheSameTypeAsReferenceObject = new object[]
@@ -320,16 +320,16 @@ namespace Naos.AWS.Domain.Test
                 actual.AsTest().Must().BeEqualTo(systemUnderTest);
                 actual.AsTest().Must().NotBeSameReferenceAs(systemUnderTest);
 
-                if (systemUnderTest.S3Credentials == null)
+                if (systemUnderTest.CredentialContainer == null)
                 {
-                    actual.S3Credentials.AsTest().Must().BeNull();
+                    actual.CredentialContainer.AsTest().Must().BeNull();
                 }
-                else if (!actual.S3Credentials.GetType().IsValueType)
+                else if (!actual.CredentialContainer.GetType().IsValueType)
                 {
                     // When the declared type is a reference type, we still have to check the runtime type.
                     // The object could be a boxed value type, which will fail this asseration because
                     // a deep clone of a value type object is the same object.
-                    actual.S3Credentials.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.S3Credentials);
+                    actual.CredentialContainer.AsTest().Must().NotBeSameReferenceAs(systemUnderTest.CredentialContainer);
                 }
             }
 
@@ -349,7 +349,7 @@ namespace Naos.AWS.Domain.Test
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
             public static void DeepCloneWith___Should_deep_clone_object_and_replace_the_associated_property_with_the_provided_value___When_called()
             {
-                var propertyNames = new string[] { "Region", "BucketName", "S3Credentials" };
+                var propertyNames = new string[] { "Region", "BucketName", "CredentialContainer" };
 
                 var scenarios = DeepCloneWithTestScenarios.ValidateAndPrepareForTesting();
 
