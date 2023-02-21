@@ -7,16 +7,13 @@
 namespace Naos.AWS.Domain
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Naos.Database.Domain;
-    using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Serialization;
-    using OBeautifulCode.Type;
 
     /// <summary>
     /// S3 Implementation of <see cref="IStreamConfig" />.
     /// </summary>
-    public partial class S3StreamConfig : IStreamConfig, IModelViaCodeGen
+    public partial class S3StreamConfig : StreamConfigBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="S3StreamConfig"/> class.
@@ -32,34 +29,8 @@ namespace Naos.AWS.Domain
             SerializerRepresentation defaultSerializerRepresentation,
             SerializationFormat defaultSerializationFormat,
             IReadOnlyCollection<IResourceLocator> allLocators)
+            : base(name, accessKinds, defaultSerializerRepresentation, defaultSerializationFormat, allLocators)
         {
-            name.MustForArg(nameof(name)).NotBeNullNorWhiteSpace();
-            accessKinds.MustForArg(nameof(accessKinds)).NotBeEqualTo(StreamAccessKinds.None);
-            defaultSerializerRepresentation.MustForArg(nameof(defaultSerializerRepresentation)).NotBeNull();
-            defaultSerializationFormat.MustForArg(nameof(defaultSerializationFormat)).NotBeEqualTo(SerializationFormat.Invalid);
-            allLocators.MustForArg(nameof(allLocators)).NotBeNullNorEmptyEnumerableNorContainAnyNulls();
-            allLocators.ToList().ForEach(_ => _.MustForArg(nameof(allLocators) + "-item").BeOfType<S3ResourceLocator>());
-
-            this.Name = name;
-            this.AccessKinds = accessKinds;
-            this.DefaultSerializerRepresentation = defaultSerializerRepresentation;
-            this.DefaultSerializationFormat = defaultSerializationFormat;
-            this.AllLocators = allLocators;
         }
-
-        /// <inheritdoc />
-        public string Name { get; private set; }
-
-        /// <inheritdoc />
-        public StreamAccessKinds AccessKinds { get; private set; }
-
-        /// <inheritdoc />
-        public SerializerRepresentation DefaultSerializerRepresentation { get; private set; }
-
-        /// <inheritdoc />
-        public SerializationFormat DefaultSerializationFormat { get; private set; }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<IResourceLocator> AllLocators { get; private set; }
     }
 }
