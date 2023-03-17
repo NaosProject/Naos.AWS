@@ -60,8 +60,8 @@ namespace Naos.AWS.Domain.Test
             var actualToken = credContainerToken.ToString();
 
             // Assert
-            actualKeys.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Keys, AccessKeyId = access, SecretAccessKey = <secret-key>, SessionToken = <null>, Expiration = 01/01/0001 00:00:00.");
-            actualToken.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Token, AccessKeyId = access, SecretAccessKey = <secret-key>, SessionToken = <session-token>, Expiration = 10/10/2010 10:10:10.");
+            actualKeys.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Keys, AccessKeyId = access, SecretAccessKey = ***, SessionToken = <null>, Expiration = 01/01/0001 00:00:00.");
+            actualToken.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Token, AccessKeyId = access, SecretAccessKey = ***, SessionToken = ***, Expiration = 10/10/2010 10:10:10.");
         }
     }
 }

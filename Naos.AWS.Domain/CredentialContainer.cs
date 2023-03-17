@@ -43,8 +43,9 @@ namespace Naos.AWS.Domain
         /// <inheritdoc cref="IDeclareToStringMethod" />
         public override string ToString()
         {
-            var secretKeyPieceOfToString = this.SecretAccessKey != null ? "<secret-key>" : "<null>";
-            var sessionTokenPieceOfToString = this.SessionToken != null ? "<session-token>" : "<null>";
+            var obfuscationToken = "***";
+            var secretKeyPieceOfToString = this.SecretAccessKey != null ? obfuscationToken : "<null>";
+            var sessionTokenPieceOfToString = this.SessionToken != null ? obfuscationToken : "<null>";
             var result = FormattableString.Invariant($"Naos.AWS.Domain.CredentialContainer: CredentialType = {this.CredentialType.ToString() ?? "<null>"}, AccessKeyId = {this.AccessKeyId?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SecretAccessKey = {secretKeyPieceOfToString}, SessionToken = {sessionTokenPieceOfToString}, Expiration = {this.Expiration.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
 
             return result;
