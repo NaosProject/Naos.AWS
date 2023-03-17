@@ -12,12 +12,12 @@ namespace Naos.AWS.Domain.Test
     using System.Linq;
 
     using FakeItEasy;
-
+    using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.AutoFakeItEasy;
     using OBeautifulCode.CodeAnalysis.Recipes;
     using OBeautifulCode.CodeGen.ModelObject.Recipes;
     using OBeautifulCode.Math.Recipes;
-
+    using OBeautifulCode.String.Recipes;
     using Xunit;
 
     using static System.FormattableString;
@@ -29,6 +29,39 @@ namespace Naos.AWS.Domain.Test
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = ObcSuppressBecause.CA1810_InitializeReferenceTypeStaticFieldsInline_FieldsDeclaredInCodeGeneratedPartialTestClass)]
         static CredentialContainerTest()
         {
+        }
+
+        [Fact]
+        public static void ToString____Should_not_have_sensitive_information()
+        {
+            // Arrange
+            var secretKey = "ThisSecretShouldNotBeInToString";
+            var sessionToken = "ThisSessionTokenShouldNotBeInToString";
+            var expirationToken = new DateTime(2010, 10, 10, 10, 10, 10, DateTimeKind.Utc);
+
+            var credContainerKeys = new CredentialContainer
+                                 {
+                                     AccessKeyId = "access",
+                                     SecretAccessKey = secretKey,
+                                     CredentialType = CredentialType.Keys,
+                                 };
+
+            var credContainerToken = new CredentialContainer
+                                     {
+                                         AccessKeyId = "access",
+                                         SecretAccessKey = secretKey,
+                                         SessionToken = sessionToken,
+                                         Expiration = expirationToken,
+                                         CredentialType = CredentialType.Token,
+                                     };
+
+            // Act
+            var actualKeys = credContainerKeys.ToString();
+            var actualToken = credContainerToken.ToString();
+
+            // Assert
+            actualKeys.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Keys, AccessKeyId = access, SecretAccessKey = <secret-key>, SessionToken = <null>, Expiration = 01/01/0001 00:00:00.");
+            actualToken.MustForTest().BeEqualTo("Naos.AWS.Domain.CredentialContainer: CredentialType = Token, AccessKeyId = access, SecretAccessKey = <secret-key>, SessionToken = <session-token>, Expiration = 10/10/2010 10:10:10.");
         }
     }
 }

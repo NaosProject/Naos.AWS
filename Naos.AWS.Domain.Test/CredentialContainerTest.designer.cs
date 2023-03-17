@@ -35,24 +35,7 @@ namespace Naos.AWS.Domain.Test
 
     public static partial class CredentialContainerTest
     {
-        private static readonly StringRepresentationTestScenarios<CredentialContainer> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<CredentialContainer>()
-            .AddScenario(() =>
-                new StringRepresentationTestScenario<CredentialContainer>
-                {
-                    Name = "Default Code Generated Scenario",
-                    SystemUnderTestExpectedStringRepresentationFunc = () =>
-                    {
-                        var systemUnderTest = A.Dummy<CredentialContainer>();
-
-                        var result = new SystemUnderTestExpectedStringRepresentation<CredentialContainer>
-                        {
-                            SystemUnderTest = systemUnderTest,
-                            ExpectedStringRepresentation = Invariant($"Naos.AWS.Domain.CredentialContainer: CredentialType = {systemUnderTest.CredentialType.ToString() ?? "<null>"}, AccessKeyId = {systemUnderTest.AccessKeyId?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SecretAccessKey = {systemUnderTest.SecretAccessKey?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SessionToken = {systemUnderTest.SessionToken?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Expiration = {systemUnderTest.Expiration.ToString(CultureInfo.InvariantCulture) ?? "<null>"}."),
-                        };
-
-                        return result;
-                    },
-                });
+        private static readonly StringRepresentationTestScenarios<CredentialContainer> StringRepresentationTestScenarios = new StringRepresentationTestScenarios<CredentialContainer>();
 
         private static readonly DeepCloneWithTestScenarios<CredentialContainer> DeepCloneWithTestScenarios = new DeepCloneWithTestScenarios<CredentialContainer>()
             .AddScenario(() =>
@@ -263,6 +246,32 @@ namespace Naos.AWS.Domain.Test
                 // Assert
                 actualInterfaces.AsTest().Must().ContainElement(typeof(IModel<CredentialContainer>));
                 expectedModelMethodHashes.Except(actualModelMethodHashes).AsTest().Must().BeEmptyEnumerable();
+            }
+
+            [Fact]
+            [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly")]
+            [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+            [SuppressMessage("Microsoft.Naming", "CA1715:IdentifiersShouldHaveCorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+            [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames")]
+            [SuppressMessage("Microsoft.Naming", "CA1722:IdentifiersShouldNotHaveIncorrectPrefix")]
+            [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration")]
+            [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly")]
+            public static void CredentialContainer___Should_declare_ToString_method___When_reflecting()
+            {
+                // Arrange
+                var expected = typeof(CredentialContainer);
+
+                // Act
+                var actual = expected.GetMethodsFiltered(MemberRelationships.DeclaredInType, MemberOwners.Instance, MemberAccessModifiers.Public).Single(_ => (_.Name == nameof(ToString)) && (!_.GetParameters().Any()));
+
+                // Assert
+                actual.DeclaringType.AsTest().Must().BeEqualTo(expected);
             }
 
             [Fact]

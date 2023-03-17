@@ -287,14 +287,5 @@ namespace Naos.AWS.Domain
 
             return result;
         }
-
-        /// <inheritdoc />
-        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        public override string ToString()
-        {
-            var result = Invariant($"Naos.AWS.Domain.CredentialContainer: CredentialType = {this.CredentialType.ToString() ?? "<null>"}, AccessKeyId = {this.AccessKeyId?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SecretAccessKey = {this.SecretAccessKey?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SessionToken = {this.SessionToken?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, Expiration = {this.Expiration.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
-
-            return result;
-        }
     }
 }

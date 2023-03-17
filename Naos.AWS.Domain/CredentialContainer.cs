@@ -7,12 +7,13 @@
 namespace Naos.AWS.Domain
 {
     using System;
+    using System.Globalization;
     using OBeautifulCode.Type;
 
     /// <summary>
     /// Wrapper object to hold the AWSCredentials and allow abstraction from changes in it.
     /// </summary>
-    public partial class CredentialContainer : IModelViaCodeGen
+    public partial class CredentialContainer : IModelViaCodeGen, IDeclareToStringMethod
     {
         /// <summary>
         /// Gets or sets the type of AWS credential.
@@ -38,5 +39,15 @@ namespace Naos.AWS.Domain
         /// Gets or sets the expiration.
         /// </summary>
         public DateTime Expiration { get; set; }
+
+        /// <inheritdoc cref="IDeclareToStringMethod" />
+        public override string ToString()
+        {
+            var secretKeyPieceOfToString = this.SecretAccessKey != null ? "<secret-key>" : "<null>";
+            var sessionTokenPieceOfToString = this.SessionToken != null ? "<session-token>" : "<null>";
+            var result = FormattableString.Invariant($"Naos.AWS.Domain.CredentialContainer: CredentialType = {this.CredentialType.ToString() ?? "<null>"}, AccessKeyId = {this.AccessKeyId?.ToString(CultureInfo.InvariantCulture) ?? "<null>"}, SecretAccessKey = {secretKeyPieceOfToString}, SessionToken = {sessionTokenPieceOfToString}, Expiration = {this.Expiration.ToString(CultureInfo.InvariantCulture) ?? "<null>"}.");
+
+            return result;
+        }
     }
 }
