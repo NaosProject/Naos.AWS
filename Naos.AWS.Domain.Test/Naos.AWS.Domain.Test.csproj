@@ -272,6 +272,7 @@
       <DependentUpon>S3StreamRepresentationTest.cs</DependentUpon>
     </Compile>
     <Compile Include="SerializationConfigurationTypes.cs" />
+    <Compile Include="SesToolsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include=".analyzers\stylecop.json" />
