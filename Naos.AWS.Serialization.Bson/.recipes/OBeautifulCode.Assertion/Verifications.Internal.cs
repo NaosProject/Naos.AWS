@@ -16,7 +16,7 @@ namespace OBeautifulCode.Assertion.Recipes
     using global::System.Globalization;
     using global::System.Linq;
     using global::System.Text.RegularExpressions;
-
+    using OBeautifulCode.String.Recipes;
     using OBeautifulCode.Type.Recipes;
 
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "A generalized assertion library is going to require lots of types.")]
@@ -846,6 +846,48 @@ namespace OBeautifulCode.Assertion.Recipes
             NotBeEqualToInternalInternal(assertionTracker, verification, verifiableItem, NotBeEqualToWhenNotNullExceptionMessageSuffix);
         }
 
+        private static void BeSequenceEqualToInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem)
+        {
+            BeSequenceEqualToInternalInternal(assertionTracker, verification, verifiableItem, BeSequenceEqualToExceptionMessageSuffix);
+        }
+
+        private static void NotBeSequenceEqualToInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem)
+        {
+            NotBeSequenceEqualToInternalInternal(assertionTracker, verification, verifiableItem, NotBeSequenceEqualToExceptionMessageSuffix);
+        }
+
+        private static void BeSequenceEqualToWhenNotNullInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem)
+        {
+            if (ReferenceEquals(verifiableItem.ItemValue, null))
+            {
+                return;
+            }
+
+            BeSequenceEqualToInternalInternal(assertionTracker, verification, verifiableItem, BeSequenceEqualToWhenNotNullExceptionMessageSuffix);
+        }
+
+        private static void NotBeSequenceEqualToWhenNotNullInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem)
+        {
+            if (ReferenceEquals(verifiableItem.ItemValue, null))
+            {
+                return;
+            }
+
+            NotBeSequenceEqualToInternalInternal(assertionTracker, verification, verifiableItem, NotBeSequenceEqualToWhenNotNullExceptionMessageSuffix);
+        }
+
         private static void BeElementInInternal(
             AssertionTracker assertionTracker,
             Verification verification,
@@ -928,7 +970,7 @@ namespace OBeautifulCode.Assertion.Recipes
             {
                 var methodologyInfo = string.Format(CultureInfo.InvariantCulture, UsingDefaultComparerMethodology, verifiableItem.ItemType.ToStringReadable());
 
-                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, NotBeInRangeExceptionMessageSuffix, methodologyInfo: methodologyInfo);
+                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, NotBeInRangeExceptionMessageSuffix, Include.FailingValue, methodologyInfo);
 
                 var argumentExceptionKind = verifiableItem.ItemIsElementInEnumerable
                     ? ArgumentExceptionKind.ArgumentException
@@ -1014,7 +1056,22 @@ namespace OBeautifulCode.Assertion.Recipes
             Verification verification,
             VerifiableItem verifiableItem)
         {
-            BeInCharacterSetInternal(assertionTracker, verification, verifiableItem, AlphabeticCharactersHashSet, BeAlphabeticExceptionMessageSuffix);
+            NotBeNullInternal(assertionTracker, verification, verifiableItem);
+
+            var otherAllowedCharacters = (IReadOnlyCollection<char>)verification.VerificationParameters[0].Value;
+
+            var stringValue = (string)verifiableItem.ItemValue;
+
+            var shouldThrow = !stringValue.IsAlphabetic(otherAllowedCharacters);
+
+            if (shouldThrow)
+            {
+                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, BeAlphabeticExceptionMessageSuffix, Include.FailingValue);
+
+                var exception = BuildException(assertionTracker, verification, exceptionMessage, ArgumentExceptionKind.ArgumentException);
+
+                throw exception;
+            }
         }
 
         private static void BeAlphanumericInternal(
@@ -1022,43 +1079,17 @@ namespace OBeautifulCode.Assertion.Recipes
             Verification verification,
             VerifiableItem verifiableItem)
         {
-            BeInCharacterSetInternal(assertionTracker, verification, verifiableItem, AlphaNumericCharactersHashSet, BeAlphanumericExceptionMessageSuffix);
-        }
-
-        private static void BeInCharacterSetInternal(
-            AssertionTracker assertionTracker,
-            Verification verification,
-            VerifiableItem verifiableItem,
-            HashSet<char> allowedCharactersHashSet,
-            string exceptionMessageSuffix)
-        {
             NotBeNullInternal(assertionTracker, verification, verifiableItem);
 
             var otherAllowedCharacters = (IReadOnlyCollection<char>)verification.VerificationParameters[0].Value;
 
             var stringValue = (string)verifiableItem.ItemValue;
 
-            bool shouldThrow;
-
-            if (otherAllowedCharacters == null)
-            {
-                shouldThrow = stringValue.Any(_ => !allowedCharactersHashSet.Contains(_));
-            }
-            else
-            {
-                allowedCharactersHashSet = new HashSet<char>(allowedCharactersHashSet);
-
-                foreach (var otherAllowedCharacter in otherAllowedCharacters)
-                {
-                    allowedCharactersHashSet.Add(otherAllowedCharacter);
-                }
-
-                shouldThrow = stringValue.Any(_ => !allowedCharactersHashSet.Contains(_));
-            }
+            var shouldThrow = !stringValue.IsAlphanumeric(otherAllowedCharacters);
 
             if (shouldThrow)
             {
-                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, exceptionMessageSuffix, Include.FailingValue);
+                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, BeAlphanumericExceptionMessageSuffix, Include.FailingValue);
 
                 var exception = BuildException(assertionTracker, verification, exceptionMessage, ArgumentExceptionKind.ArgumentException);
 
@@ -1790,6 +1821,54 @@ namespace OBeautifulCode.Assertion.Recipes
                 var argumentExceptionKind = verifiableItem.ItemIsElementInEnumerable
                     ? ArgumentExceptionKind.ArgumentException
                     : ArgumentExceptionKind.ArgumentOutOfRangeException;
+
+                var exception = BuildException(assertionTracker, verification, exceptionMessage, argumentExceptionKind);
+
+                throw exception;
+            }
+        }
+
+        private static void BeSequenceEqualToInternalInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem,
+            string exceptionMessageSuffix)
+        {
+            var elementType = verifiableItem.ItemType.GetClosedEnumerableElementType();
+
+            var shouldThrow = !AreSequenceEqual(elementType, verifiableItem.ItemValue, verification.VerificationParameters[0].Value, verification.VerificationParameters[1].Value);
+
+            if (shouldThrow)
+            {
+                var methodologyInfo = string.Format(CultureInfo.InvariantCulture, UsingIsSequenceEqualToMethodology, elementType.ToStringReadable());
+
+                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, exceptionMessageSuffix, methodologyInfo: methodologyInfo);
+
+                var argumentExceptionKind = ArgumentExceptionKind.ArgumentException;
+
+                var exception = BuildException(assertionTracker, verification, exceptionMessage, argumentExceptionKind);
+
+                throw exception;
+            }
+        }
+
+        private static void NotBeSequenceEqualToInternalInternal(
+            AssertionTracker assertionTracker,
+            Verification verification,
+            VerifiableItem verifiableItem,
+            string exceptionMessageSuffix)
+        {
+            var elementType = verifiableItem.ItemType.GetClosedEnumerableElementType();
+
+            var shouldThrow = AreSequenceEqual(elementType, verifiableItem.ItemValue, verification.VerificationParameters[0].Value, verification.VerificationParameters[1].Value);
+
+            if (shouldThrow)
+            {
+                var methodologyInfo = string.Format(CultureInfo.InvariantCulture, UsingIsSequenceEqualToMethodology, elementType.ToStringReadable());
+
+                var exceptionMessage = BuildVerificationFailedExceptionMessage(assertionTracker, verification, verifiableItem, exceptionMessageSuffix, methodologyInfo: methodologyInfo);
+
+                var argumentExceptionKind = ArgumentExceptionKind.ArgumentException;
 
                 var exception = BuildException(assertionTracker, verification, exceptionMessage, argumentExceptionKind);
 

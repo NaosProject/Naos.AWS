@@ -168,6 +168,95 @@ namespace OBeautifulCode.Collection.Recipes
         }
 
         /// <summary>
+        /// Removes the elements of a specified collection from an enumerable.
+        /// </summary>
+        /// <remarks>
+        /// Unlike <see cref="System.Linq.Enumerable.Except{TSource}(IEnumerable{TSource}, IEnumerable{TSource})"/>,
+        /// this method does not remove duplicates.
+        /// Adapted from: <a href="https://metadataconsulting.blogspot.com/2021/02/CSharp-dotNet-Get-difference-between-two-unordered-not-unique-lists-using-BitArrays-for-super-fast-speed.html" />.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The collection to remove from.</param>
+        /// <param name="itemsToRemove">The items to remove.</param>
+        /// <param name="comparer">OPTIONAL equality comparer to use when compare values.  DEFAULT is to use <see cref="EqualityComparerHelper.GetEqualityComparerToUse{T}(IEqualityComparer{T})"/>.</param>
+        /// <returns>
+        /// The specified <paramref name="value"/> without the items in <paramref name="itemsToRemove" /> without performing the distinct operation.
+        /// For example if <paramref name="value"/> = { 1, 2, 2, 3 } and <paramref name="itemsToRemove"/> = { 1, 2, 3 } the result will be { 2 }.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="itemsToRemove"/> is null.</exception>
+        public static IEnumerable<T> RemoveRange<T>(
+            this IEnumerable<T> value,
+            IEnumerable<T> itemsToRemove,
+            IEqualityComparer<T> comparer = null)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            if (itemsToRemove == null)
+            {
+                throw new ArgumentNullException(nameof(itemsToRemove));
+            }
+
+            var itemToRemoveToCountMap = new Dictionary<T, int>(comparer);
+
+            var nullCount = 0;
+
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                if (itemToRemove == null)
+                {
+                    nullCount++;
+                }
+                else if (itemToRemoveToCountMap.TryGetValue(itemToRemove, out var itemToRemoveCount))
+                {
+                    itemToRemoveToCountMap[itemToRemove] = itemToRemoveCount + 1;
+                }
+                else
+                {
+                    itemToRemoveToCountMap.Add(itemToRemove, 1);
+                }
+            }
+
+            var result = new List<T>();
+
+            foreach (var item in value)
+            {
+                if (item == null)
+                {
+                    nullCount--;
+
+                    if (nullCount < 0)
+                    {
+                        // ReSharper disable once ExpressionIsAlwaysNull
+                        result.Add(item);
+                    }
+                }
+                else if (itemToRemoveToCountMap.TryGetValue(item, out var itemToRemoveCount))
+                {
+                    if (itemToRemoveCount == 0)
+                    {
+                        itemToRemoveToCountMap.Remove(item);
+
+                        result.Add(item);
+                    }
+                    else
+                    {
+                        itemToRemoveToCountMap[item] = itemToRemoveCount - 1;
+                    }
+                }
+                else
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Splits an ordered collection into chunks of a specified length.
         /// </summary>
         /// <typeparam name="T">The type of element in the collection.</typeparam>
@@ -223,7 +312,7 @@ namespace OBeautifulCode.Collection.Recipes
         /// contain one copy of the the duplicate item and only if it doesn't appear in the other set.
         /// </remarks>
         /// <param name="value">The first enumerable.</param>
-        /// <param name="secondSet">The second enumerable to compare against the first.</param>
+        /// <param name="secondSet">The collection enumerable to compare against the first.</param>
         /// <returns>IEnumerable(T) with the symmetric difference of the two sets.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="secondSet"/> is null.</exception>
@@ -246,7 +335,7 @@ namespace OBeautifulCode.Collection.Recipes
         /// </remarks>
         /// <typeparam name="TSource">The type of elements in the collection.</typeparam>
         /// <param name="value">The first enumerable.</param>
-        /// <param name="secondSet">The second enumerable to compare against the first.</param>
+        /// <param name="secondSet">The collection enumerable to compare against the first.</param>
         /// <param name="comparer">Optional equality comparer to use to compare elements.  Default is to call <see cref="EqualityComparerHelper.GetEqualityComparerToUse{T}(IEqualityComparer{T})"/>.</param>
         /// <returns>Returns an <see cref="IEnumerable{T}"/> with the symmetric difference of the two sets.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
