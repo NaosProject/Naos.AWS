@@ -7,13 +7,16 @@
 namespace Naos.AWS.Domain
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
+    using Naos.CodeAnalysis.Recipes;
 
     /// <summary>
     /// Simple Email Service tools.
     /// </summary>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ses", Justification = NaosSuppressBecause.CA1704_IdentifiersShouldBeSpelledCorrectly_SpellingIsCorrectInContextOfTheDomain)]
     public static class SesTools
     {
         /// <summary>
