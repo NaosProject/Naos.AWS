@@ -40,6 +40,8 @@ namespace Naos.AWS.Domain
             var message = "SendRawEmail";
             byte version = 0x04;
 
+            #pragma warning disable SA1305 // Field names should not use Hungarian notation
+
             // Step 1: Create a Date Key
             var kDate = HmacSHA256(Encoding.UTF8.GetBytes("AWS4" + secretKey), Encoding.UTF8.GetBytes(date));
 
@@ -54,6 +56,8 @@ namespace Naos.AWS.Domain
 
             // Step 5: Create a Message Key
             var kMessage = HmacSHA256(kTerminal, Encoding.UTF8.GetBytes(message));
+
+            #pragma warning restore SA1305 // Field names should not use Hungarian notation
 
             // Step 6: Create Signature and Version Key
             var signatureAndVersion = new[] { version }.Concat(kMessage).ToArray();
