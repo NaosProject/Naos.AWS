@@ -146,12 +146,15 @@ namespace Naos.AWS.S3
             }
         }
 
-        private static string CreateChecksumMetadataKey(HashAlgorithmName hashAlgorithmName)
+        private static string CreateChecksumMetadataKey(
+            HashAlgorithmName hashAlgorithmName)
         {
             // Actual Checksum metadata key in S3 will be 'x-amz-meta-{HashAlgorithmName}-checksum' since
             // Amazon will prepend 'x-amz-meta-' to the metadata key if not already present.
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return hashAlgorithmName + AwsInteractionBase.MetadataKeyChecksumSuffix;
+            var result = hashAlgorithmName + AwsInteractionBase.MetadataKeyChecksumSuffix;
+
+            return result;
         }
     }
 }

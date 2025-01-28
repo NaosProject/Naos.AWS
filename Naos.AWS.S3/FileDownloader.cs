@@ -46,7 +46,7 @@ namespace Naos.AWS.S3
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
@@ -54,17 +54,19 @@ namespace Naos.AWS.S3
         {
             uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
-            await this.DownloadFileAsync(
+            var result = await this.DownloadFileAsync(
                 uploadFileResult.Region,
                 uploadFileResult.BucketName,
                 uploadFileResult.KeyName,
                 destinationFilePath,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
@@ -72,17 +74,19 @@ namespace Naos.AWS.S3
         {
             uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
-            await this.DownloadFileAsync(
+            var result = await this.DownloadFileAsync(
                 uploadFileResult.Region,
                 uploadFileResult.BucketName,
                 uploadFileResult.KeyName,
                 destinationStream,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -94,12 +98,14 @@ namespace Naos.AWS.S3
 
             using (var fileStream = File.Create(destinationFilePath))
             {
-                await this.DownloadFileAsync(region, bucketName, keyName, fileStream, throwIfKeyNotFound);
+                var result = await this.DownloadFileAsync(region, bucketName, keyName, fileStream, throwIfKeyNotFound);
+
+                return result;
             }
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -114,6 +120,8 @@ namespace Naos.AWS.S3
 
             var regionEndpoint = RegionEndpoint.GetBySystemName(region);
             var awsCredentials = this.Credentials.ToAwsCredentials();
+
+            DownloadFileResult result;
 
             using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
@@ -140,14 +148,24 @@ namespace Naos.AWS.S3
                             {
                                 VerifyChecksums(destinationStream, response);
                             }
+
+                            var userDefinedMetadata = GetUserDefinedMetadata(response);
+
+                            result = new DownloadFileResult(
+                                keyExists: true,
+                                response.ContentLength,
+                                response.LastModified,
+                                userDefinedMetadata);
                         }
                     }
                 }
                 catch (AmazonS3Exception ex) when ((!throwIfKeyNotFound) && (ex.ErrorCode == "NoSuchKey"))
                 {
-                    // no-op
+                    result = new DownloadFileResult(keyExists: false, null, null, null);
                 }
             }
+
+            return result;
         }
 
         private static void VerifyChecksums(
@@ -172,6 +190,17 @@ namespace Naos.AWS.S3
                 .Keys
                 .Where(_ => _.EndsWith(MetadataKeyChecksumSuffix, StringComparison.OrdinalIgnoreCase))
                 .Select(key => new ComputedChecksum(ExtractHashAlgorithmNameFromMetadataKey(key), response.Metadata[key]));
+
+            return result;
+        }
+
+        private static IReadOnlyDictionary<string, string> GetUserDefinedMetadata(
+            GetObjectResponse response)
+        {
+            var result = response.Metadata
+                .Keys
+                .Where(_ => !_.EndsWith(MetadataKeyChecksumSuffix, StringComparison.OrdinalIgnoreCase))
+                .ToDictionary(SanitizeUserDefinedMetadataKey, key => response.Metadata[key]);
 
             return result;
         }

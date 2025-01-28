@@ -116,35 +116,39 @@ namespace Naos.AWS.S3
         #region IDownloadFiles
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
             bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(
+            var result = await this.fileDownloader.DownloadFileAsync(
                 uploadFileResult,
                 destinationFilePath,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
             bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(
+            var result = await this.fileDownloader.DownloadFileAsync(
                 uploadFileResult,
                 destinationStream,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -152,17 +156,19 @@ namespace Naos.AWS.S3
             bool validateChecksumsIfPresent = true,
             bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(
+            var result = await this.fileDownloader.DownloadFileAsync(
                 region,
                 bucketName,
                 keyName,
                 destinationFilePath,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(
+        public async Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -170,13 +176,15 @@ namespace Naos.AWS.S3
             bool validateChecksumsIfPresent = true,
             bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(
+            var result = await this.fileDownloader.DownloadFileAsync(
                 region,
                 bucketName,
                 keyName,
                 destinationStream,
                 validateChecksumsIfPresent,
                 throwIfKeyNotFound);
+
+            return result;
         }
 
         #endregion

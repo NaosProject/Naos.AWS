@@ -24,9 +24,9 @@ namespace Naos.AWS.Domain
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
         /// <returns>
-        /// Task to allow for async await use.
+        /// The result of downloading the file.
         /// </returns>
-        Task DownloadFileAsync(
+        Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -44,9 +44,9 @@ namespace Naos.AWS.Domain
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
         /// <returns>
-        /// Task to allow for async await use.
+        /// The result of downloading the file.
         /// </returns>
-        Task DownloadFileAsync(
+        Task<DownloadFileResult> DownloadFileAsync(
             string region,
             string bucketName,
             string keyName,
@@ -62,9 +62,9 @@ namespace Naos.AWS.Domain
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
         /// <returns>
-        /// Task to allow for async await use.
+        /// The result of downloading the file.
         /// </returns>
-        Task DownloadFileAsync(
+        Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
@@ -78,9 +78,9 @@ namespace Naos.AWS.Domain
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
         /// <returns>
-        /// Task to allow for async await use.
+        /// The result of downloading the file.
         /// </returns>
-        Task DownloadFileAsync(
+        Task<DownloadFileResult> DownloadFileAsync(
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
