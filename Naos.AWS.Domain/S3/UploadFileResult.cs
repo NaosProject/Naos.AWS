@@ -8,7 +8,6 @@ namespace Naos.AWS.Domain
 {
     using System.Collections.Generic;
     using System.Security.Cryptography;
-
     using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
@@ -23,7 +22,11 @@ namespace Naos.AWS.Domain
         /// <param name="bucketName">Bucket name file was uploaded to.</param>
         /// <param name="keyName">Key name of the file.</param>
         /// <param name="computedChecksums">Computed checksums of the uploaded file.</param>
-        public UploadFileResult(string region, string bucketName, string keyName, IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums)
+        public UploadFileResult(
+            string region,
+            string bucketName,
+            string keyName,
+            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums)
         {
             region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
             bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();

@@ -10,17 +10,15 @@ namespace Naos.AWS.S3
     using System.IO;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
-
     using Naos.AWS.Domain;
 
     /// <summary>
     /// Class to manage files in Amazon S3.
     /// </summary>
-#pragma warning disable SA1124 // Do not use regions - good use of regions here...
     public class FileManager : IManageFiles
     {
         private readonly IListFiles fileLister;
-        private readonly IManageFileMetadata fileMedataManager;
+        private readonly IManageFileMetadata fileMetadataManager;
         private readonly IUploadFiles fileUploader;
         private readonly IDownloadFiles fileDownloader;
 
@@ -29,8 +27,15 @@ namespace Naos.AWS.S3
         /// </summary>
         /// <param name="accessKey">Access key with rights to read and write files in specified buckets.</param>
         /// <param name="secretKey">Secret key with rights to read and write files in specified buckets.</param>
-        public FileManager(string accessKey, string secretKey)
-            : this(new CredentialContainer { AccessKeyId = accessKey, SecretAccessKey = secretKey })
+        public FileManager(
+            string accessKey,
+            string secretKey)
+            : this(
+                new CredentialContainer
+                {
+                    AccessKeyId = accessKey,
+                    SecretAccessKey = secretKey,
+                })
         {
         }
 
@@ -38,10 +43,11 @@ namespace Naos.AWS.S3
         /// Initializes a new instance of the <see cref="FileManager"/> class.
         /// </summary>
         /// <param name="credentials">Credentials with rights to read and write files in specified buckets.</param>
-        public FileManager(CredentialContainer credentials)
+        public FileManager(
+            CredentialContainer credentials)
         {
             this.fileLister = new FileLister(credentials);
-            this.fileMedataManager = new FileMetadataManager(credentials);
+            this.fileMetadataManager = new FileMetadataManager(credentials);
             this.fileUploader = new FileUploader(credentials);
             this.fileDownloader = new FileDownloader(credentials);
         }
@@ -61,9 +67,11 @@ namespace Naos.AWS.S3
         {
             this.fileUploader = fileUploader;
             this.fileDownloader = fileDownloader;
-            this.fileMedataManager = fileMetadataManager;
+            this.fileMetadataManager = fileMetadataManager;
             this.fileLister = fileLister;
         }
+
+        #pragma warning disable SA1124 // Do not use regions - good use of regions here...
 
         #region IUploadFiles
 
@@ -108,27 +116,67 @@ namespace Naos.AWS.S3
         #region IDownloadFiles
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, string destinationFilePath, bool validateChecksumsIfPresent = true)
+        public async Task DownloadFileAsync(
+            UploadFileResult uploadFileResult,
+            string destinationFilePath,
+            bool validateChecksumsIfPresent = true,
+            bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationFilePath, validateChecksumsIfPresent);
+            await this.fileDownloader.DownloadFileAsync(
+                uploadFileResult,
+                destinationFilePath,
+                validateChecksumsIfPresent,
+                throwIfKeyNotFound);
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(UploadFileResult uploadFileResult, Stream destinationStream, bool validateChecksumsIfPresent = true)
+        public async Task DownloadFileAsync(
+            UploadFileResult uploadFileResult,
+            Stream destinationStream,
+            bool validateChecksumsIfPresent = true,
+            bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(uploadFileResult, destinationStream, validateChecksumsIfPresent);
+            await this.fileDownloader.DownloadFileAsync(
+                uploadFileResult,
+                destinationStream,
+                validateChecksumsIfPresent,
+                throwIfKeyNotFound);
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, string destinationFilePath, bool validateChecksumsIfPresent = true)
+        public async Task DownloadFileAsync(
+            string region,
+            string bucketName,
+            string keyName,
+            string destinationFilePath,
+            bool validateChecksumsIfPresent = true,
+            bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationFilePath, validateChecksumsIfPresent);
+            await this.fileDownloader.DownloadFileAsync(
+                region,
+                bucketName,
+                keyName,
+                destinationFilePath,
+                validateChecksumsIfPresent,
+                throwIfKeyNotFound);
         }
 
         /// <inheritdoc />
-        public async Task DownloadFileAsync(string region, string bucketName, string keyName, Stream destinationStream, bool validateChecksumsIfPresent = true)
+        public async Task DownloadFileAsync(
+            string region,
+            string bucketName,
+            string keyName,
+            Stream destinationStream,
+            bool validateChecksumsIfPresent = true,
+            bool throwIfKeyNotFound = true)
         {
-            await this.fileDownloader.DownloadFileAsync(region, bucketName, keyName, destinationStream, validateChecksumsIfPresent);
+            await this.fileDownloader.DownloadFileAsync(
+                region,
+                bucketName,
+                keyName,
+                destinationStream,
+                validateChecksumsIfPresent,
+                throwIfKeyNotFound);
         }
 
         #endregion
@@ -136,13 +184,18 @@ namespace Naos.AWS.S3
         #region IListFiles
 
         /// <inheritdoc />
-        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName)
+        public async Task<ICollection<CloudFile>> ListFilesAsync(
+            string region,
+            string bucketName)
         {
             return await this.fileLister.ListFilesAsync(region, bucketName);
         }
 
         /// <inheritdoc />
-        public async Task<ICollection<CloudFile>> ListFilesAsync(string region, string bucketName, string keyPrefixSearchPattern)
+        public async Task<ICollection<CloudFile>> ListFilesAsync(
+            string region,
+            string bucketName,
+            string keyPrefixSearchPattern)
         {
             return await this.fileLister.ListFilesAsync(region, bucketName, keyPrefixSearchPattern);
         }
@@ -152,17 +205,25 @@ namespace Naos.AWS.S3
         #region IManageFileMetadata
 
         /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(UploadFileResult uploadFileResult, bool shouldSanitizeKeys = true)
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(
+            UploadFileResult uploadFileResult,
+            bool shouldSanitizeKeys = true)
         {
-            return await this.fileMedataManager.GetFileMetadataAsync(uploadFileResult, shouldSanitizeKeys);
+            return await this.fileMetadataManager.GetFileMetadataAsync(uploadFileResult, shouldSanitizeKeys);
         }
 
         /// <inheritdoc />
-        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(string region, string bucketName, string keyName, bool shouldSanitizeKeys = true)
+        public async Task<IReadOnlyDictionary<string, string>> GetFileMetadataAsync(
+            string region,
+            string bucketName,
+            string keyName,
+            bool shouldSanitizeKeys = true)
         {
-            return await this.fileMedataManager.GetFileMetadataAsync(region, bucketName, keyName, shouldSanitizeKeys);
+            return await this.fileMetadataManager.GetFileMetadataAsync(region, bucketName, keyName, shouldSanitizeKeys);
         }
 
         #endregion
+
+        #pragma warning restore SA1124 // Do not use regions
     }
 }

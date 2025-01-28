@@ -7,25 +7,24 @@
 namespace Naos.AWS.S3
 {
     using System;
-
+    using System.Diagnostics.CodeAnalysis;
     using Amazon.Runtime;
     using Amazon.SecurityToken.Model;
-
     using Naos.AWS.Domain;
-
     using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
     /// Base class for Amazon S3 operations.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
     public abstract class AwsInteractionBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AwsInteractionBase"/> class.
         /// </summary>
         /// <param name="credentials">Credentials with rights to read and write  files in specified buckets.</param>
-        protected AwsInteractionBase(CredentialContainer credentials)
+        protected AwsInteractionBase(
+            CredentialContainer credentials)
         {
             new { credentials }.AsArg().Must().NotBeNull();
 
@@ -52,7 +51,7 @@ namespace Naos.AWS.S3
         /// </summary>
         /// <param name="awsMetadataKey">The metadata key received from AWS.</param>
         /// <returns>The metadata key with the prefix removed.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "aws", Justification = "Spelling/name is correct.")]
         protected static string SanitizeUserDefinedMetadataKey(string awsMetadataKey)
         {
             if (string.IsNullOrWhiteSpace(awsMetadataKey))
@@ -74,28 +73,30 @@ namespace Naos.AWS.S3
         /// </summary>
         /// <param name="credentials">CredentialContainer to be converted.</param>
         /// <returns>AWSCredentials using supplied values.</returns>
-        public static AWSCredentials ToAwsCredentials(this CredentialContainer credentials)
+        public static AWSCredentials ToAwsCredentials(
+            this CredentialContainer credentials)
         {
             new { credentials }.AsArg().Must().NotBeNull();
 
-            AWSCredentials ret = null;
+            AWSCredentials result;
+
             switch (credentials.CredentialType)
             {
                 case CredentialType.Token:
-                    ret = new Credentials(
+                    result = new Credentials(
                         credentials.AccessKeyId,
                         credentials.SecretAccessKey,
                         credentials.SessionToken,
                         credentials.Expiration);
                     break;
                 case CredentialType.Keys:
-                    ret = new BasicAWSCredentials(credentials.AccessKeyId, credentials.SecretAccessKey);
+                    result = new BasicAWSCredentials(credentials.AccessKeyId, credentials.SecretAccessKey);
                     break;
                 default:
                     throw new ArgumentException("Unsupported credential type: " + credentials.CredentialType);
             }
 
-            return ret;
+            return result;
         }
     }
 }
