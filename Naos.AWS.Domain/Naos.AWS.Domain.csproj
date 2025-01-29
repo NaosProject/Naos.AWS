@@ -160,6 +160,7 @@
     <Compile Include="Instance.cs" />
     <Compile Include="S3\DownloadFileDetails.cs" />
     <Compile Include="S3\DownloadFileResult.cs" />
+    <Compile Include="S3\ExistingFileWriteAction.cs" />
     <Compile Include="SesTools.cs" />
     <Compile Include="NatGateway.cs" />
     <Compile Include="KeyPair.cs" />

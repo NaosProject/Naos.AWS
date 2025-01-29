@@ -19,6 +19,7 @@ namespace Naos.AWS.S3
     using Naos.Recipes.Cryptography.Hashing;
     using OBeautifulCode.Assertion.Recipes;
     using Spritely.Redo;
+    using static System.FormattableString;
 
     /// <summary>
     /// Class to upload files to Amazon S3.
@@ -44,7 +45,8 @@ namespace Naos.AWS.S3
             string keyName,
             string sourceFilePath,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+            IReadOnlyDictionary<string, string> userDefinedMetadata = null,
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
         {
             sourceFilePath.AsArg(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
 
@@ -55,7 +57,8 @@ namespace Naos.AWS.S3
                 sourceFilePath,
                 null,
                 hashAlgorithmNames,
-                userDefinedMetadata);
+                userDefinedMetadata,
+                existingFileWriteAction);
 
             return result;
         }
@@ -67,7 +70,8 @@ namespace Naos.AWS.S3
             string keyName,
             Stream sourceStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+            IReadOnlyDictionary<string, string> userDefinedMetadata = null,
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
         {
             sourceStream.AsArg(nameof(sourceStream)).Must().NotBeNull();
 
@@ -78,7 +82,8 @@ namespace Naos.AWS.S3
                 null,
                 sourceStream,
                 hashAlgorithmNames,
-                userDefinedMetadata);
+                userDefinedMetadata,
+                existingFileWriteAction);
 
             return result;
         }
@@ -90,7 +95,8 @@ namespace Naos.AWS.S3
             string sourceFilePath,
             Stream sourceFileStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
-            IReadOnlyDictionary<string, string> userDefinedMetadata)
+            IReadOnlyDictionary<string, string> userDefinedMetadata,
+            ExistingFileWriteAction existingFileWriteAction)
         {
             region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
             bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
@@ -109,6 +115,19 @@ namespace Naos.AWS.S3
                         Key = keyName,
                     };
 
+                    switch (existingFileWriteAction)
+                    {
+                        case ExistingFileWriteAction.OverwriteFile:
+                            // no-op
+                            break;
+                        case ExistingFileWriteAction.Throw:
+                        case ExistingFileWriteAction.DoNotOverwriteFile:
+                            transferUtilityUploadRequest.IfNoneMatch = "*";
+                            break;
+                        default:
+                            throw new NotSupportedException(Invariant($"This {nameof(ExistingFileWriteAction)} is not supported: {existingFileWriteAction}."));
+                    }
+
                     Dictionary<HashAlgorithmName, ComputedChecksum> computedChecksums;
                     if (sourceFilePath != null)
                     {
@@ -116,7 +135,9 @@ namespace Naos.AWS.S3
 
                         computedChecksums = hashAlgorithmNames
                             .Distinct()
-                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromFilePath(_, sourceFilePath)));
+                            .ToDictionary(
+                                _ => _,
+                                _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromFilePath(_, sourceFilePath)));
                     }
                     else
                     {
@@ -126,7 +147,18 @@ namespace Naos.AWS.S3
 
                         computedChecksums = hashAlgorithmNames
                             .Distinct()
-                            .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromStream(_, sourceFileStream)));
+                            .ToDictionary(
+                                _ => _,
+                                _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromStream(_, sourceFileStream)));
+                    }
+
+                    // This enables multi-part uploads.  The S3 SDK determines whether to use multi-part
+                    // uploads based on the length of the stream passed in and PRIOR to applying AutoResetStreamPosition.
+                    // So here we seek to the beginning of the stream so that the SDK can consider the size of the whole
+                    // stream when determining whether to use a multi-part upload.
+                    if (sourceFileStream.CanSeek)
+                    {
+                        sourceFileStream.Seek(0, SeekOrigin.Begin);
                     }
 
                     // If there is an MD5 hash passed in then add to ContentMD5 in order to have
@@ -152,13 +184,34 @@ namespace Naos.AWS.S3
                     }
 
                     var localTransferUtility = transferUtility;
-                    await
-                        Using.LinearBackOff(TimeSpan.FromSeconds(5))
-                            .WithMaxRetries(3)
-                            .RunAsync(() => localTransferUtility.UploadAsync(transferUtilityUploadRequest))
-                            .Now();
 
-                    var result = new UploadFileResult(region, bucketName, keyName, computedChecksums);
+                    var wasWritten = true;
+
+                    try
+                    {
+                        // Note: if throwIfKeyExists is true, we will attempt to upload multiple times before
+                        // throwing because of this re-try logic.  If we're doing a large multi-part upload, this
+                        // could take a while before throwing.
+                        await
+                            Using.LinearBackOff(TimeSpan.FromSeconds(5))
+                                .WithMaxRetries(3)
+                                .RunAsync(() => localTransferUtility.UploadAsync(transferUtilityUploadRequest))
+                                .Now();
+                    }
+                    catch (AmazonS3Exception ex) when (ex.ErrorCode == "PreconditionFailed")
+                    {
+                        if (existingFileWriteAction == ExistingFileWriteAction.Throw)
+                        {
+                            throw new InvalidOperationException(
+                                Invariant($"The specified key ('{keyName}') already exists in the specified bucket ('{bucketName}') within the specified region ('{region}').  See inner exception."), ex);
+                        }
+                        else
+                        {
+                            wasWritten = false;
+                        }
+                    }
+
+                    var result = new UploadFileResult(region, bucketName, keyName, computedChecksums, wasWritten);
 
                     return result;
                 }

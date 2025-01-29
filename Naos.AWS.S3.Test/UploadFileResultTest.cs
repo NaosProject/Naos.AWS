@@ -9,6 +9,7 @@ namespace Naos.AWS.S3.Test
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
+    using FakeItEasy;
     using Naos.AWS.Domain;
     using Xunit;
 
@@ -30,7 +31,7 @@ namespace Naos.AWS.S3.Test
         public void Constructor___Should_instantiate_upload_file_result___When_passed_valid_input()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new UploadFileResult(Region, BucketName, KeyName, HashAlgorithms);
+            new UploadFileResult(Region, BucketName, KeyName, HashAlgorithms, A.Dummy<bool>());
         }
 
         /// <summary>
@@ -40,9 +41,9 @@ namespace Naos.AWS.S3.Test
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_invalid_region()
         {
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(null, BucketName, KeyName, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult(string.Empty, BucketName, KeyName, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult("   ", BucketName, KeyName, HashAlgorithms));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(null, BucketName, KeyName, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult(string.Empty, BucketName, KeyName, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult("   ", BucketName, KeyName, HashAlgorithms, A.Dummy<bool>()));
         }
 
         /// <summary>
@@ -52,9 +53,9 @@ namespace Naos.AWS.S3.Test
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_invalid_bucket_name()
         {
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, null, KeyName, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, string.Empty, KeyName, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, "   ", KeyName, HashAlgorithms));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, null, KeyName, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, string.Empty, KeyName, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, "   ", KeyName, HashAlgorithms, A.Dummy<bool>()));
         }
 
         /// <summary>
@@ -64,9 +65,9 @@ namespace Naos.AWS.S3.Test
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_invalid_key_name()
         {
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, null, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, BucketName, string.Empty, HashAlgorithms));
-            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, BucketName, "   ", HashAlgorithms));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, null, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, BucketName, string.Empty, HashAlgorithms, A.Dummy<bool>()));
+            Assert.Throws<ArgumentException>(() => new UploadFileResult(Region, BucketName, "   ", HashAlgorithms, A.Dummy<bool>()));
         }
 
         /// <summary>
@@ -76,9 +77,9 @@ namespace Naos.AWS.S3.Test
         [Fact]
         public void Constructor___Should_throw_exception___When_passed_null_computed_checksum_dictionary()
         {
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null));
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null));
-            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null, A.Dummy<bool>()));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null, A.Dummy<bool>()));
+            Assert.Throws<ArgumentNullException>(() => new UploadFileResult(Region, BucketName, KeyName, null, A.Dummy<bool>()));
         }
     }
 }

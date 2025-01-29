@@ -82,7 +82,8 @@ namespace Naos.AWS.S3
             string keyName,
             string sourceFilePath,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+            IReadOnlyDictionary<string, string> userDefinedMetadata = null,
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
         {
             return await this.fileUploader.UploadFileAsync(
                 region,
@@ -90,7 +91,8 @@ namespace Naos.AWS.S3
                 keyName,
                 sourceFilePath,
                 hashAlgorithmNames,
-                userDefinedMetadata);
+                userDefinedMetadata,
+                existingFileWriteAction);
         }
 
         /// <inheritdoc />
@@ -100,7 +102,8 @@ namespace Naos.AWS.S3
             string keyName,
             Stream sourceStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
-            IReadOnlyDictionary<string, string> userDefinedMetadata = null)
+            IReadOnlyDictionary<string, string> userDefinedMetadata = null,
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
         {
             return await this.fileUploader.UploadFileAsync(
                 region,
@@ -108,7 +111,8 @@ namespace Naos.AWS.S3
                 keyName,
                 sourceStream,
                 hashAlgorithmNames,
-                userDefinedMetadata);
+                userDefinedMetadata,
+                existingFileWriteAction);
         }
 
         #endregion

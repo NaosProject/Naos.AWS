@@ -22,11 +22,13 @@ namespace Naos.AWS.Domain
         /// <param name="bucketName">Bucket name file was uploaded to.</param>
         /// <param name="keyName">Key name of the file.</param>
         /// <param name="computedChecksums">Computed checksums of the uploaded file.</param>
+        /// <param name="wasWritten">A value indicating whether the file was written.  This is only ever false when the file already exists AND the <see cref="ExistingFileWriteAction.DoNotOverwriteFile"/> action is used when uploading.</param>
         public UploadFileResult(
             string region,
             string bucketName,
             string keyName,
-            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums)
+            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> computedChecksums,
+            bool wasWritten)
         {
             region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
             bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
@@ -37,6 +39,7 @@ namespace Naos.AWS.Domain
             this.BucketName = bucketName;
             this.KeyName = keyName;
             this.Checksums = computedChecksums;
+            this.WasWritten = wasWritten;
         }
 
         /// <summary>
@@ -58,5 +61,11 @@ namespace Naos.AWS.Domain
         /// Gets the checksums for the uploaded file.
         /// </summary>
         public IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> Checksums { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the file was written.
+        /// This is only ever false when the file already exists AND the <see cref="ExistingFileWriteAction.DoNotOverwriteFile"/> action is used when uploading.
+        /// </summary>
+        public bool WasWritten { get; private set; }
     }
 }
