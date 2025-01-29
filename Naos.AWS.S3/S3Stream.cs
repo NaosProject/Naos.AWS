@@ -33,6 +33,8 @@ namespace Naos.AWS.S3
     public class S3Stream : StandardStreamBase
     {
         private const string MetadataKeyTagNamePrefix = "tag-";
+        private const string ObjectTimestampUtcKeyTagName = "object-timestamp-utc";
+
         private static readonly TypeRepresentation IdentifierTypeRepresentation = typeof(string).ToRepresentation();
         private static readonly TypeRepresentation ObjectTypeRepresentation = typeof(byte[]).ToRepresentation();
         private static readonly TypeRepresentation IdentifierTypeRepresentationWithoutAssemblyVersions = IdentifierTypeRepresentation.RemoveAssemblyVersions();
@@ -192,43 +194,91 @@ namespace Naos.AWS.S3
         public override PutRecordResult Execute(
             StandardPutRecordOp operation)
         {
-            operation.ExistingRecordStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.ExistingRecordStrategy)}")).BeEqualTo(ExistingRecordStrategy.None, Invariant($"No support for {nameof(ExistingRecordStrategy)}."));
             operation.Payload.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.Payload)}")).BeAssignableToType<BinaryDescribedSerialization>(Invariant($"Only binary payloads supported."));
+            operation.VersionMatchStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.VersionMatchStrategy)}")).BeEqualTo(VersionMatchStrategy.Any, Invariant($"The only supported {nameof(operation.VersionMatchStrategy)} is {nameof(VersionMatchStrategy.Any)}."));
+            operation.InternalRecordId.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.InternalRecordId)}")).BeNull(Invariant($"No support for {nameof(operation.InternalRecordId)}."));
+
             var resourceLocator = this.TryGetSingleLocator(operation);
 
-            var userDefinedMetadata = operation
-                                     .Metadata
-                                     .Tags
-                                    ?.Select(_ => new KeyValuePair<string, string>(_.Name, _.Value))
-                                     .ToDictionary(k => k.Key, v => v.Value)
-                                   ?? new Dictionary<string, string>();
+            var tags = operation.Metadata.Tags?.ToArray() ?? new NamedValue<string>[0];
+
+            var userDefinedMetadata = new Dictionary<string, string>();
+
+            for (var x = 0; x < tags.Length; x++)
+            {
+                var metadataKey = Invariant($"{MetadataKeyTagNamePrefix}{x}");
+
+                // Note that the AWS SDK throws when the NamedValue<string> is serialized
+                // with CRLF, but oddly the NamedValue<string>.Value can contain a CRLF and it
+                // works just fine.  The caller should serialize using JsonFormattingKind.Compact
+                var metadataValue = this.tagSerializer.SerializeToString(tags[x]);
+
+                userDefinedMetadata.Add(metadataKey, metadataValue);
+            }
 
             if (operation.Metadata.ObjectTimestampUtc != null)
             {
                 userDefinedMetadata.Add(
-                    nameof(operation.Metadata.ObjectTimestampUtc),
+                    ObjectTimestampUtcKeyTagName,
                     operation.Metadata.ObjectTimestampUtc.ToStringInvariantPreferred());
             }
 
             var binaryPayload = (BinaryDescribedSerialization)operation.Payload;
+
+            ExistingFileWriteAction existingFileWriteAction;
+
+            switch (operation.ExistingRecordStrategy)
+            {
+                case ExistingRecordStrategy.None:
+                    // This is an odd case because you can't keep two objects with the same id
+                    // in the stream, and yet this is the default value on StandardPutRecordOp.
+                    // So for this saying, saying None is the same as saying Prune with retention 0
+                    existingFileWriteAction = ExistingFileWriteAction.OverwriteFile;
+                    break;
+                case ExistingRecordStrategy.DoNotWriteIfFoundById:
+                    existingFileWriteAction = ExistingFileWriteAction.DoNotOverwriteFile;
+                    break;
+                case ExistingRecordStrategy.ThrowIfFoundById:
+                    existingFileWriteAction = ExistingFileWriteAction.Throw;
+                    break;
+                case ExistingRecordStrategy.PruneIfFoundById:
+                    if (operation.RecordRetentionCount != 0)
+                    {
+                        // Per the comment above, this is also an odd case because we technically don't need to throw
+                        // if there are no records to prune in the stream, but setting a RecordRetentionCount > 0 implies
+                        // that the caller doesn't understand the limitations of this stream.
+                        throw new NotSupportedException($"{nameof(ExistingRecordStrategy)} of {nameof(ExistingRecordStrategy.PruneIfFoundById)} is not supported when {nameof(operation.RecordRetentionCount)} is greater than 0.");
+                    }
+
+                    existingFileWriteAction = ExistingFileWriteAction.OverwriteFile;
+                    break;
+                default:
+                    throw new NotSupportedException($"This {nameof(ExistingRecordStrategy)} is not supported: {operation.ExistingRecordStrategy}.");
+            }
+
             using (var sourceStream = new MemoryStream(binaryPayload.SerializedPayload))
             {
+                // ReSharper disable once AccessToDisposedClosure
                 Func<Task<UploadFileResult>> uploadFileAsyncFunc = () => this.fileManager.UploadFileAsync(
-                                                                       resourceLocator.Region,
-                                                                       resourceLocator.BucketName,
-                                                                       operation.Metadata.StringSerializedId,
-                                                                       sourceStream,
-                                                                       new[]
-                                                                       {
-                                                                           HashAlgorithmName.MD5,
-                                                                           HashAlgorithmName.SHA256,
-                                                                           HashAlgorithmName.SHA1,
-                                                                       },
-                                                                       userDefinedMetadata);
+                    resourceLocator.Region,
+                    resourceLocator.BucketName,
+                    operation.Metadata.StringSerializedId,
+                    sourceStream,
+                    new[]
+                    {
+                        HashAlgorithmName.MD5,
+                        HashAlgorithmName.SHA256,
+                        HashAlgorithmName.SHA1,
+                    },
+                    userDefinedMetadata,
+                    existingFileWriteAction);
 
                 var uploadResult = uploadFileAsyncFunc.ExecuteSynchronously();
 
-                var result = new PutRecordResult(-1);
+                var result = uploadResult.WasWritten ?
+                    new PutRecordResult(-1) :
+                    new PutRecordResult(null, new[] { -1L });
+
                 return result;
             }
         }
