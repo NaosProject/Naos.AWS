@@ -18,7 +18,9 @@ namespace Naos.AWS.Domain
         /// </summary>
         /// <param name="hashAlgorithmName">The name of the hash algorithm name to used to compute the checksum.</param>
         /// <param name="hashValue">The hash value.</param>
-        public ComputedChecksum(HashAlgorithmName hashAlgorithmName, string hashValue)
+        public ComputedChecksum(
+            HashAlgorithmName hashAlgorithmName,
+            string hashValue)
         {
             this.HashAlgorithmName = hashAlgorithmName;
             this.Value = hashValue;

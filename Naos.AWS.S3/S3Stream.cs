@@ -134,9 +134,9 @@ namespace Naos.AWS.S3
 
                 StreamRecord result;
 
-                if (downloadFileResult.KeyExists)
+                if (downloadFileResult.Details != null)
                 {
-                    var tags = this.GetTags(downloadFileResult.UserDefinedMetadata);
+                    var tags = this.GetTags(downloadFileResult.Details.UserDefinedMetadata);
 
                     // ReSharper disable once PossibleInvalidOperationException - LastModifiedUtc guaranteed to not be null when KeyExists == true
                     var resultMetadata = new StreamRecordMetadata(
@@ -145,7 +145,7 @@ namespace Naos.AWS.S3
                         IdentifierTypeRepresentationWithAndWithoutVersion,
                         ObjectTypeRepresentationWithAndWithoutVersion,
                         tags,
-                        (DateTime)downloadFileResult.LastModifiedUtc,
+                        downloadFileResult.Details.LastModifiedUtc,
                         null); // the object is a byte array so it doesn't implement IHaveTimestampUtc
 
                     DescribedSerializationBase describedSerializationBase;

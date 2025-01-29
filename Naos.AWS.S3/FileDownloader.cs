@@ -19,6 +19,7 @@ namespace Naos.AWS.S3
     using Naos.Recipes.Cryptography.Hashing;
     using OBeautifulCode.Assertion.Recipes;
     using Spritely.Redo;
+    using static System.FormattableString;
 
     /// <summary>
     /// Class to download files from Amazon S3.
@@ -134,6 +135,8 @@ namespace Naos.AWS.S3
                 var localClient = client;
                 try
                 {
+                    // Note: if throwIfKeyNotFound is true, we will attempt to download multiple times before
+                    // throwing because of this re-try logic.
                     using (var response = await
                                Using.LinearBackOff(TimeSpan.FromSeconds(5))
                                    .WithMaxRetries(3)
@@ -144,34 +147,50 @@ namespace Naos.AWS.S3
                         {
                             await responseStream.CopyToAsync(destinationStream);
 
+                            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> validatedChecksums = null;
+
                             if (validateChecksumsIfPresent)
                             {
-                                VerifyChecksums(destinationStream, response);
+                                validatedChecksums = VerifyChecksums(destinationStream, response);
                             }
 
                             var userDefinedMetadata = GetUserDefinedMetadata(response);
 
                             result = new DownloadFileResult(
-                                keyExists: true,
-                                response.ContentLength,
-                                response.LastModified,
-                                userDefinedMetadata);
+                                region,
+                                bucketName,
+                                keyName,
+                                new DownloadFileDetails(
+                                    response.ContentLength,
+                                    response.LastModified,
+                                    userDefinedMetadata,
+                                    validatedChecksums));
                         }
                     }
                 }
-                catch (AmazonS3Exception ex) when ((!throwIfKeyNotFound) && (ex.ErrorCode == "NoSuchKey"))
+                catch (AmazonS3Exception ex) when (ex.ErrorCode == "NoSuchKey")
                 {
-                    result = new DownloadFileResult(keyExists: false, null, null, null);
+                    if (throwIfKeyNotFound)
+                    {
+                        throw new InvalidOperationException(
+                            Invariant($"The specified key ('{keyName}') does not exist in the specified bucket ('{bucketName}') within the specified region ('{region}').  See inner exception."), ex);
+                    }
+                    else
+                    {
+                        result = new DownloadFileResult(region, bucketName, keyName, details: null);
+                    }
                 }
             }
 
             return result;
         }
 
-        private static void VerifyChecksums(
+        private static IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> VerifyChecksums(
             Stream destinationStream,
             GetObjectResponse response)
         {
+            var result = new Dictionary<HashAlgorithmName, ComputedChecksum>();
+
             foreach (var computedChecksum in GetSavedChecksums(response))
             {
                 var checksum = HashGenerator.ComputeHashFromStream(computedChecksum.HashAlgorithmName, destinationStream);
@@ -180,7 +199,11 @@ namespace Naos.AWS.S3
                 {
                     throw new ChecksumVerificationException(computedChecksum.HashAlgorithmName, computedChecksum.Value, checksum);
                 }
+
+                result.Add(computedChecksum.HashAlgorithmName, computedChecksum);
             }
+
+            return result;
         }
 
         private static IEnumerable<ComputedChecksum> GetSavedChecksums(

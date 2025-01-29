@@ -158,6 +158,7 @@
     <Compile Include="InstanceStatus.cs" />
     <Compile Include="InstanceWithStatus.cs" />
     <Compile Include="Instance.cs" />
+    <Compile Include="S3\DownloadFileDetails.cs" />
     <Compile Include="S3\DownloadFileResult.cs" />
     <Compile Include="SesTools.cs" />
     <Compile Include="NatGateway.cs" />

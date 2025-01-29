@@ -6,8 +6,6 @@
 
 namespace Naos.AWS.Domain
 {
-    using System;
-    using System.Collections.Generic;
     using OBeautifulCode.Assertion.Recipes;
 
     /// <summary>
@@ -18,45 +16,44 @@ namespace Naos.AWS.Domain
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadFileResult"/> class.
         /// </summary>
-        /// <param name="keyExists">A value indicating whether the key exists.</param>
-        /// <param name="sizeInBytes">The size of the file in bytes or null if <paramref name="keyExists"/> is false.</param>
-        /// <param name="lastModifiedUtc">The last modified date of the file in UTC or null if <paramref name="keyExists"/> is false.</param>
-        /// <param name="userDefinedMetadata">Metadata stored along with the object or null if <paramref name="keyExists"/> is false.  Note that currently S3 limits the size of keys and data to 2 KB. Keys will not include Amazon specific prefix.</param>
+        /// <param name="region">The region that the bucket is in.</param>
+        /// <param name="bucketName">The name of the bucket that the file was downloaded from.</param>
+        /// <param name="keyName">The name of the key that was downloaded.</param>
+        /// <param name="details">Details about the downloaded file if the key exists.  Null if the key does not exist.</param>
         public DownloadFileResult(
-            bool keyExists,
-            long? sizeInBytes,
-            DateTime? lastModifiedUtc,
-            IReadOnlyDictionary<string, string> userDefinedMetadata)
+            string region,
+            string bucketName,
+            string keyName,
+            DownloadFileDetails details)
         {
-            sizeInBytes.MustForArg(nameof(sizeInBytes)).BeGreaterThanOrEqualToWhenNotNull((long?)0);
-            lastModifiedUtc.MustForArg(nameof(lastModifiedUtc)).BeUtcDateTimeWhenNotNull();
+            region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
+            bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
+            keyName.AsArg(nameof(keyName)).Must().NotBeNullNorWhiteSpace();
 
-            this.KeyExists = keyExists;
-            this.SizeInBytes = sizeInBytes;
-            this.LastModifiedUtc = lastModifiedUtc;
-            this.UserDefinedMetadata = userDefinedMetadata;
+            this.Region = region;
+            this.BucketName = bucketName;
+            this.KeyName = keyName;
+            this.Details = details;
         }
 
         /// <summary>
-        /// Gets a value indicating whether the key exists.
+        /// Gets the region that the bucket is in.
         /// </summary>
-        public bool KeyExists { get; private set; }
+        public string Region { get; private set; }
 
         /// <summary>
-        /// Gets the size of the file in bytes or null if <see cref="KeyExists"/> is false.
+        /// Gets the name of the bucket that the file was downloaded from.
         /// </summary>
-        public long? SizeInBytes { get; private set; }
+        public string BucketName { get; private set; }
 
         /// <summary>
-        /// Gets the last modified date of the file in UTC or null if <see cref="KeyExists"/> is false.
+        /// Gets the name of the key that was downloaded.
         /// </summary>
-        public DateTime? LastModifiedUtc { get; private set; }
+        public string KeyName { get; private set; }
 
         /// <summary>
-        /// Gets metadata stored along with the object or null if <see cref="KeyExists"/> is false
-        /// Note that currently S3 limits the size of keys and data to 2 KB.
-        /// Keys will not include Amazon specific prefix.
+        /// Gets details about the downloaded file if the key exists.  Null if the key does not exist.
         /// </summary>
-        public IReadOnlyDictionary<string, string> UserDefinedMetadata { get; private set; }
+        public DownloadFileDetails Details { get; private set; }
     }
 }
