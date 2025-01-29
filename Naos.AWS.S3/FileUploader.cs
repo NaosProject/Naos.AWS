@@ -12,16 +12,12 @@ namespace Naos.AWS.S3
     using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
-
     using Amazon;
     using Amazon.S3;
     using Amazon.S3.Transfer;
-
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
-
     using OBeautifulCode.Assertion.Recipes;
-
     using Spritely.Redo;
 
     /// <summary>
@@ -52,7 +48,16 @@ namespace Naos.AWS.S3
         {
             sourceFilePath.AsArg(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
 
-            return await this.UploadFileAsync(region, bucketName, keyName, sourceFilePath, null, hashAlgorithmNames, userDefinedMetadata);
+            var result = await this.UploadFileAsync(
+                region,
+                bucketName,
+                keyName,
+                sourceFilePath,
+                null,
+                hashAlgorithmNames,
+                userDefinedMetadata);
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -66,7 +71,16 @@ namespace Naos.AWS.S3
         {
             sourceStream.AsArg(nameof(sourceStream)).Must().NotBeNull();
 
-            return await this.UploadFileAsync(region, bucketName, keyName, null, sourceStream, hashAlgorithmNames, userDefinedMetadata);
+            var result = await this.UploadFileAsync(
+                region,
+                bucketName,
+                keyName,
+                null,
+                sourceStream,
+                hashAlgorithmNames,
+                userDefinedMetadata);
+
+            return result;
         }
 
         private async Task<UploadFileResult> UploadFileAsync(
@@ -115,7 +129,8 @@ namespace Naos.AWS.S3
                             .ToDictionary(_ => _, _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromStream(_, sourceFileStream)));
                     }
 
-                    // If there is an MD5 hash passed in then add to ContentMD5 in order to have S3 perform a checksum verification before persisting the file.
+                    // If there is an MD5 hash passed in then add to ContentMD5 in order to have
+                    // S3 perform a checksum verification before persisting the file.
                     if (computedChecksums.ContainsKey(HashAlgorithmName.MD5))
                     {
                         transferUtilityUploadRequest.Headers.ContentMD5 = EncodingHelper.ConvertHexStringToBase64(computedChecksums[HashAlgorithmName.MD5].Value);
@@ -123,7 +138,9 @@ namespace Naos.AWS.S3
 
                     foreach (var computedChecksum in computedChecksums)
                     {
-                        transferUtilityUploadRequest.Metadata.Add(CreateChecksumMetadataKey(computedChecksum.Key), computedChecksum.Value.Value);
+                        var checksumMetadataKey = CreateChecksumMetadataKey(computedChecksum.Key);
+
+                        transferUtilityUploadRequest.Metadata.Add(checksumMetadataKey, computedChecksum.Value.Value);
                     }
 
                     if (userDefinedMetadata != null)
@@ -141,7 +158,9 @@ namespace Naos.AWS.S3
                             .RunAsync(() => localTransferUtility.UploadAsync(transferUtilityUploadRequest))
                             .Now();
 
-                    return new UploadFileResult(region, bucketName, keyName, computedChecksums);
+                    var result = new UploadFileResult(region, bucketName, keyName, computedChecksums);
+
+                    return result;
                 }
             }
         }
@@ -151,8 +170,7 @@ namespace Naos.AWS.S3
         {
             // Actual Checksum metadata key in S3 will be 'x-amz-meta-{HashAlgorithmName}-checksum' since
             // Amazon will prepend 'x-amz-meta-' to the metadata key if not already present.
-            // ReSharper disable once ArrangeStaticMemberQualifier
-            var result = hashAlgorithmName + AwsInteractionBase.MetadataKeyChecksumSuffix;
+            var result = hashAlgorithmName + MetadataKeyChecksumSuffix;
 
             return result;
         }
