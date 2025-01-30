@@ -190,7 +190,6 @@ namespace Naos.AWS.S3
 
         /// <inheritdoc />
         [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = NaosSuppressBecause.CA1506_AvoidExcessiveClassCoupling_DisagreeWithAssessment)]
-        [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "uploadResult", Justification = "Prefer to see result is coming back.")]
         public override PutRecordResult Execute(
             StandardPutRecordOp operation)
         {
@@ -247,13 +246,13 @@ namespace Naos.AWS.S3
                         // Per the comment above, this is also an odd case because we technically don't need to throw
                         // if there are no records to prune in the stream, but setting a RecordRetentionCount > 0 implies
                         // that the caller doesn't understand the limitations of this stream.
-                        throw new NotSupportedException($"{nameof(ExistingRecordStrategy)} of {nameof(ExistingRecordStrategy.PruneIfFoundById)} is not supported when {nameof(operation.RecordRetentionCount)} is greater than 0.");
+                        throw new NotSupportedException(Invariant($"{nameof(ExistingRecordStrategy)} of {nameof(ExistingRecordStrategy.PruneIfFoundById)} is not supported when {nameof(operation.RecordRetentionCount)} is greater than 0."));
                     }
 
                     existingFileWriteAction = ExistingFileWriteAction.OverwriteFile;
                     break;
                 default:
-                    throw new NotSupportedException($"This {nameof(ExistingRecordStrategy)} is not supported: {operation.ExistingRecordStrategy}.");
+                    throw new NotSupportedException(Invariant($"This {nameof(ExistingRecordStrategy)} is not supported: {operation.ExistingRecordStrategy}."));
             }
 
             using (var sourceStream = new MemoryStream(binaryPayload.SerializedPayload))
@@ -390,7 +389,7 @@ namespace Naos.AWS.S3
 
             foreach (var metadataKey in userDefinedMetadata.Keys)
             {
-                if (metadataKey.StartsWith(MetadataKeyTagNamePrefix))
+                if (metadataKey.StartsWith(MetadataKeyTagNamePrefix, StringComparison.Ordinal))
                 {
                     var metadataValue = userDefinedMetadata[metadataKey];
 

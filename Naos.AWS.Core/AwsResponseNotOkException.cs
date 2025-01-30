@@ -23,6 +23,9 @@ namespace Naos.AWS.Core
     {
         private static readonly IStringSerialize ErrorSerializer = new ObcJsonSerializer();
 
+        #pragma warning disable CS3001 // Argument type is not CLS-compliant
+        #pragma warning disable CS3003 // Type is not CLS-compliant
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AwsResponseNotOkException"/> class.
         /// </summary>
@@ -44,5 +47,8 @@ namespace Naos.AWS.Core
         /// Gets the response object.
         /// </summary>
         public AmazonWebServiceResponse Response { get; private set; }
+
+        #pragma warning restore CS3003 // Type is not CLS-compliant
+        #pragma warning restore CS3001 // Argument type is not CLS-compliant
     }
 }

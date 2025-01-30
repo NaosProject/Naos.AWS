@@ -15,6 +15,8 @@ namespace Naos.AWS.Core
     /// </summary>
     public static class Validator
     {
+        #pragma warning disable CS3001 // Argument type is not CLS-compliant
+
         /// <summary>
         /// Throws an AwsResponseNotOkException when the HTTP response is not 200 (OK).
         /// </summary>
@@ -27,5 +29,7 @@ namespace Naos.AWS.Core
                 throw new AwsResponseNotOkException(request, response);
             }
         }
+
+        #pragma warning restore CS3001 // Argument type is not CLS-compliant
     }
 }

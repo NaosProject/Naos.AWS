@@ -50,6 +50,9 @@ namespace Naos.AWS.Core
             }
         }
 
+        #pragma warning disable CS3003 // Type is not CLS-compliant
+        #pragma warning disable CS3002 // Return type is not CLS-compliant
+
         /// <summary>
         /// Gets or sets the credentials that can be used in lieu or providing to each method.
         /// </summary>
@@ -72,5 +75,8 @@ namespace Naos.AWS.Core
 
             return ret;
         }
+
+        #pragma warning restore CS3002 // Return type is not CLS-compliant
+        #pragma warning restore CS3003 // Type is not CLS-compliant
     }
 }

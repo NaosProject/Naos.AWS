@@ -42,7 +42,8 @@ namespace Naos.AWS.S3.Test
                         Region = "us-east-1",
                         BucketName = "stream-testing",
                     }),
-                fileManager);
+                fileManager,
+                new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>());
 
             var newFileName = FormattableString.Invariant($"StreamTest_{Guid.NewGuid()}.bin");
             var newFileContents = A.Dummy<byte[]>();
@@ -51,7 +52,7 @@ namespace Naos.AWS.S3.Test
             idsBefore.MustForTest().NotContainElement(newFileName);
 
             stream.PutWithId(newFileName, newFileContents);
-            
+
             var ids = stream.GetDistinctIds<string>();
             ids.MustForTest().ContainElement(newFileName);
 

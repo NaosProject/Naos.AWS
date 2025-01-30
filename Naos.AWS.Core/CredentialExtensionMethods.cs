@@ -7,7 +7,7 @@
 namespace Naos.AWS.Core
 {
     using System;
-
+    using System.Diagnostics.CodeAnalysis;
     using Amazon.Runtime;
     using Amazon.SecurityToken.Model;
 
@@ -20,12 +20,14 @@ namespace Naos.AWS.Core
     /// </summary>
     public static class CredentialExtensionMethods
     {
+        #pragma warning disable CS3002 // Return type is not CLS-compliant
+
         /// <summary>
         /// Convert a CredentialContainer to AWSCredentials.
         /// </summary>
         /// <param name="credentials">CredentialContainer to be converted.</param>
         /// <returns>AWSCredentials using supplied values.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Aws", Justification = "Spelling/name is correct.")]
         public static AWSCredentials ToAwsCredentials(this CredentialContainer credentials)
         {
             new { credentials }.AsArg().Must().NotBeNull();
@@ -49,5 +51,7 @@ namespace Naos.AWS.Core
 
             return ret;
         }
+
+        #pragma warning restore CS3002 // Return type is not CLS-compliant
     }
 }
