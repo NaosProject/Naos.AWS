@@ -322,14 +322,13 @@ namespace Naos.AWS.S3
         public override IReadOnlyCollection<StringSerializedIdentifier> Execute(
             StandardGetDistinctStringSerializedIdsOp operation)
         {
-            var identifierType = typeof(string).ToRepresentation();
-
-            operation.RecordFilter.DeprecatedIdTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}")).BeNull();
-            operation.RecordFilter.IdTypes.Single().MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}")).BeEqualTo(identifierType);
-            operation.RecordFilter.InternalRecordIds.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}")).BeNull();
-            operation.RecordFilter.ObjectTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}")).BeNull();
-            operation.RecordFilter.Tags.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}")).BeNull();
-            operation.RecordFilter.Ids.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}")).BeNull();
+            operation.RecordFilter.InternalRecordIds.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.InternalRecordIds)}")).BeNull(Invariant($"No support for {nameof(RecordFilter.InternalRecordIds)}."));
+            operation.RecordFilter.Ids.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Ids)}")).BeNull(Invariant($"No support for {nameof(RecordFilter.Ids)}."));
+            operation.RecordFilter.IdTypes.Single().MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.IdTypes)}")).BeEqualTo(IdentifierTypeRepresentation);
+            operation.RecordFilter.ObjectTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.ObjectTypes)}")).BeNull(Invariant($"No support for {nameof(RecordFilter.ObjectTypes)}."));
+            operation.RecordFilter.VersionMatchStrategy.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.VersionMatchStrategy)}")).BeEqualTo(VersionMatchStrategy.Any, Invariant($"The only supported {nameof(RecordFilter.VersionMatchStrategy)} is {nameof(VersionMatchStrategy.Any)}."));
+            operation.RecordFilter.Tags.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.Tags)}")).BeNull(Invariant($"No support for {nameof(RecordFilter.Tags)}."));
+            operation.RecordFilter.DeprecatedIdTypes.MustForArg(Invariant($"{nameof(operation)}.{nameof(operation.RecordFilter)}.{nameof(operation.RecordFilter.DeprecatedIdTypes)}")).BeNull(Invariant($"No support for {nameof(RecordFilter.DeprecatedIdTypes)}."));
 
             var resourceLocator = this.TryGetSingleLocator(operation);
 
@@ -339,7 +338,7 @@ namespace Naos.AWS.S3
             var listedFiles = listFilesAsyncFunc.ExecuteSynchronously();
 
             var result = listedFiles
-                .Select(_ => new StringSerializedIdentifier(_.KeyName, identifierType))
+                .Select(_ => new StringSerializedIdentifier(_.KeyName, IdentifierTypeRepresentation))
                 .ToList();
 
             return result;
