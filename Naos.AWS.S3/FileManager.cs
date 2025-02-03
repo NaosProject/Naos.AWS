@@ -11,6 +11,7 @@ namespace Naos.AWS.S3
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Naos.AWS.Domain;
+    using OBeautifulCode.IO;
 
     /// <summary>
     /// Class to manage files in Amazon S3.
@@ -83,7 +84,8 @@ namespace Naos.AWS.S3
             string sourceFilePath,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null,
-            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile,
+            MediaType? mediaType = null)
         {
             return await this.fileUploader.UploadFileAsync(
                 region,
@@ -92,7 +94,8 @@ namespace Naos.AWS.S3
                 sourceFilePath,
                 hashAlgorithmNames,
                 userDefinedMetadata,
-                existingFileWriteAction);
+                existingFileWriteAction,
+                mediaType);
         }
 
         /// <inheritdoc />
@@ -103,7 +106,8 @@ namespace Naos.AWS.S3
             Stream sourceStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null,
-            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile,
+            MediaType? mediaType = null)
         {
             return await this.fileUploader.UploadFileAsync(
                 region,
@@ -112,7 +116,8 @@ namespace Naos.AWS.S3
                 sourceStream,
                 hashAlgorithmNames,
                 userDefinedMetadata,
-                existingFileWriteAction);
+                existingFileWriteAction,
+                mediaType);
         }
 
         #endregion

@@ -18,6 +18,7 @@ namespace Naos.AWS.S3
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
     using OBeautifulCode.Assertion.Recipes;
+    using OBeautifulCode.IO;
     using Spritely.Redo;
     using static System.FormattableString;
 
@@ -46,7 +47,8 @@ namespace Naos.AWS.S3
             string sourceFilePath,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null,
-            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile,
+            MediaType? mediaType = null)
         {
             sourceFilePath.AsArg(nameof(sourceFilePath)).Must().NotBeNullNorWhiteSpace();
 
@@ -58,7 +60,8 @@ namespace Naos.AWS.S3
                 null,
                 hashAlgorithmNames,
                 userDefinedMetadata,
-                existingFileWriteAction);
+                existingFileWriteAction,
+                mediaType);
 
             return result;
         }
@@ -71,7 +74,8 @@ namespace Naos.AWS.S3
             Stream sourceStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata = null,
-            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile)
+            ExistingFileWriteAction existingFileWriteAction = ExistingFileWriteAction.OverwriteFile,
+            MediaType? mediaType = null)
         {
             sourceStream.AsArg(nameof(sourceStream)).Must().NotBeNull();
 
@@ -83,7 +87,8 @@ namespace Naos.AWS.S3
                 sourceStream,
                 hashAlgorithmNames,
                 userDefinedMetadata,
-                existingFileWriteAction);
+                existingFileWriteAction,
+                mediaType);
 
             return result;
         }
@@ -96,7 +101,8 @@ namespace Naos.AWS.S3
             Stream sourceFileStream,
             IReadOnlyCollection<HashAlgorithmName> hashAlgorithmNames,
             IReadOnlyDictionary<string, string> userDefinedMetadata,
-            ExistingFileWriteAction existingFileWriteAction)
+            ExistingFileWriteAction existingFileWriteAction,
+            MediaType? mediaType = null)
         {
             region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
             bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
@@ -114,6 +120,12 @@ namespace Naos.AWS.S3
                         BucketName = bucketName,
                         Key = keyName,
                     };
+
+                    if (mediaType != null)
+                    {
+                        var contentType = ((MediaType)mediaType).ToMimeTypeName();
+                        transferUtilityUploadRequest.ContentType = contentType;
+                    }
 
                     switch (existingFileWriteAction)
                     {
