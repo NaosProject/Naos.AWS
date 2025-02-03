@@ -18,6 +18,7 @@ namespace Naos.AWS.S3
     using Naos.Database.Domain;
     using OBeautifulCode.Assertion.Recipes;
     using OBeautifulCode.Execution.Recipes;
+    using OBeautifulCode.IO;
     using OBeautifulCode.Representation.System;
     using OBeautifulCode.Serialization;
     using OBeautifulCode.String.Recipes;
@@ -255,6 +256,21 @@ namespace Naos.AWS.S3
                     throw new NotSupportedException(Invariant($"This {nameof(ExistingRecordStrategy)} is not supported: {operation.ExistingRecordStrategy}."));
             }
 
+            // Note that we are throwing if multiple MediaType tags are found.
+            MediaType? mediaType = null;
+            var mediaTypeTag = tags.SingleOrDefault(_ => _.Name == TagNames.MediaType);
+            if (mediaTypeTag != null)
+            {
+                if (Enum.TryParse<MediaType>(mediaTypeTag.Value, out var parsedMediaType))
+                {
+                    mediaType = parsedMediaType;
+                }
+                else
+                {
+                    throw new NotSupportedException(Invariant($"This {nameof(MediaType)} is not supported: {mediaTypeTag.Value}"));
+                }
+            }
+
             using (var sourceStream = new MemoryStream(binaryPayload.SerializedPayload))
             {
                 // ReSharper disable once AccessToDisposedClosure
@@ -270,7 +286,8 @@ namespace Naos.AWS.S3
                         HashAlgorithmName.SHA1,
                     },
                     userDefinedMetadata,
-                    existingFileWriteAction);
+                    existingFileWriteAction,
+                    mediaType);
 
                 var uploadResult = uploadFileAsyncFunc.ExecuteSynchronously();
 
