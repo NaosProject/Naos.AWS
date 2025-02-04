@@ -23,6 +23,7 @@ namespace Naos.AWS.Domain
         /// <param name="destinationFilePath">File path to download to.</param>
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
+        /// <param name="getTags">OPTIONAL value indicating whether to get the object's tags.  DEFAULT is to skip fetching tags.</param>
         /// <returns>
         /// The result of downloading the file.
         /// </returns>
@@ -32,7 +33,8 @@ namespace Naos.AWS.Domain
             string keyName,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true);
+            bool throwIfKeyNotFound = true,
+            bool getTags = false);
 
         /// <summary>
         /// Downloads file to provided path from the specified region and bucket and key.
@@ -43,6 +45,7 @@ namespace Naos.AWS.Domain
         /// <param name="destinationStream">Stream to download to.</param>
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
+        /// <param name="getTags">OPTIONAL value indicating whether to get the object's tags.  DEFAULT is to skip fetching tags.</param>
         /// <returns>
         /// The result of downloading the file.
         /// </returns>
@@ -52,7 +55,8 @@ namespace Naos.AWS.Domain
             string keyName,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true);
+            bool throwIfKeyNotFound = true,
+            bool getTags = false);
 
         /// <summary>
         /// Downloads file to provided path from the specified region and bucket and key.
@@ -61,6 +65,7 @@ namespace Naos.AWS.Domain
         /// <param name="destinationFilePath">File path to download to.</param>
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
+        /// <param name="getTags">OPTIONAL value indicating whether to get the object's tags.  DEFAULT is to skip fetching tags.</param>
         /// <returns>
         /// The result of downloading the file.
         /// </returns>
@@ -68,7 +73,8 @@ namespace Naos.AWS.Domain
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true);
+            bool throwIfKeyNotFound = true,
+            bool getTags = false);
 
         /// <summary>
         /// Downloads file to provided stream from the specified region and bucket and key.
@@ -77,6 +83,7 @@ namespace Naos.AWS.Domain
         /// <param name="destinationStream">Stream to download to.</param>
         /// <param name="validateChecksumsIfPresent">OPTIONAL value indicating whether to validate checksums if present in the file metadata. DEFAULT and recommended value is true.</param>
         /// <param name="throwIfKeyNotFound">OPTIONAL value indicating whether to throw if the key is not found.  DEFAULT is to throw.</param>
+        /// <param name="getTags">OPTIONAL value indicating whether to get the object's tags.  DEFAULT is to skip fetching tags.</param>
         /// <returns>
         /// The result of downloading the file.
         /// </returns>
@@ -84,6 +91,7 @@ namespace Naos.AWS.Domain
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true);
+            bool throwIfKeyNotFound = true,
+            bool getTags = false);
     }
 }

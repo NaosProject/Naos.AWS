@@ -129,13 +129,15 @@ namespace Naos.AWS.S3
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             var result = await this.fileDownloader.DownloadFileAsync(
                 uploadFileResult,
                 destinationFilePath,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }
@@ -145,13 +147,15 @@ namespace Naos.AWS.S3
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             var result = await this.fileDownloader.DownloadFileAsync(
                 uploadFileResult,
                 destinationStream,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }
@@ -163,7 +167,8 @@ namespace Naos.AWS.S3
             string keyName,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             var result = await this.fileDownloader.DownloadFileAsync(
                 region,
@@ -171,7 +176,8 @@ namespace Naos.AWS.S3
                 keyName,
                 destinationFilePath,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }
@@ -183,7 +189,8 @@ namespace Naos.AWS.S3
             string keyName,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             var result = await this.fileDownloader.DownloadFileAsync(
                 region,
@@ -191,7 +198,8 @@ namespace Naos.AWS.S3
                 keyName,
                 destinationStream,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }

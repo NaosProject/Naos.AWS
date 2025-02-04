@@ -18,6 +18,7 @@ namespace Naos.AWS.S3
     using Naos.AWS.Domain;
     using Naos.Recipes.Cryptography.Hashing;
     using OBeautifulCode.Assertion.Recipes;
+    using OBeautifulCode.Type;
     using Spritely.Redo;
     using static System.FormattableString;
 
@@ -51,7 +52,8 @@ namespace Naos.AWS.S3
             UploadFileResult uploadFileResult,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
@@ -61,7 +63,8 @@ namespace Naos.AWS.S3
                 uploadFileResult.KeyName,
                 destinationFilePath,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }
@@ -71,7 +74,8 @@ namespace Naos.AWS.S3
             UploadFileResult uploadFileResult,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             uploadFileResult.AsArg(nameof(uploadFileResult)).Must().NotBeNull();
 
@@ -81,7 +85,8 @@ namespace Naos.AWS.S3
                 uploadFileResult.KeyName,
                 destinationStream,
                 validateChecksumsIfPresent,
-                throwIfKeyNotFound);
+                throwIfKeyNotFound,
+                getTags);
 
             return result;
         }
@@ -93,13 +98,20 @@ namespace Naos.AWS.S3
             string keyName,
             string destinationFilePath,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             destinationFilePath.AsArg(nameof(destinationFilePath)).Must().NotBeNullNorWhiteSpace();
 
             using (var fileStream = File.Create(destinationFilePath))
             {
-                var result = await this.DownloadFileAsync(region, bucketName, keyName, fileStream, throwIfKeyNotFound);
+                var result = await this.DownloadFileAsync(
+                    region,
+                    bucketName,
+                    keyName,
+                    fileStream,
+                    throwIfKeyNotFound,
+                    getTags);
 
                 return result;
             }
@@ -112,7 +124,8 @@ namespace Naos.AWS.S3
             string keyName,
             Stream destinationStream,
             bool validateChecksumsIfPresent = true,
-            bool throwIfKeyNotFound = true)
+            bool throwIfKeyNotFound = true,
+            bool getTags = false)
         {
             region.AsArg(nameof(region)).Must().NotBeNullNorWhiteSpace();
             bucketName.AsArg(nameof(bucketName)).Must().NotBeNullNorWhiteSpace();
@@ -126,7 +139,7 @@ namespace Naos.AWS.S3
 
             using (var client = new AmazonS3Client(awsCredentials, regionEndpoint))
             {
-                var request = new GetObjectRequest
+                var getObjectRequest = new GetObjectRequest
                 {
                     BucketName = bucketName,
                     Key = keyName,
@@ -135,15 +148,18 @@ namespace Naos.AWS.S3
                 var localClient = client;
                 try
                 {
+                    string versionId;
+                    DownloadFileDetails downloadFileDetails;
+
                     // Note: if throwIfKeyNotFound is true, we will attempt to download multiple times before
                     // throwing because of this re-try logic.
-                    using (var response = await
+                    using (var getObjectResponse = await
                                Using.LinearBackOff(TimeSpan.FromSeconds(5))
                                    .WithMaxRetries(3)
-                                   .RunAsync(() => localClient.GetObjectAsync(request))
+                                   .RunAsync(() => localClient.GetObjectAsync(getObjectRequest))
                                    .Now())
                     {
-                        using (var responseStream = response.ResponseStream)
+                        using (var responseStream = getObjectResponse.ResponseStream)
                         {
                             await responseStream.CopyToAsync(destinationStream);
 
@@ -151,25 +167,65 @@ namespace Naos.AWS.S3
 
                             if (validateChecksumsIfPresent)
                             {
-                                validatedChecksums = VerifyChecksums(destinationStream, response);
+                                validatedChecksums = VerifyChecksums(destinationStream, getObjectResponse);
                             }
 
-                            var userDefinedMetadata = GetUserDefinedMetadata(response);
+                            var userDefinedMetadata = GetUserDefinedMetadata(getObjectResponse);
 
-                            result = new DownloadFileResult(
-                                region,
-                                bucketName,
-                                keyName,
-                                new DownloadFileDetails(
-                                    response.ContentLength,
-                                    response.LastModified,
-                                    userDefinedMetadata,
-                                    validatedChecksums));
+                            downloadFileDetails = new DownloadFileDetails(
+                                getObjectResponse.ContentLength,
+                                getObjectResponse.LastModified,
+                                userDefinedMetadata,
+                                validatedChecksums,
+                                null);
                         }
+
+                        versionId = getObjectResponse.VersionId;
                     }
+
+                    // Note: there is no was to get the object and it's tags in one S3 API call.
+                    // Further, unless the bucket is versioned, there is no way to ensure that the tags
+                    // we get back are for the object we just retrieved, because GetObjectTaggingResponse
+                    // does not contain an ETag for the object that we could compare against the ETag from
+                    // the response above.
+
+                    // Note: if the bucket is not versioned, VersionId will just be null and has no negative
+                    // impact when added to the GetObjectTaggingRequest below.
+                    if (getTags)
+                    {
+                        var getTagsRequest = new GetObjectTaggingRequest
+                        {
+                            BucketName = bucketName,
+                            Key = keyName,
+                            VersionId = versionId,
+                        };
+
+                        var getTagsResponse = await
+                            Using.LinearBackOff(TimeSpan.FromSeconds(5))
+                                .WithMaxRetries(3)
+                                .RunAsync(() => localClient.GetObjectTaggingAsync(getTagsRequest))
+                                .Now();
+
+                        var tags = getTagsResponse.Tagging.Select(_ => new NamedValue<string>(_.Key, _.Value)).ToList();
+
+                        downloadFileDetails = new DownloadFileDetails(
+                            downloadFileDetails.SizeInBytes,
+                            downloadFileDetails.LastModifiedUtc,
+                            downloadFileDetails.UserDefinedMetadata,
+                            downloadFileDetails.ValidatedChecksums,
+                            tags);
+                    }
+
+                    result = new DownloadFileResult(
+                        region,
+                        bucketName,
+                        keyName,
+                        downloadFileDetails);
                 }
-                catch (AmazonS3Exception ex) when (ex.ErrorCode == "NoSuchKey")
+                catch (AmazonS3Exception ex) when ((ex.ErrorCode == "NoSuchKey") || (ex.ErrorCode == "NoSuchVersion"))
                 {
+                    // Note: NoSuchVersion would be thrown when executing GetObjectTaggingRequest
+                    // and the object is deleted prior to that but after the GetObjectRequest was executed.
                     if (throwIfKeyNotFound)
                     {
                         throw new InvalidOperationException(

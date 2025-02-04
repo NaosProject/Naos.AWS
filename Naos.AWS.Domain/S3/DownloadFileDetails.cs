@@ -10,11 +10,12 @@ namespace Naos.AWS.Domain
     using System.Collections.Generic;
     using System.Security.Cryptography;
     using OBeautifulCode.Assertion.Recipes;
+    using OBeautifulCode.Type;
 
     /// <summary>
     /// Details related to a downloaded file.
     /// </summary>
-    public class DownloadFileDetails
+    public class DownloadFileDetails : IHaveTags
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadFileDetails"/> class.
@@ -23,11 +24,13 @@ namespace Naos.AWS.Domain
         /// <param name="lastModifiedUtc">The last modified date of the file in UTC.</param>
         /// <param name="userDefinedMetadata">Metadata stored along with the object.  Note that currently S3 limits the size of keys and data to 2 KB. Keys will not include Amazon specific prefix.</param>
         /// <param name="validatedChecksums">The validated checksums or null if not validated.  Validation compares the checksums that were computed and stored when the file was uploaded against the checksums it computes on the downloaded payload.</param>
+        /// <param name="tags">The object's tags or null if they were not fetched.</param>
         public DownloadFileDetails(
             long sizeInBytes,
             DateTime lastModifiedUtc,
             IReadOnlyDictionary<string, string> userDefinedMetadata,
-            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> validatedChecksums)
+            IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> validatedChecksums,
+            IReadOnlyCollection<NamedValue<string>> tags)
         {
             sizeInBytes.MustForArg(nameof(sizeInBytes)).BeGreaterThanOrEqualTo(0L);
             lastModifiedUtc.MustForArg(nameof(lastModifiedUtc)).BeUtcDateTime();
@@ -37,6 +40,7 @@ namespace Naos.AWS.Domain
             this.LastModifiedUtc = lastModifiedUtc;
             this.UserDefinedMetadata = userDefinedMetadata;
             this.ValidatedChecksums = validatedChecksums;
+            this.Tags = tags;
         }
 
         /// <summary>
@@ -62,5 +66,8 @@ namespace Naos.AWS.Domain
         /// against the checksums it computes on the downloaded payload.
         /// </summary>
         public IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> ValidatedChecksums { get; private set; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<NamedValue<string>> Tags { get; private set; }
     }
 }
