@@ -43,7 +43,8 @@ namespace Naos.AWS.S3.Test
                         BucketName = "stream-testing",
                     }),
                 fileManager,
-                new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>());
+                new ObcJsonSerializer<CompactFormatJsonSerializationConfiguration<NullJsonSerializationConfiguration>>(),
+                pullObjectTagsIntoStreamRecordMetadataTags: true);
 
             var newFileName = FormattableString.Invariant($"StreamTest_{Guid.NewGuid()}.bin");
             var newFileContents = A.Dummy<byte[]>();

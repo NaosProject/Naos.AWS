@@ -45,6 +45,7 @@ namespace Naos.AWS.S3
 
         private readonly IManageFiles fileManager;
         private readonly IStringSerializeAndDeserialize tagSerializer;
+        private readonly bool pullObjectTagsIntoStreamRecordMetadataTags;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="S3Stream"/> class.
@@ -56,6 +57,15 @@ namespace Naos.AWS.S3
         /// <param name="resourceLocatorProtocols">Protocol to get appropriate resource locator(s).</param>
         /// <param name="fileManager">Backing interface to interact with S3.</param>
         /// <param name="tagSerializer">The serializer to use when serializing tags.</param>
+        /// <param name="pullObjectTagsIntoStreamRecordMetadataTags">
+        /// A value indicating whether to read object tags in S3 on GET operations and put them into
+        /// the persisted <see cref="StreamRecordMetadata.Tags"/>.
+        /// Note that <see cref="StreamRecordMetadata.Tags"/> are persisted to S3 in user-defined metadata and
+        /// not object tags.  Thus, setting this value to true would augment the persisted tags.  This is useful in
+        /// situations where objects are tagged after PUT-ing.  For example, AWS GuardDuty scans files for malware
+        /// and puts the result of scanning into a new tag.  By pulling this object tag into <see cref="StreamRecordMetadata.Tags"/>,
+        /// the caller can determine if a file contains malware.
+        /// </param>
         public S3Stream(
             string name,
             ISerializerFactory serializerFactory,
@@ -63,7 +73,8 @@ namespace Naos.AWS.S3
             SerializationFormat defaultSerializationFormat,
             IResourceLocatorProtocols resourceLocatorProtocols,
             IManageFiles fileManager,
-            IStringSerializeAndDeserialize tagSerializer)
+            IStringSerializeAndDeserialize tagSerializer,
+            bool pullObjectTagsIntoStreamRecordMetadataTags)
             : base(name, serializerFactory, defaultSerializerRepresentation, defaultSerializationFormat, resourceLocatorProtocols)
         {
             fileManager.MustForArg(nameof(fileManager)).NotBeNull();
@@ -71,6 +82,7 @@ namespace Naos.AWS.S3
 
             this.fileManager = fileManager;
             this.tagSerializer = tagSerializer;
+            this.pullObjectTagsIntoStreamRecordMetadataTags = pullObjectTagsIntoStreamRecordMetadataTags;
         }
 
         /// <inheritdoc />
@@ -131,7 +143,8 @@ namespace Naos.AWS.S3
                         id,
                         destinationStream,
                         validateChecksumsIfPresent: true,
-                        throwIfKeyNotFound);
+                        throwIfKeyNotFound,
+                        getTags: this.pullObjectTagsIntoStreamRecordMetadataTags);
 
                 var downloadFileResult = downloadFileAsyncFunc.ExecuteSynchronously();
 
@@ -140,6 +153,11 @@ namespace Naos.AWS.S3
                 if (downloadFileResult.Details != null)
                 {
                     var tags = this.GetTags(downloadFileResult.Details.UserDefinedMetadata);
+
+                    if (this.pullObjectTagsIntoStreamRecordMetadataTags)
+                    {
+                        tags = tags.Concat(downloadFileResult.Details.Tags).ToList();
+                    }
 
                     // ReSharper disable once PossibleInvalidOperationException - LastModifiedUtc guaranteed to not be null when KeyExists == true
                     var resultMetadata = new StreamRecordMetadata(
