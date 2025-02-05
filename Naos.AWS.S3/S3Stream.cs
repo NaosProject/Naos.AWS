@@ -156,7 +156,19 @@ namespace Naos.AWS.S3
 
                     if (this.pullObjectTagsIntoStreamRecordMetadataTags)
                     {
-                        tags = tags.Concat(downloadFileResult.Details.Tags).ToList();
+                        var objectTags = downloadFileResult.Details.Tags;
+
+                        // Pull the malware scan result.
+                        var malwareScanResult = objectTags.GetMalwareScanResultFromGuardDutyScan();
+                        if (malwareScanResult != null)
+                        {
+                            var malwareScanResultTag = new NamedValue<string>(TagNames.MalwareScanResult, malwareScanResult.ToString());
+
+                            tags.Add(malwareScanResultTag);
+                        }
+
+                        // Add the object tags, including the tag that was used to determine the malware scan result.
+                        tags = tags.Concat(objectTags).ToList();
                     }
 
                     // ReSharper disable once PossibleInvalidOperationException - LastModifiedUtc guaranteed to not be null when KeyExists == true
@@ -417,7 +429,7 @@ namespace Naos.AWS.S3
             return result;
         }
 
-        private IReadOnlyCollection<NamedValue<string>> GetTags(
+        private List<NamedValue<string>> GetTags(
             IReadOnlyDictionary<string, string> userDefinedMetadata)
         {
             var result = new List<NamedValue<string>>();
