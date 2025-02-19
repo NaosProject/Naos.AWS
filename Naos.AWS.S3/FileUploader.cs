@@ -162,15 +162,15 @@ namespace Naos.AWS.S3
                             .ToDictionary(
                                 _ => _,
                                 _ => new ComputedChecksum(_, HashGenerator.ComputeHashFromStream(_, sourceFileStream)));
-                    }
 
-                    // This enables multi-part uploads.  The S3 SDK determines whether to use multi-part
-                    // uploads based on the length of the stream passed in and PRIOR to applying AutoResetStreamPosition.
-                    // So here we seek to the beginning of the stream so that the SDK can consider the size of the whole
-                    // stream when determining whether to use a multi-part upload.
-                    if (sourceFileStream.CanSeek)
-                    {
-                        sourceFileStream.Seek(0, SeekOrigin.Begin);
+                        // This enables multi-part uploads.  The S3 SDK determines whether to use multi-part
+                        // uploads based on the length of the stream passed in and PRIOR to applying AutoResetStreamPosition.
+                        // So here we seek to the beginning of the stream so that the SDK can consider the size of the whole
+                        // stream when determining whether to use a multi-part upload.
+                        if (sourceFileStream.CanSeek)
+                        {
+                            sourceFileStream.Seek(0, SeekOrigin.Begin);
+                        }
                     }
 
                     // If there is an MD5 hash passed in then add to ContentMD5 in order to have
