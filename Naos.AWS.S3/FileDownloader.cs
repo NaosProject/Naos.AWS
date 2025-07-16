@@ -161,6 +161,14 @@ namespace Naos.AWS.S3
                     {
                         using (var responseStream = getObjectResponse.ResponseStream)
                         {
+                            // For large files, it's possible to get an OutOfMemoryException if the system
+                            // can't find the needed contiguous bytes in memory.
+                            // This approach pre-sizes the destination stream to avoid many re-allocations.
+                            if (destinationStream is MemoryStream)
+                            {
+                                destinationStream.SetLength(getObjectResponse.ContentLength);
+                            }
+
                             await responseStream.CopyToAsync(destinationStream);
 
                             IReadOnlyDictionary<HashAlgorithmName, ComputedChecksum> validatedChecksums = null;
